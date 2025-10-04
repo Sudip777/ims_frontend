@@ -1,7 +1,6 @@
-<!-- button.component.html -->
 <button
-  [type]="type"
-  [class]="buttonClasses"
+  [attr.type]="type"
+  [ngClass]="buttonClasses"
   [disabled]="disabled"
   (click)="onClick($event)"
 >

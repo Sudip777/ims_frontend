@@ -1,5 +1,4 @@
-// button.component.ts
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type ButtonColor =
@@ -27,17 +26,19 @@ export class ButtonComponent {
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() color: ButtonColor = 'primary';
   @Input() size: ButtonSize = 'md';
-  @Input() disabled: boolean = false;
-  @Input() fullWidth: boolean = false;
-  @Input() className: string = '';
+  @Input() disabled = false;
+  @Input() fullWidth = false;
+  @Input() className = '';
   @Input() prefix?: string;
   @Input() postfix?: string;
+  @Input() rounded = true; // ✅ new
+  @Input() ariaLabel?: string; // ✅ accessibility
 
   @Output() buttonClick = new EventEmitter<Event>();
 
   // Base styles
   private readonly baseStyles =
-    'inline-flex items-center justify-center gap-3 font-semibold rounded-full transition-all duration-300 ease-in-out border-0 disabled:opacity-50 disabled:cursor-not-allowed tracking-tight';
+    'inline-flex items-center justify-center gap-3 font-semibold transition-all duration-300 ease-in-out border-0 disabled:opacity-50 disabled:cursor-not-allowed tracking-tight focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
 
   // Color variants
   private readonly colorStyles: Record<ButtonColor, string> = {
@@ -62,7 +63,6 @@ export class ButtonComponent {
       'bg-[#6B7280] text-white shadow-[0_10px_40px_rgba(107,114,128,0.3)] hover:shadow-[0_15px_50px_rgba(107,114,128,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(107,114,128,0.3)]',
   };
 
-  // Size variants
   private readonly sizeStyles: Record<ButtonSize, string> = {
     sm: 'py-2 px-6 text-sm',
     md: 'py-3 px-8 text-base',
@@ -70,15 +70,25 @@ export class ButtonComponent {
   };
 
   get buttonClasses(): string {
-    const widthClass = this.fullWidth ? 'w-full' : '';
+    const widthClass = this.fullWidth ? 'w-full block' : '';
+    const shapeClass = this.rounded ? 'rounded-full' : 'rounded-none';
     return `${this.baseStyles} ${this.colorStyles[this.color]} ${
       this.sizeStyles[this.size]
-    } ${widthClass} ${this.className}`.trim();
+    } ${shapeClass} ${widthClass} ${this.className}`.trim();
   }
 
   onClick(event: Event): void {
     if (!this.disabled) {
       this.buttonClick.emit(event);
     }
+  }
+
+  // ✅ Forward external classes to the host
+  @HostBinding('attr.role') role = 'button';
+  @HostBinding('attr.aria-disabled') get ariaDisabled() {
+    return this.disabled;
+  }
+  @HostBinding('attr.aria-label') get ariaLabelValue() {
+    return this.ariaLabel || null;
   }
 }
