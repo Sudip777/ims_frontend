@@ -26,7 +26,7 @@ body {
 }
 
 .btn-primary {
-  @apply bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md font-medium transition-colors;
+  @apply bg-colors-ims-primary hover:bg-colors-ims-primary  text-white px-4 py-2 rounded-md font-medium transition-colors;
 }
 
 .btn-secondary {
