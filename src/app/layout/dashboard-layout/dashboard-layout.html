@@ -1,0 +1,55 @@
+<div class="flex h-screen overflow-hidden">
+  <!-- Overlay -->
+  @if (sidebarOpen) {
+  <div (click)="closeSidebar()" class="fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
+  }
+
+  <!-- Sidebar -->
+  <app-sidebar
+    [sidebarOpen]="sidebarOpen"
+    (closeSidebarEvent)="closeSidebar()"
+    class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transition-transform duration-300 lg:translate-x-0"
+    [ngClass]="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+  ></app-sidebar>
+
+  <!-- Main content -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Mobile hamburger header -->
+    <div
+      class="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm"
+    >
+      <button
+        (click)="toggleSidebar(true)"
+        class="p-2 hover:bg-purple-50 rounded-lg transition-all duration-200 active:scale-95"
+        aria-label="Open menu"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="text-gray-700"
+        >
+          <path d="M4 5h16" />
+          <path d="M4 12h16" />
+          <path d="M4 19h16" />
+        </svg>
+      </button>
+
+      <div class="flex-1 flex justify-center">
+        <app-icon name="app-logo"></app-icon>
+      </div>
+
+      <!-- TODO: Optional: Add notification/profile icon -->
+    </div>
+
+    <div class="flex-1 overflow-auto">
+      <router-outlet (activate)="onChildActivate($event)"></router-outlet>
+    </div>
+  </div>
+</div>

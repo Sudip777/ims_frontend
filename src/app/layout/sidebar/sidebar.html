@@ -1,1 +1,46 @@
-<p>sidebar works!</p>
+<aside class="flex flex-col justify-between p-4 h-full">
+  <div class="flex-1 overflow-y-auto">
+    <div class="flex items-center justify-between mb-4 lg:block">
+      <app-icon name="app-logo"></app-icon>
+    </div>
+
+    <p-iconfield class="mb-4 w-48">
+      <p-inputicon class="pi pi-search" />
+      <input type="text" pInputText placeholder="Search" class="w-full" />
+    </p-iconfield>
+
+    <div class="flex flex-col gap-2 mt-4">
+      <div
+        *ngFor="let item of navItems"
+        [routerLink]="[item.route]"
+        (click)="onNavigate()"
+        routerLinkActive="bg-ims-primary-hover-light text-ims-primary"
+        [routerLinkActiveOptions]="{ exact: item.route === '/dashboard/overview' }"
+        class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
+      >
+        <app-icon [name]="item.icon"></app-icon>
+        <span class="text-sm font-medium font-heading">{{ item.label }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between border-t border-gray-200 pt-4 cursor-pointer">
+    <div class="flex items-center gap-3">
+      <img
+        src="https://product-images-cdn.liketoknow.it/iuKVvnpxT0v7D55D_vJj64TWaSiMU7.impujQZk7f2Ya6P4iCTMTv0ThpeOVaK2A8kFgGMXkfvZolK53hY2CkuUVUIdOWq_fYv4.U8tv_W.WDw4mpY3dpycOi.Yxq73w3qCj0b9.oHm98mTIJQ1X3dbV_iNQOUIuZrDBfP9j5cmDAIUSyBH2pQIsYoM-"
+        alt="Olivia Rhye"
+        class="w-12 h-12 rounded-full object-cover"
+      />
+      <div>
+        <h3 class="text-sm font-medium font-heading text-ims-text-general">Olivia Rhye</h3>
+        <p class="text-sm font-medium font-heading text-ims-text-primary">Admin</p>
+      </div>
+    </div>
+    <div
+      (click)="logout()"
+      class="hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group p-2"
+    >
+      <app-icon name="logout"></app-icon>
+    </div>
+  </div>
+</aside>

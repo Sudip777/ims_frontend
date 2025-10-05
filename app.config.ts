@@ -8,8 +8,13 @@ export const appConfig: ApplicationConfig = {
     // ... other providers
     providePrimeNG({
       theme: {
-        preset: Aura, // Apply the theme preset
-        // options: { ... } // Optional: configure prefix, dark mode, etc.
+        preset: Aura, // Or your chosen theme
+        options: {
+          cssLayer: {
+            name: 'primeng',
+            order: 'tailwind, primeng', // Or your desired order
+          },
+        },
       },
     }),
   ],

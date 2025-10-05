@@ -1,0 +1,61 @@
+::ng-deep {
+  // Override CSS variables at the datepicker level
+  .p-datepicker {
+    --p-primary-color: #a855f7 !important;
+    --p-primary-contrast-color: #ffffff !important;
+    --p-primary-hover-color: #9333ea !important;
+  }
+
+  // Selected date - target the span with p-datepicker-day class
+  .p-datepicker-calendar .p-datepicker-day.p-highlight {
+    background: #a855f7 !important;
+    color: white !important;
+  }
+
+  // Today's date when selected
+  .p-datepicker-calendar .p-datepicker-today .p-datepicker-day.p-highlight {
+    background: #a855f7 !important;
+    color: white !important;
+  }
+
+  // Hover state on selected date
+  .p-datepicker-calendar .p-datepicker-day.p-highlight:hover {
+    background: #9333ea !important;
+  }
+
+  // Hover state on unselected dates
+  .p-datepicker-calendar .p-datepicker-day:not(.p-highlight):hover {
+    background: #f3e8ff !important;
+    color: #a855f7 !important;
+  }
+
+  // Today's date (not selected) - the light purple background
+  .p-datepicker-calendar .p-datepicker-today .p-datepicker-day:not(.p-highlight) {
+    background: #f3e8ff !important;
+    color: #a855f7 !important;
+  }
+
+  // Focus state
+  .p-datepicker-calendar .p-datepicker-day:focus {
+    outline: 0 none !important;
+    box-shadow: 0 0 0 0.2rem rgba(168, 85, 247, 0.2) !important;
+  }
+
+  // Input field border when focused
+  .p-datepicker-input:focus {
+    border-color: #a855f7 !important;
+    box-shadow: 0 0 0 0.2rem rgba(168, 85, 247, 0.2) !important;
+  }
+
+  // Input wrapper focus
+  .p-inputwrapper-focus .p-datepicker-input {
+    border-color: #a855f7 !important;
+    box-shadow: 0 0 0 0.2rem rgba(168, 85, 247, 0.2) !important;
+  }
+
+  // Optional: Navigation buttons hover
+  .p-datepicker-header .p-datepicker-prev:hover,
+  .p-datepicker-header .p-datepicker-next:hover {
+    color: #a855f7 !important;
+  }
+}
