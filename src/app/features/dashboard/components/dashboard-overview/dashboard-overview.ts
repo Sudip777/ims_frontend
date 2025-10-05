@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -8,7 +8,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { ButtonModule } from "primeng/button";
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-dashboard-overview',
@@ -16,15 +16,14 @@ import { ButtonModule } from "primeng/button";
   imports: [
     CommonModule,
     FormsModule,
-    IconComponent,
     InputIconModule,
     IconFieldModule,
     InputTextModule,
     DatePickerModule,
     MetricCardComponent,
     ChartModule,
-    ButtonModule
-],
+    ButtonModule,
+  ],
   templateUrl: './dashboard-overview.html',
   styleUrls: ['./dashboard-overview.scss'],
 })
@@ -33,6 +32,13 @@ export class DashboardOverview implements OnInit {
   selectedPeriod = '1m';
   date: Date | null = null;
   sidebarOpen = false;
+  @Output() sidebarToggle = new EventEmitter<boolean>();
+
+  openSidebar() {
+    console.log('Opening sidebar...'); // Debug log
+
+    this.sidebarToggle.emit(true);
+  }
 
   // Chart Data
   stackedBarData: any;

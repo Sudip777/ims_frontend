@@ -12,10 +12,9 @@ import { PrimeNG } from 'primeng/config';
   styleUrls: ['./main-layout.scss'],
 })
 export class MainLayout implements OnInit {
+  constructor(private primeng: PrimeNG) {}
 
-    constructor(private primeng: PrimeNG) {}
-
-    ngOnInit() {
-        this.primeng.ripple.set(true);
-    }
+  ngOnInit() {
+    this.primeng.ripple.set(true);
   }
+}
