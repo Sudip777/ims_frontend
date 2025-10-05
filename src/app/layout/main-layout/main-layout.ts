@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { IconComponent } from '../../shared/icons/components/icon.component';
 import { ButtonComponent } from '../../shared/components/button/button';
-import { RouterOutlet } from '@angular/router';
+import { PrimeNG } from 'primeng/config';
 
 @Component({
   selector: 'app-main-layout',
@@ -11,4 +11,11 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './main-layout.html',
   styleUrls: ['./main-layout.scss'],
 })
-export class MainLayout {}
+export class MainLayout implements OnInit {
+
+    constructor(private primeng: PrimeNG) {}
+
+    ngOnInit() {
+        this.primeng.ripple.set(true);
+    }
+  }

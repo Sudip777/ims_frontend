@@ -1,1 +1,294 @@
-<p>dashboard-overview works!</p>
+<div class="flex h-screen overflow-hidden">
+  <div
+    *ngIf="sidebarOpen"
+    class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+    (click)="sidebarOpen = false"
+  ></div>
+
+  <aside
+    [class]="
+      'fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r-2 border-gray-200 flex flex-col justify-between p-4 transition-transform duration-300 ' +
+      (sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0')
+    "
+  >
+    <div class="flex-1 overflow-y-auto">
+      <div class="flex items-center justify-between mb-4 lg:block">
+        <app-icon name="app-logo"></app-icon>
+      </div>
+
+      <p-iconfield class="mb-4 w-48">
+        <p-inputicon class="pi pi-search" />
+        <input type="text" pInputText placeholder="Search" class="w-full" />
+      </p-iconfield>
+
+      <div class="flex flex-col gap-2 mt-4">
+        <div
+          class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
+        >
+          <app-icon name="dashboard-overview"></app-icon>
+          <span class="text-sm font-medium font-heading">Dashboard</span>
+        </div>
+        <div
+          class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
+        >
+          <app-icon name="product"></app-icon>
+          <span class="text-sm font-medium font-heading">Product</span>
+        </div>
+        <div
+          class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
+        >
+          <app-icon name="supplier"></app-icon>
+          <span class="text-sm font-medium font-heading">Supplier</span>
+        </div>
+        <div
+          class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
+        >
+          <app-icon name="shipment"></app-icon>
+          <span class="text-sm font-medium font-heading">Shipment</span>
+        </div>
+        <div
+          class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
+        >
+          <app-icon name="category"></app-icon>
+          <span class="text-sm font-medium font-heading">Category</span>
+        </div>
+        <div
+          class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
+        >
+          <app-icon name="dashboard-warehouse"></app-icon>
+          <span class="text-sm font-medium font-heading">Warehouse</span>
+        </div>
+        <div
+          class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
+        >
+          <app-icon name="stock"></app-icon>
+          <span class="text-sm font-medium font-heading">Stock</span>
+        </div>
+        <div
+          class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
+        >
+          <app-icon name="purchase-order"></app-icon>
+          <span class="text-sm font-medium font-heading">Purchase Order</span>
+        </div>
+        <div
+          class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
+        >
+          <app-icon name="sales-order"></app-icon>
+          <span class="text-sm font-medium font-heading">Sales Order</span>
+        </div>
+        <div
+          class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
+        >
+          <app-icon name="customer"></app-icon>
+          <span class="text-sm font-medium font-heading">Customer</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between border-t border-gray-200 pt-4 cursor-pointer">
+      <div class="flex items-center gap-3">
+        <img
+          src="https://product-images-cdn.liketoknow.it/iuKVvnpxT0v7D55D_vJj64TWaSiMU7.impujQZk7f2Ya6P4iCTMTv0ThpeOVaK2A8kFgGMXkfvZolK53hY2CkuUVUIdOWq_fYv4.U8tv_W.WDw4mpY3dpycOi.Yxq73w3qCj0b9.oHm98mTIJQ1X3dbV_iNQOUIuZrDBfP9j5cmDAIUSyBH2pQIsYoM-"
+          alt="Olivia Rhye"
+          class="w-12 h-12 rounded-full object-cover"
+        />
+        <div>
+          <h3 class="text-sm font-medium font-heading text-ims-text-general">Olivia Rhye</h3>
+          <p class="text-sm font-medium font-heading text-ims-text-primary">Admin</p>
+        </div>
+      </div>
+      <div
+        class="hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
+      >
+        <app-icon name="logout"></app-icon>
+      </div>
+    </div>
+  </aside>
+
+  <main class="flex-1 overflow-y-auto bg-gray-50">
+    <div class="sticky top-0 z-30 bg-white border-b border-gray-200 px-4 py-3 lg:hidden">
+      <button (click)="sidebarOpen = true" class="p-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-menu-icon lucide-menu"
+        >
+          <path d="M4 5h16" />
+          <path d="M4 12h16" />
+          <path d="M4 19h16" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="p-4 lg:p-8">
+      <div class="max-w-7xl mx-auto">
+        <h1 class="text-2xl lg:text-3xl font-semibold text-gray-900 mb-6 lg:mb-8 font-heading">
+          Welcome back, Olivia
+        </h1>
+
+        <div class="flex flex-col lg:flex-row lg:items-center gap-3 mb-6">
+          <div class="hidden lg:inline-flex bg-white rounded-lg overflow-x-auto">
+            <button
+              *ngFor="let period of timePeriods"
+              (click)="selectedPeriod = period"
+              [ngClass]="
+                selectedPeriod === period
+                  ? 'bg-gray-50 text-gray-900'
+                  : 'text-gray-600 hover:bg-ims-primary-hover-light bg-white'
+              "
+              class="px-4 lg:px-5 py-2.5 text-sm font-medium transition-colors border-r border-gray-300 cursor-pointer whitespace-nowrap"
+              type="button"
+            >
+              {{ period }}
+            </button>
+          </div>
+
+          <div class="flex items-center gap-3 lg:ml-auto">
+            <button
+              class="hidden xl:inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm"
+            >
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 22 22"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M11 7V15M7 11H15M21 11C21 16.5228 16.5228 21 11 21C5.47715 21 1 16.5228 1 11C1 5.47715 5.47715 1 11 1C16.5228 1 21 5.47715 21 11Z"
+                  stroke="#101828"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              Add Metrics
+            </button>
+
+            <p-datepicker
+              [(ngModel)]="date"
+              dateFormat="dd M yy"
+              showIcon="true"
+              placeholder="Select date"
+              class="xl:w-auto"
+            ></p-datepicker>
+
+            <button
+              class="hidden lg:inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm"
+            >
+              <svg
+                width="18"
+                height="12"
+                viewBox="0 0 18 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M4 6H14M1.5 1H16.5M6.5 11H11.5"
+                  stroke="#344054"
+                  stroke-width="1.67"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              Filters
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
+          <app-metric-card
+            title="Average Order Volume"
+            value="$208"
+            [percentage]="12"
+            trend="up"
+            chartPath="M 0 48 Q 20 40 40 44 Q 60 48 80 36 Q 100 24 128 8"
+          ></app-metric-card>
+          <app-metric-card
+            title="Transaction Count (Orders)"
+            value="100"
+            [percentage]="2"
+            trend="down"
+            chartPath="M 0 16 Q 20 20 40 28 Q 60 36 80 40 Q 100 44 128 48"
+          ></app-metric-card>
+          <app-metric-card
+            title="Products Sold"
+            value="270"
+            [percentage]="2"
+            trend="up"
+            chartPath="M 0 48 Q 20 44 40 40 Q 60 36 80 28 Q 100 20 128 8"
+          ></app-metric-card>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
+          <app-metric-card
+            title="Gross Profit Margin"
+            value="69.10%"
+            [percentage]="12"
+            trend="up"
+            chartPath="M 0 48 Q 20 40 40 44 Q 60 48 80 36 Q 100 24 128 8"
+          ></app-metric-card>
+          <app-metric-card
+            title="Gross Profit"
+            value="$26.4k"
+            [percentage]="2"
+            trend="down"
+            chartPath="M 0 16 Q 20 20 40 28 Q 60 36 80 40 Q 100 44 128 48"
+          ></app-metric-card>
+          <app-metric-card
+            title="Total Net Revenue"
+            value="$1.8m"
+            [percentage]="2"
+            trend="up"
+            chartPath="M 0 48 Q 20 44 40 40 Q 60 36 80 28 Q 100 20 128 8"
+          ></app-metric-card>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
+          <div class="bg-white p-4 lg:p-6 rounded-2xl shadow-sm">
+            <p-chart
+              type="bar"
+              [data]="stackedBarData"
+              [options]="stackedBarOptions"
+              class="h-64 lg:h-[30rem]"
+            ></p-chart>
+          </div>
+
+          <div class="bg-white p-4 lg:p-6 rounded-2xl shadow-sm flex flex-col items-center">
+            <p-chart
+              type="doughnut"
+              [data]="doughnutData"
+              [options]="doughnutOptions"
+              class="w-full h-64 lg:h-[30rem]"
+            ></p-chart>
+          </div>
+
+          <div class="bg-white p-4 lg:p-6 rounded-2xl shadow-sm flex flex-col items-center">
+            <p-chart
+              type="pie"
+              [data]="pieData"
+              [options]="pieOptions"
+              class="w-full h-64 lg:h-[30rem]"
+            ></p-chart>
+          </div>
+
+          <div class="bg-white p-4 lg:p-6 rounded-2xl shadow-sm">
+            <p-chart
+              type="bar"
+              [data]="normalBarData"
+              [options]="normalBarOptions"
+              class="h-64 lg:h-[30rem]"
+            ></p-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
