@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { IconComponent } from '../../shared/icons/components/icon.component';
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
+import { BadgeModule } from 'primeng/badge';
+import { OverlayBadgeModule } from 'primeng/overlaybadge';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -16,6 +18,8 @@ import { ButtonModule } from 'primeng/button';
     RouterModule,
     DrawerModule,
     ButtonModule,
+    BadgeModule,
+    OverlayBadgeModule,
   ],
   templateUrl: './dashboard-layout.html',
   styleUrl: './dashboard-layout.scss',

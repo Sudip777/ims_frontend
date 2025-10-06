@@ -38,7 +38,7 @@ export class ButtonComponent {
 
   // Base styles
   private readonly baseStyles =
-    'inline-flex items-center justify-center gap-3 font-semibold transition-all duration-300 ease-in-out border-0 disabled:opacity-50 disabled:cursor-not-allowed tracking-tight focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
+    'inline-flex items-center justify-center gap-3 font-semibold transition-all duration-300 ease-in-out border-0 disabled:opacity-50 disabled:cursor-not-allowed tracking-tight focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer';
 
   // Color variants
   private readonly colorStyles: Record<ButtonColor, string> = {

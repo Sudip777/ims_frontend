@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TextFieldComponent } from '../../../shared/components/text-field/text-field';
 import { IconComponent } from '../../../shared/icons/components/icon.component';
 import { ButtonComponent } from '../../../shared/components/button/button';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-onboarding',
@@ -13,6 +14,7 @@ import { ButtonComponent } from '../../../shared/components/button/button';
 })
 export class OnboardingComponent {
   onboardingForm: FormGroup;
+  private router = inject(Router);
 
   businessTypes = [
     { value: 'super-stockiest', label: 'Super-stockiest' },
@@ -55,5 +57,11 @@ export class OnboardingComponent {
   isFieldInvalid(fieldName: string): boolean {
     const field = this.onboardingForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  navigateLogin() {
+    console.log('Sign is Clickedd');
+
+    this.router.navigate(['/login']);
   }
 }

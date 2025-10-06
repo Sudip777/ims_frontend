@@ -1,5 +1,7 @@
-<main class="flex flex-col md:flex-row min-h-screen bg-gray-50">
-  <section class="lg:flex lg:w-1/2 bg-colors-ims-primary p-12 flex-col justify-between text-white overflow-hidden">
+<main class="flex flex-col md:flex-row min-h-screen bg-ims-primary">
+  <section
+    class="lg:flex lg:w-1/2 bg-colors-ims-primary p-12 flex-col justify-between text-white overflow-hidden"
+  >
     <div class="flex flex-col gap-20 justify-center items-center md:items-start">
       <app-icon name="app-icon-white"></app-icon>
       <div class="max-w-lg">
@@ -18,7 +20,7 @@
   <section class="w-full lg:w-1/2 p-8 lg:p-16 flex flex-col justify-between bg-white">
     <div class="w-full max-w-xl mx-auto">
       <div class="mb-8">
-        <h3 class="text-xl  text-colors-ims-text-secondary mb-2 font-sans">
+        <h3 class="text-xl text-colors-ims-text-secondary mb-2 font-sans">
           Tell us a little about your business
         </h3>
       </div>
@@ -30,7 +32,8 @@
           formControlName="businessName"
           type="text"
           [required]="true"
-          [error]="isFieldInvalid('businessName')">
+          [error]="isFieldInvalid('businessName')"
+        >
         </app-text-field>
 
         <app-text-field
@@ -39,7 +42,8 @@
           formControlName="industry"
           type="text"
           [required]="true"
-          [error]="isFieldInvalid('industry')">
+          [error]="isFieldInvalid('industry')"
+        >
         </app-text-field>
 
         <app-text-field
@@ -48,7 +52,8 @@
           formControlName="domain"
           type="text"
           [required]="true"
-          [error]="isFieldInvalid('domain')">
+          [error]="isFieldInvalid('domain')"
+        >
         </app-text-field>
 
         <app-text-field
@@ -57,11 +62,14 @@
           formControlName="productService"
           type="text"
           [required]="true"
-          [error]="isFieldInvalid('productService')">
+          [error]="isFieldInvalid('productService')"
+        >
         </app-text-field>
 
         <div>
-          <label class="block text-[13px] font-semibold text-colors-ims-text-primary mb-3 uppercase tracking-wide">
+          <label
+            class="block text-[13px] font-semibold text-colors-ims-text-primary mb-3 uppercase tracking-wide"
+          >
             Which of the following best describes you<span class="text-red-600 ml-0.5">*</span>
           </label>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -71,15 +79,21 @@
                 type="radio"
                 [value]="type.value"
                 formControlName="businessType"
-                class="w-4 h-4 border-2 border-gray-300 rounded-full checked:border-colors-ims-primary checked:bg-colors-ims-primary hover:border-colors-ims-primary">
-              <span class="text-sm font-medium text-colors-ims-text-secondary group-hover:text-gray-900 transition-colors">{{ type.label }}</span>
+                class="w-4 h-4 border-2 border-gray-300 rounded-full checked:border-colors-ims-primary checked:bg-colors-ims-primary hover:border-colors-ims-primary"
+              />
+              <span
+                class="text-sm font-medium text-colors-ims-text-secondary group-hover:text-gray-900 transition-colors"
+                >{{ type.label }}</span
+              >
             </label>
             }
           </div>
         </div>
 
         <div>
-          <label class="block text-[13px] font-semibold text-colors-ims-text-primary mb-3 uppercase tracking-wide">
+          <label
+            class="block text-[13px] font-semibold text-colors-ims-text-primary mb-3 uppercase tracking-wide"
+          >
             Storage Keeping Unit(SKU) Size<span class="text-red-600 ml-0.5">*</span>
           </label>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -89,8 +103,12 @@
                 type="radio"
                 [value]="size.value"
                 formControlName="skuSize"
-                class="w-4 h-4 border-2 border-gray-300 rounded-full checked:border-colors-ims-primary checked:bg-colors-ims-primary hover:border-colors-ims-primary">
-              <span class="text-sm font-medium text-colors-ims-text-secondary group-hover:text-gray-900 transition-colors">{{ size.label }}</span>
+                class="w-4 h-4 border-2 border-gray-300 rounded-full checked:border-colors-ims-primary checked:bg-colors-ims-primary hover:border-colors-ims-primary"
+              />
+              <span
+                class="text-sm font-medium text-colors-ims-text-secondary group-hover:text-gray-900 transition-colors"
+                >{{ size.label }}</span
+              >
             </label>
             }
           </div>
@@ -98,10 +116,17 @@
       </form>
     </div>
 
-    <div class="flex justify-center mt-10">
-      <app-button type="submit" color="primary" size="md" class="flex items-center justify-center">
-        Get Started
-        <app-icon name="arrow-right" class="ml-2"></app-icon>
+    <div class="flex justify-center mt-10 cursor-pointer">
+      <app-button
+        (buttonClick)="navigateLogin()"
+        type="submit"
+        color="primary"
+        size="md"
+        routerLink="/onboarding"
+      >
+        <span class="flex justify-center items-center gap-4 font-heading text-md font-semibold"
+          >Sign in <app-icon name="arrow-right"></app-icon>
+        </span>
       </app-button>
     </div>
   </section>

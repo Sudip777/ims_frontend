@@ -3,11 +3,12 @@ import { ButtonModule } from 'primeng/button';
 import { IconComponent } from '../../shared/icons/components/icon.component';
 import { ButtonComponent } from '../../shared/components/button/button';
 import { PrimeNG } from 'primeng/config';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [ButtonModule, IconComponent, ButtonComponent],
+  imports: [ButtonModule, IconComponent, ButtonComponent, RouterLink],
   templateUrl: './main-layout.html',
   styleUrls: ['./main-layout.scss'],
 })
