@@ -4,7 +4,6 @@
   <div (click)="closeSidebar()" class="fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
   }
 
-  <!-- Sidebar -->
   <app-sidebar
     [sidebarOpen]="sidebarOpen"
     (closeSidebarEvent)="closeSidebar()"
@@ -12,9 +11,7 @@
     [ngClass]="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
   ></app-sidebar>
 
-  <!-- Main content -->
   <div class="flex-1 flex flex-col overflow-hidden">
-    <!-- Mobile hamburger header -->
     <div
       class="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm"
     >
@@ -33,7 +30,7 @@
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="text-gray-700"
+          class=""
         >
           <path d="M4 5h16" />
           <path d="M4 12h16" />
