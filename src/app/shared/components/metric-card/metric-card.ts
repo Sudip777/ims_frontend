@@ -13,4 +13,5 @@ export class MetricCardComponent {
   @Input() percentage: number = 0;
   @Input() trend: 'up' | 'down' = 'up';
   @Input() chartPath: string = 'M 0 32 Q 32 48 64 32 T 128 16';
+  @Input() isPrimary: boolean = false;
 }

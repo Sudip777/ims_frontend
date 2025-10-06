@@ -1,71 +1,46 @@
 <main>
-  <div
-    class="text-ims-primary font-sans font-semibol flex hover:text-ims-primary-hover flex-1 items-center p-2 cursor-pointer"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="lucide lucide-arrow-left-icon lucide-arrow-left"
-    >
-      <path d="m12 19-7-7 7-7" />
-      <path d="M19 12H5" />
-    </svg>
-    <span class="text-sm font-sans p-2">Back</span>
-  </div>
-
   <div>
+    <h1 class="font-heading font-medium p-2 tracking-tight text-2xl">Product's Overview</h1>
+
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
       <app-metric-card
-        title="Average Order Volume"
-        value="$208"
+        title="Active Products"
+        value="100"
         [percentage]="12"
+        [isPrimary]="true"
         trend="up"
-        chartPath="M 0 48 Q 20 40 40 44 Q 60 48 80 36 Q 100 24 128 8"
       ></app-metric-card>
+
       <app-metric-card
-        title="Transaction Count (Orders)"
+        title="Out of Stock"
         value="100"
         [percentage]="2"
         trend="down"
-        chartPath="M 0 16 Q 20 20 40 28 Q 60 36 80 40 Q 100 44 128 48"
       ></app-metric-card>
+
       <app-metric-card
-        title="Products Sold"
+        title="Products Booked"
         value="270"
         [percentage]="2"
         trend="up"
-        chartPath="M 0 48 Q 20 44 40 40 Q 60 36 80 28 Q 100 20 128 8"
-      ></app-metric-card>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
-      <app-metric-card
-        title="Gross Profit Margin"
-        value="69.10%"
-        [percentage]="12"
-        trend="up"
-        chartPath="M 0 48 Q 20 40 40 44 Q 60 48 80 36 Q 100 24 128 8"
       ></app-metric-card>
       <app-metric-card
-        title="Gross Profit"
-        value="$26.4k"
-        [percentage]="2"
-        trend="down"
-        chartPath="M 0 16 Q 20 20 40 28 Q 60 36 80 40 Q 100 44 128 48"
-      ></app-metric-card>
-      <app-metric-card
-        title="Total Net Revenue"
-        value="$1.8m"
+        title="Products Billed"
+        value="270"
         [percentage]="2"
         trend="up"
-        chartPath="M 0 48 Q 20 44 40 40 Q 60 36 80 28 Q 100 20 128 8"
+      ></app-metric-card>
+      <app-metric-card
+        title="Products Billed"
+        value="270"
+        [percentage]="2"
+        trend="up"
+      ></app-metric-card>
+      <app-metric-card
+        title="Products Deleted"
+        value="270"
+        [percentage]="2"
+        trend="up"
       ></app-metric-card>
     </div>
   </div>
@@ -124,7 +99,7 @@
 
   <p-toast></p-toast>
 
-  <!-- Product Table -->
+  <!--  Table -->
   <p-table
     #dt
     [value]="products"
@@ -139,7 +114,6 @@
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
     [showCurrentPageReport]="true"
   >
-    <!-- Caption -->
     <ng-template pTemplate="caption">
       <div class="flex items-center justify-between">
         <p-iconfield>
@@ -152,11 +126,11 @@
           />
         </p-iconfield>
         <div>
-          <p-button label=" Add New" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+          <p-button label=" Add " icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
           <p-button
             class="bg-ims-primary"
             icon="pi pi-upload"
-            label="Export CSV"
+            label="Export"
             (onClick)="exportCSV($event)"
           />
         </div>
@@ -186,7 +160,6 @@
       </div>
     </ng-template>
 
-    <!-- Header -->
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 3rem">
@@ -212,7 +185,6 @@
       </tr>
     </ng-template>
 
-    <!-- Body -->
     <ng-template pTemplate="body" let-product>
       <tr>
         <td style="width: 3rem">
@@ -262,7 +234,7 @@
     </ng-template>
   </p-table>
 
-  <!-- Product Dialog -->
+  <!--  Dialog -->
   <p-dialog
     [(visible)]="productDialog"
     [style]="{ width: '480px' }"
