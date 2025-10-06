@@ -2,14 +2,13 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TextFieldComponent } from '../../../shared/components/text-field/text-field';
-import { RouterOutlet } from '@angular/router';
-import { IconComponent } from "../../../shared/icons/components/icon.component";
-import { ButtonComponent } from "../../../shared/components/button/button";
+import { IconComponent } from '../../../shared/icons/components/icon.component';
+import { ButtonComponent } from '../../../shared/components/button/button';
 
 @Component({
   selector: 'app-onboarding',
   standalone: true,
-  imports: [CommonModule, TextFieldComponent, ReactiveFormsModule, RouterOutlet, IconComponent, ButtonComponent],
+  imports: [CommonModule, TextFieldComponent, ReactiveFormsModule, IconComponent, ButtonComponent],
   templateUrl: './onboarding.html',
 })
 export class OnboardingComponent {
@@ -19,7 +18,7 @@ export class OnboardingComponent {
     { value: 'super-stockiest', label: 'Super-stockiest' },
     { value: 'distributor', label: 'Distributor' },
     { value: 'retailer', label: 'Retailer' },
-    { value: 'brand', label: 'Brand' }
+    { value: 'brand', label: 'Brand' },
   ];
 
   skuSizes = [
@@ -28,7 +27,7 @@ export class OnboardingComponent {
     { value: '1001-5000', label: '1001-5000 units' },
     { value: '5001-10000', label: '5001-10000 units' },
     { value: '10001-25000', label: '10001-25000 units' },
-    { value: '>25000', label: '>25000 units' }
+    { value: '>25000', label: '>25000 units' },
   ];
 
   constructor(private fb: FormBuilder) {
@@ -38,7 +37,7 @@ export class OnboardingComponent {
       domain: ['', Validators.required],
       productService: ['', Validators.required],
       businessType: ['', Validators.required],
-      skuSize: ['', Validators.required]
+      skuSize: ['', Validators.required],
     });
   }
 
@@ -47,7 +46,7 @@ export class OnboardingComponent {
       console.log('Form submitted:', this.onboardingForm.value);
       // Handle form submission
     } else {
-      Object.keys(this.onboardingForm.controls).forEach(key => {
+      Object.keys(this.onboardingForm.controls).forEach((key) => {
         this.onboardingForm.get(key)?.markAsTouched();
       });
     }
