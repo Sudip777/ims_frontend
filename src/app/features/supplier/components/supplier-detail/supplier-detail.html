@@ -1,1 +1,238 @@
-<p>supplier-detail works!</p>
+<main>
+  <div>
+    <h1 class="font-heading font-medium p-2 tracking-tight text-2xl">Supplier's Overview</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
+      <app-metric-card
+        title="Active Suppliers"
+        value="100"
+        [percentage]="12"
+        [isPrimary]="true"
+        trend="up"
+      ></app-metric-card>
+      <app-metric-card
+        title="Inactive Suppliers"
+        value="20"
+        [percentage]="2"
+        trend="down"
+      ></app-metric-card>
+      <app-metric-card
+        title="Deleted Suppliers"
+        value="10"
+        [percentage]="2"
+        trend="up"
+      ></app-metric-card>
+    </div>
+  </div>
+
+  <div class="flex justify-between">
+    <h2 class="font-heading font-medium p-2 text-2xl">Suppliers Detail</h2>
+    <div class="flex flex-col lg:flex-row lg:items-center gap-3 mb-6">
+      <div class="hidden lg:inline-flex bg-white rounded-lg overflow-x-auto">
+        <button
+          *ngFor="let period of timePeriods"
+          (click)="selectedPeriod = period"
+          [ngClass]="
+            selectedPeriod === period
+              ? 'bg-gray-50 text-gray-900'
+              : 'text-gray-600 hover:bg-ims-primary-hover-light bg-white'
+          "
+          class="px-4 lg:px-5 py-2.5 text-sm font-medium transition-colors border-r border-gray-300 cursor-pointer whitespace-nowrap"
+          type="button"
+        >
+          {{ period }}
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3 lg:ml-auto">
+        <button
+          class="hidden lg:inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 22 22"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11 7V15M7 11H15M21 11C21 16.5228 16.5228 21 11 21C5.47715 21 1 16.5228 1 11C1 5.47715 5.47715 1 11 1C16.5228 1 21 5.47715 21 11Z"
+              stroke="#101828"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Add Metrics
+        </button>
+
+        <p-datepicker
+          [(ngModel)]="date"
+          dateFormat="dd M yy"
+          showIcon="true"
+          placeholder="Select date"
+          class="lg:w-auto"
+        ></p-datepicker>
+      </div>
+    </div>
+  </div>
+
+  <p-toast></p-toast>
+
+  <!-- Supplier Table -->
+  <p-table
+    #dt
+    [value]="suppliers"
+    [rows]="10"
+    [paginator]="true"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [globalFilterFields]="['name', 'email', 'phone', 'address']"
+    [(selection)]="selectedSupplierss"
+    dataKey="supplierId"
+    [rowHover]="true"
+    [tableStyle]="{ 'min-width': '80rem' }"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} suppliers"
+    [showCurrentPageReport]="true"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex items-center justify-between">
+        <p-iconfield>
+          <p-inputicon class="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Search..."
+          />
+        </p-iconfield>
+        <div class="flex">
+          <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+          <p-button
+            class="hidden md:flex"
+            icon="pi pi-upload"
+            label="Export"
+            (onClick)="exportCSV($event)"
+          />
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- Header -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th>ID</th>
+        <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+        <th>Email</th>
+        <th pSortableColumn="phone">Phone <p-sortIcon field="phone"></p-sortIcon></th>
+        <th pSortableColumn="address">Addres<p-sortIcon field="address"></p-sortIcon></th>
+        <th>Created By</th>
+        <th pSortableColumn="isActive">Status <p-sortIcon field="isActive"></p-sortIcon></th>
+        <th pSortableColumn="createdAt">Created At <p-sortIcon field="createdAt"></p-sortIcon></th>
+        <th style="min-width: 8rem">Actions</th>
+      </tr>
+    </ng-template>
+
+    <!-- Body -->
+    <ng-template pTemplate="body" let-supplier>
+      <tr>
+        <td style="width: 3rem">
+          <p-tableCheckbox [value]="supplier"></p-tableCheckbox>
+        </td>
+        <td>{{ supplier.supplierId }}</td>
+        <td>{{ supplier.name }}</td>
+        <td>{{ supplier.email }}</td>
+        <td>{{ supplier.phone }}</td>
+        <td>{{ supplier.address }}</td>
+        <td>{{ supplier.createdByUserId }}</td>
+        <td>
+          <p-tag
+            [value]="getStatusLabel(supplier.isActive)"
+            [severity]="getSeverity(supplier.isActive)"
+          ></p-tag>
+        </td>
+        <td>{{ supplier.createdAt | date : 'mediumDate' }}</td>
+        <td>
+          <p-button
+            icon="pi pi-pencil"
+            class="mr-2"
+            [rounded]="true"
+            [outlined]="true"
+            (onClick)="editSupplier(supplier)"
+          ></p-button>
+          <p-button
+            icon="pi pi-trash"
+            severity="danger"
+            [rounded]="true"
+            [outlined]="true"
+            (onClick)="deleteSupplier(supplier)"
+          ></p-button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!-- Supplier Dialog -->
+  <p-dialog
+    [(visible)]="supplierDialog"
+    [style]="{ width: '480px' }"
+    header="Supplier Details"
+    [modal]="true"
+  >
+    <ng-template pTemplate="content">
+      <div class="flex flex-col gap-6">
+        <div>
+          <label for="name" class="block font-bold mb-3">Supplier Name</label>
+          <input
+            type="text"
+            pInputText
+            id="name"
+            [(ngModel)]="supplier.name"
+            required
+            autofocus
+            fluid
+          />
+          <small class="text-red-500" *ngIf="submitted && !supplier.name">Name is required.</small>
+        </div>
+
+        <div>
+          <label for="email" class="block font-bold mb-3">Email</label>
+          <input type="email" pInputText id="email" [(ngModel)]="supplier.email" required fluid />
+        </div>
+
+        <div>
+          <label for="phone" class="block font-bold mb-3">Phone</label>
+          <input type="text" pInputText id="phone" [(ngModel)]="supplier.phone" required fluid />
+        </div>
+
+        <div>
+          <label for="address" class="block font-bold mb-3">Address</label>
+          <textarea pTextarea id="address" [(ngModel)]="supplier.address" rows="3" fluid></textarea>
+        </div>
+
+        <div>
+          <label class="block font-bold mb-3">Active Status</label>
+          <p-select
+            [(ngModel)]="supplier.isActive"
+            [options]="[
+              { label: 'Active', value: true },
+              { label: 'Inactive', value: false }
+            ]"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select Status"
+            fluid
+          ></p-select>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <p-button label="Cancel" icon="pi pi-times" text (onClick)="hideDialog()" />
+      <p-button label="Save" icon="pi pi-check" (onClick)="saveSupplier()" />
+    </ng-template>
+  </p-dialog>
+
+  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+</main>

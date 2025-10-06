@@ -1,0 +1,63 @@
+/* 💜 Define purple tones */
+$purple-main: #7e57c2;
+$purple-hover: #673ab7;
+
+/* === Style "New" button === */
+::ng-deep .p-button .pi.pi-plus,
+::ng-deep .p-button .p-button-label {
+  color: #fff !important;
+}
+
+::ng-deep .p-button[label='New'] button,
+::ng-deep .p-button:has(.pi-plus) {
+  background-color: $purple-main !important;
+  border-color: $purple-main !important;
+  color: #fff !important;
+}
+
+::ng-deep .p-button:has(.pi-plus):hover {
+  background-color: $purple-hover !important;
+  border-color: $purple-hover !important;
+}
+
+/* === Style "Export CSV" button === */
+::ng-deep .p-button .pi.pi-upload,
+::ng-deep .p-button.bg-ims-primary .p-button-label {
+  color: #fff !important;
+}
+
+::ng-deep .p-button.bg-ims-primary button,
+::ng-deep .p-button:has(.pi-upload) {
+  background-color: $purple-main !important;
+  border-color: $purple-main !important;
+  color: #fff !important;
+}
+
+::ng-deep .p-button:has(.pi-upload):hover {
+  background-color: $purple-hover !important;
+  border-color: $purple-hover !important;
+}
+
+/* === Style "Save" and "Cancel" buttons === */
+::ng-deep .p-dialog-footer .p-button {
+  background-color: $purple-main !important;
+  border-color: $purple-main !important;
+  color: #fff !important;
+}
+
+::ng-deep .p-dialog-footer .p-button:hover {
+  background-color: $purple-hover !important;
+  border-color: $purple-hover !important;
+}
+
+/* === Input border fix === */
+::ng-deep input.p-inputtext {
+  border: 1px solid #ccc !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+::ng-deep input.p-inputtext:focus {
+  border-color: $purple-main !important;
+  box-shadow: 0 0 0 1px $purple-main !important;
+}
