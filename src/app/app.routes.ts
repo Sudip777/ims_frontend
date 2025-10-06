@@ -10,7 +10,7 @@ import { CategoryDetail } from './features/category/components/category-detail/c
 import { WarehouseDetail } from './features/warehouse/components/warehouse-detail/warehouse-detail';
 
 export const routes: Routes = [
-  { path: '', component: MainLayout }, // Landing
+  { path: '', component: MainLayout },
   { path: 'onboarding', component: OnboardingComponent },
   { path: 'login', component: Login },
 

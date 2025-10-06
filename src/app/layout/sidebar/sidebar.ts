@@ -9,6 +9,7 @@ import { ChartModule } from 'primeng/chart';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AvatarModule } from 'primeng/avatar';
 
 interface NavItem {
   icon: string;
@@ -33,6 +34,7 @@ interface NavItem {
     ButtonModule,
     RouterLink,
     RouterLinkActive,
+    AvatarModule,
   ],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
