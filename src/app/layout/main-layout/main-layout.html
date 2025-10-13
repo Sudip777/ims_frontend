@@ -1,1 +1,90 @@
-<p>main-layout works!</p>
+<body class="bg-white text-gray-900 font-sans">
+  <header class="flex justify-between items-center p-4">
+    <app-icon name="app-logo"> </app-icon>
+
+    <app-button type="submit" color="primary" size="md" routerLink="/onboarding">
+      <span class="flex justify-center items-center gap-4 font-heading text-md font-semibold"
+        >Sign in <app-icon name="arrow-right"></app-icon>
+      </span>
+    </app-button>
+  </header>
+
+  <section class="text-center py-16 relative">
+    <div class="absolute inset-0">
+      <div
+        class="w-full h-full bg-gradient-to-r from-purple-300 via-pink-300 to-blue-300 opacity-20 animate-pulse"
+      ></div>
+    </div>
+    <div class="relative z-10">
+      <h2 class="font-heading text-3xl md:text-4xl font-semibold text-gray-900 mb-4">
+        Technology doesn’t have to feel like a different language
+      </h2>
+      <p class="text-lg md:text-xl text-gray-700">
+        Simplified inventory management to drive business growth and strategically scale operations
+      </p>
+    </div>
+  </section>
+
+  <section class="max-auto w-full grid grid-cols-1 md:grid-cols-2 gap-4 px-6 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2">
+      <div class="flex gap-6">
+        <div class="text-purple-600">
+          <app-icon name="order"></app-icon>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-purple-600 mb-2">Order Management</h3>
+          <p>
+            Efficiently manage all your sales and purchasing activities with our platform. Handle
+            invoices and bills seamlessly while tracking payments with ease.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex gap-6">
+        <div class="text-purple-600">
+          <app-icon name="warehouse"></app-icon>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-purple-600 mb-2">Warehouse Management</h3>
+          <p>
+            Centrally manage your stock across multiple warehouses and generate detailed reports
+            specific to each warehouse.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex gap-6">
+        <div class="text-purple-600">
+          <app-icon name="inventory"></app-icon>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-purple-600 mb-2">Inventory Tracking</h3>
+          <p>
+            Meticulously monitor a wide range of inventory items and effortlessly track item
+            movements, transfer products between locations.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex gap-6">
+        <div class="text-purple-600">
+          <app-icon name="report-analytics"></app-icon>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-purple-600 mb-2">Reports & Analytics</h3>
+          <p>
+            Access a variety of reports and gain insights into inventory aging, vendor payments,
+            sales details.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard  -->
+    <div class="border rounded-lg overflow-hidden shadow-lg">
+      <app-icon name="dashboard-preview"></app-icon>
+    </div>
+  </section>
+
+  <footer class="text-center text-gray-500 py-6">© TheUnityWare 2025</footer>
+</body>

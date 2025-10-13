@@ -1,34 +1,35 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+@import 'primeicons/primeicons.css';
 
-// Custom styles
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+// // Custom styles
+// * {
+//   margin: 0;
+//   padding: 0;
+//   box-sizing: border-box;
+// }
 
-body {
-  font-family: 'Inter', sans-serif;
-  @apply bg-gray-50 text-gray-900;
-}
+// body {
+//   font-family: 'Inter', sans-serif;
+//   @apply bg-gray-50 text-gray-900;
+// }
 
-// Custom PrimeNG overrides
-.p-component {
-  font-family: 'Inter', sans-serif;
-}
+// // Custom PrimeNG overrides
+// .p-component {
+//   font-family: 'Inter', sans-serif;
+// }
 
-// Utility classes
-.card {
-  @apply bg-white rounded-lg shadow-sm border border-gray-200;
-}
+// // Utility classes
+// // .card {
+//   @apply bg-white rounded-lg shadow-sm border border-gray-200;
+// }
 
-.btn-primary {
-  @apply bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md font-medium transition-colors;
-}
+// .btn-primary {
+//   @apply bg-colors-ims-primary hover:bg-colors-ims-primary text-white px-4 py-2 rounded-md font-medium transition-colors;
+// }
 
-.btn-secondary {
-  @apply bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md font-medium transition-colors;
-}
+// .btn-secondary {
+//   @apply bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md font-medium transition-colors;
+// }

@@ -1,11 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
+import { IconComponent } from '../../shared/icons/components/icon.component';
+import { ButtonComponent } from '../../shared/components/button/button';
+import { PrimeNG } from 'primeng/config';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [],
+  standalone: true,
+  imports: [ButtonModule, IconComponent, ButtonComponent, RouterLink],
   templateUrl: './main-layout.html',
-  styleUrl: './main-layout.scss'
+  styleUrls: ['./main-layout.scss'],
 })
-export class MainLayout {
+export class MainLayout implements OnInit {
+  constructor(private primeng: PrimeNG) {}
 
+  ngOnInit() {
+    this.primeng.ripple.set(true);
+  }
 }

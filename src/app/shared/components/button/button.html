@@ -1,0 +1,14 @@
+<button
+  [attr.type]="type"
+  [ngClass]="buttonClasses"
+  [disabled]="disabled"
+  (click)="onClick($event)"
+>
+  <ng-content select="[prefix]"></ng-content>
+
+  <span class="tracking-tight">
+    <ng-content></ng-content>
+  </span>
+
+  <ng-content select="[postfix]"></ng-content>
+</button>

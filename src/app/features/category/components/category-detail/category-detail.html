@@ -1,0 +1,212 @@
+<main>
+  <div>
+    <h1 class="font-heading font-medium p-2 tracking-tight text-2xl">Category Overview</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
+      <app-metric-card
+        title="Active Categories"
+        value="100"
+        [percentage]="12"
+        [isPrimary]="true"
+        trend="up"
+      ></app-metric-card>
+      <app-metric-card
+        title="Inactive Categories"
+        value="20"
+        [percentage]="2"
+        trend="down"
+      ></app-metric-card>
+      <app-metric-card
+        title="Deleted Categories"
+        value="10"
+        [percentage]="2"
+        trend="up"
+      ></app-metric-card>
+    </div>
+  </div>
+
+  <div class="flex justify-between">
+    <h2 class="font-heading font-medium p-2 text-2xl">Category Detail</h2>
+    <div class="flex flex-col lg:flex-row lg:items-center gap-3 mb-6">
+      <div class="hidden lg:inline-flex bg-white rounded-lg overflow-x-auto">
+        <button
+          *ngFor="let period of timePeriods"
+          (click)="selectedPeriod = period"
+          [ngClass]="
+            selectedPeriod === period
+              ? 'bg-gray-50 text-gray-900'
+              : 'text-gray-600 hover:bg-ims-primary-hover-light bg-white'
+          "
+          class="px-4 lg:px-5 py-2.5 text-sm font-medium transition-colors border-r border-gray-300 cursor-pointer whitespace-nowrap"
+          type="button"
+        >
+          {{ period }}
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3 lg:ml-auto">
+        <button
+          class="hidden lg:inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 22 22"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11 7V15M7 11H15M21 11C21 16.5228 16.5228 21 11 21C5.47715 21 1 16.5228 1 11C1 5.47715 5.47715 1 11 1C16.5228 1 21 5.47715 21 11Z"
+              stroke="#101828"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Add Metrics
+        </button>
+
+        <p-datepicker
+          [(ngModel)]="date"
+          dateFormat="dd M yy"
+          showIcon="true"
+          placeholder="Select date"
+          class="lg:w-auto"
+        ></p-datepicker>
+      </div>
+    </div>
+  </div>
+
+  <p-toast></p-toast>
+
+  <!--  Table -->
+  <p-table
+    #dt
+    [value]="categories"
+    [rows]="10"
+    [paginator]="true"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [globalFilterFields]="['categoryName', 'categoryId']"
+    [(selection)]="categories"
+    dataKey="categoryId"
+    [rowHover]="true"
+    [tableStyle]="{ 'min-width': '80rem' }"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories"
+    [showCurrentPageReport]="true"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex items-center justify-between">
+        <p-iconfield>
+          <p-inputicon class="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Search..."
+          />
+        </p-iconfield>
+        <div class="flex">
+          <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+          <p-button
+            class="hidden md:flex"
+            icon="pi pi-upload"
+            label="Export"
+            (onClick)="exportCSV($event)"
+          />
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- Header -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th>Category ID</th>
+        <th pSortableColumn="categoryName">Category Name <p-sortIcon field="name"></p-sortIcon></th>
+        <th>Parent Category</th>
+
+        <th style="min-width: 8rem">Actions</th>
+      </tr>
+    </ng-template>
+
+    <!-- Body -->
+    <ng-template pTemplate="body" let-category>
+      <tr>
+        <td style="width: 3rem">
+          <p-tableCheckbox [value]="category"></p-tableCheckbox>
+        </td>
+        <td>{{ category.categoryId }}</td>
+        <td>{{ category.categoryName }}</td>
+        <td>{{ category.parentCategoryName }}</td>
+        <td>
+          <p-button
+            icon="pi pi-pencil"
+            class="mr-2"
+            [rounded]="true"
+            [outlined]="true"
+            (onClick)="editCategory(category)"
+          ></p-button>
+          <p-button
+            icon="pi pi-trash"
+            severity="danger"
+            [rounded]="true"
+            [outlined]="true"
+            (onClick)="deleteCategory(category)"
+          ></p-button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!-- Supplier Dialog -->
+  <p-dialog
+    [(visible)]="categoryDialog"
+    [style]="{ width: '480px' }"
+    header="Category Details"
+    [modal]="true"
+  >
+    <ng-template pTemplate="content">
+      <div class="flex flex-col gap-6">
+        <div>
+          <label for="name" class="block font-bold mb-3">Category Name</label>
+          <input
+            type="text"
+            pInputText
+            id="name"
+            [(ngModel)]="category.categoryName"
+            required
+            autofocus
+            fluid
+          />
+          <small class="text-red-500" *ngIf="submitted && !category.categoryName"
+            >Name is required.</small
+          >
+        </div>
+
+        <div>
+          <label for="parentCategoryName" class="block font-bold mb-3">Parent Category</label>
+          <input
+            type="text"
+            pInputText
+            id="name"
+            [(ngModel)]="category.parentCategoryName"
+            required
+            autofocus
+            fluid
+          />
+          <small class="text-red-500" *ngIf="submitted && !category.parentCategoryName"
+            >Name is required.</small
+          >
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <p-button label="Cancel" icon="pi pi-times" text (onClick)="hideDialog()" />
+      <p-button label="Save" icon="pi pi-check" (onClick)="saveCategory()" />
+    </ng-template>
+  </p-dialog>
+
+  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+</main>

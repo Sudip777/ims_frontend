@@ -1,34 +1,45 @@
-/* You can add global styles to this file, and also import other style files */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@plugin "tailwindcss-primeui";
 
-// Custom styles
+@import 'primeicons/primeicons.css';
+/* Custom styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
-body {
-  font-family: 'Inter', sans-serif;
-  @apply bg-gray-50 text-gray-900;
+:root {
+  --p-primary-50: #faf5ff;
+  --p-primary-100: #f3e8ff;
+  --p-primary-200: #e9d5ff;
+  --p-primary-300: #d8b4fe;
+  --p-primary-400: #c084fc;
+  --p-primary-500: #a855f7;
+  --p-primary-600: #9333ea;
+  --p-primary-700: #7e22ce;
+  --p-primary-800: #6b21a8;
+  --p-primary-900: #581c87;
+  --p-primary-950: #3b0764;
 }
+// body {
+//   font-family: 'Inter', sans-serif;
+//   @apply bg-gray-50 text-gray-900;
+// }
 
-// Custom PrimeNG overrides
-.p-component {
-  font-family: 'Inter', sans-serif;
-}
+// .p-component {
+//   font-family: 'Inter', sans-serif;
+// }
 
-// Utility classes
-.card {
-  @apply bg-white rounded-lg shadow-sm border border-gray-200;
-}
+// .card {
+//   @apply bg-white rounded-lg shadow-sm border border-gray-200;
+// }
 
-.btn-primary {
-  @apply bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md font-medium transition-colors;
-}
+// .btn-primary {
+//   @apply bg-colors-ims-primary hover:bg-colors-ims-primary text-white px-4 py-2 rounded-md font-medium transition-colors;
+// }
 
-.btn-secondary {
-  @apply bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md font-medium transition-colors;
-}
+// .btn-secondary {
+//   @apply bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md font-medium transition-colors;
+// }

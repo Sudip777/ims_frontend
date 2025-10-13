@@ -1,0 +1,73 @@
+<div class="flex h-screen overflow-hidden">
+  <!-- Overlay -->
+  @if (sidebarOpen) {
+  <div (click)="closeSidebar()" class="fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
+  }
+
+  <app-sidebar
+    [sidebarOpen]="sidebarOpen"
+    (closeSidebarEvent)="closeSidebar()"
+    class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transition-transform duration-300 lg:translate-x-0"
+    [ngClass]="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+  ></app-sidebar>
+
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <div
+      class="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm"
+    >
+      <button
+        (click)="toggleSidebar(true)"
+        class="p-2 hover:bg-purple-50 rounded-lg transition-all duration-200 active:scale-95"
+        aria-label="Open menu"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class=""
+        >
+          <path d="M4 5h16" />
+          <path d="M4 12h16" />
+          <path d="M4 19h16" />
+        </svg>
+      </button>
+
+      <div class="flex-1 flex justify-center">
+        <app-icon name="app-logo"></app-icon>
+      </div>
+
+      <!-- <p-overlaybadge value="2">
+        <i class="pi pi-bell" style="font-size: 2rem"></i>
+      </p-overlaybadge> -->
+    </div>
+
+    <div
+      class="hidden m-4 lg:flex items-center gap-2 cursor-pointer text-ims-primary transition-all duration-200 hover:text-ims-primary/80 hover:translate-x-[-2px] border border-ims-primary"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="w-5 h-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="m12 19-7-7 7-7" />
+        <path d="M19 12H5" />
+      </svg>
+      <span class="font-sans text-sm font-medium tracking-wide"> Go Back </span>
+    </div>
+
+    <div class="flex-1 overflow-auto ml-2">
+      <router-outlet (activate)="onChildActivate($event)"></router-outlet>
+    </div>
+  </div>
+</div>

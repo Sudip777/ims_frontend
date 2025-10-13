@@ -1,1 +1,349 @@
-<p>product-detail works!</p>
+<main>
+  <div>
+    <h1 class="font-heading font-medium p-2 tracking-tight text-2xl">Product's Overview</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
+      <app-metric-card
+        title="Active Products"
+        value="100"
+        [percentage]="12"
+        [isPrimary]="true"
+        trend="up"
+      ></app-metric-card>
+
+      <app-metric-card
+        title="Out of Stock"
+        value="100"
+        [percentage]="2"
+        trend="down"
+      ></app-metric-card>
+
+      <app-metric-card
+        title="Products Booked"
+        value="270"
+        [percentage]="2"
+        trend="up"
+      ></app-metric-card>
+      <app-metric-card
+        title="Products Billed"
+        value="270"
+        [percentage]="2"
+        trend="up"
+      ></app-metric-card>
+      <app-metric-card
+        title="Products Billed"
+        value="270"
+        [percentage]="2"
+        trend="up"
+      ></app-metric-card>
+      <app-metric-card
+        title="Products Deleted"
+        value="270"
+        [percentage]="2"
+        trend="up"
+      ></app-metric-card>
+    </div>
+  </div>
+
+  <div class="flex justify-between">
+    <h1 class="font-heading font-medium p-2 tracking-tight text-2xl">Products</h1>
+    <div class="flex flex-col lg:flex-row lg:items-center gap-3 mb-6">
+      <div class="hidden lg:inline-flex bg-white rounded-lg overflow-x-auto">
+        <button
+          *ngFor="let period of timePeriods"
+          (click)="selectedPeriod = period"
+          [ngClass]="
+            selectedPeriod === period
+              ? 'bg-gray-50 text-gray-900'
+              : 'text-gray-600 hover:bg-ims-primary-hover-light bg-white'
+          "
+          class="px-4 lg:px-5 py-2.5 text-sm font-medium transition-colors border-r border-gray-300 cursor-pointer whitespace-nowrap"
+          type="button"
+        >
+          {{ period }}
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3 lg:ml-auto">
+        <button
+          class="hidden :inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 22 22"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11 7V15M7 11H15M21 11C21 16.5228 16.5228 21 11 21C5.47715 21 1 16.5228 1 11C1 5.47715 5.47715 1 11 1C16.5228 1 21 5.47715 21 11Z"
+              stroke="#101828"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Add Metrics
+        </button>
+
+        <p-datepicker
+          [(ngModel)]="date"
+          dateFormat="dd M yy"
+          showIcon="true"
+          placeholder="Select date"
+          class="lg:w-auto"
+        ></p-datepicker>
+      </div>
+    </div>
+  </div>
+
+  <p-toast></p-toast>
+
+  <!--  Table -->
+  <p-table
+    #dt
+    [value]="products"
+    [rows]="10"
+    [paginator]="true"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [globalFilterFields]="['Name', 'SKU']"
+    [(selection)]="selectedProducts"
+    dataKey="ProductId"
+    [rowHover]="true"
+    [tableStyle]="{ 'min-width': '80rem' }"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+    [showCurrentPageReport]="true"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex items-center justify-between">
+        <p-iconfield>
+          <p-inputicon class="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($event.target.value, 'contains')"
+            placeholder="Search..."
+          />
+        </p-iconfield>
+        <div>
+          <p-button label=" Add " icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+          <p-button
+            class="bg-ims-primary"
+            icon="pi pi-upload"
+            label="Export"
+            (onClick)="exportCSV($event)"
+          />
+        </div>
+        <ng-template pTemplate="end">
+          <!-- <div class="flex gap-2">
+        <p-fileUpload
+          mode="basic"
+          accept="image/*"
+          [maxFileSize]="1000000"
+          chooseLabel="Import
+          auto
+          customUpload
+        ></p-fileUpload>
+        <p-button label="Export CSV" icon="pi pi-upload" (onClick)="exportCSV($event)"></p-button>
+      </div> -->
+
+          <div>
+            <p-button label=" Add New" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+            <p-button
+              class="bg-ims-primary"
+              icon="pi pi-upload"
+              label="Export CSV"
+              (onClick)="exportCSV($event)"
+            />
+          </div>
+        </ng-template>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th pSortableColumn="ProductId">ID <p-sortIcon field="ProductId"></p-sortIcon></th>
+        <th pSortableColumn="SKU">SKU <p-sortIcon field="SKU"></p-sortIcon></th>
+        <th pSortableColumn="Name">Name <p-sortIcon field="Name"></p-sortIcon></th>
+        <th>Image</th>
+        <th pSortableColumn="UnitPrice">Unit Price <p-sortIcon field="UnitPrice"></p-sortIcon></th>
+        <th pSortableColumn="CostPrice">Cost Price <p-sortIcon field="CostPrice"></p-sortIcon></th>
+        <th pSortableColumn="CategoryId">
+          Category ID <p-sortIcon field="CategoryId"></p-sortIcon>
+        </th>
+        <th pSortableColumn="SupplierId">
+          Supplier ID <p-sortIcon field="SupplierId"></p-sortIcon>
+        </th>
+        <th>Stock (Min–Max)</th>
+        <th>Reorder Level</th>
+        <th>Status</th>
+        <th pSortableColumn="CreatedAt">Created At <p-sortIcon field="CreatedAt"></p-sortIcon></th>
+        <th style="min-width: 8rem">Actions</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-product>
+      <tr>
+        <td style="width: 3rem">
+          <p-tableCheckbox [value]="product"></p-tableCheckbox>
+        </td>
+        <td>{{ product.ProductId }}</td>
+        <td>{{ product.SKU }}</td>
+        <td>{{ product.Name }}</td>
+        <td>
+          <img
+            [src]="product.Image"
+            [alt]="product.Name"
+            style="width: 64px"
+            class="rounded shadow-sm"
+          />
+        </td>
+        <td>{{ product.UnitPrice | currency : 'USD' }}</td>
+        <td>{{ product.CostPrice | currency : 'USD' }}</td>
+        <td>{{ product.CategoryId || '-' }}</td>
+        <td>{{ product.SupplierId }}</td>
+        <td>{{ product.MinStock }} - {{ product.MaxStock }}</td>
+        <td>{{ product.ReorderLevel }}</td>
+        <td>
+          <p-tag
+            [value]="getStatusLabel(product.IsActive)"
+            [severity]="getSeverity(product.IsActive)"
+          ></p-tag>
+        </td>
+        <td>{{ product.CreatedAt | date : 'mediumDate' }}</td>
+        <td>
+          <p-button
+            icon="pi pi-pencil"
+            class="mr-2"
+            [rounded]="true"
+            [outlined]="true"
+            (onClick)="editProduct(product)"
+          ></p-button>
+          <p-button
+            icon="pi pi-trash"
+            severity="danger"
+            [rounded]="true"
+            [outlined]="true"
+            (onClick)="deleteProduct(product)"
+          ></p-button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!--  Dialog -->
+  <p-dialog
+    [(visible)]="productDialog"
+    [style]="{ width: '480px' }"
+    header="Product Details"
+    [modal]="true"
+  >
+    <ng-template pTemplate="content">
+      <div class="flex flex-col gap-6">
+        <img
+          [src]="product.Image"
+          [alt]="product.Name"
+          class="block m-auto pb-4 rounded-lg shadow"
+          *ngIf="product?.Image"
+        />
+
+        <div>
+          <label for="Name" class="block font-bold mb-3">Product Name</label>
+          <input
+            type="text"
+            pInputText
+            id="Name"
+            [(ngModel)]="product.Name"
+            required
+            autofocus
+            fluid
+          />
+          <small class="text-red-500" *ngIf="submitted && !product.Name">Name is required.</small>
+        </div>
+
+        <div>
+          <label for="SKU" class="block font-bold mb-3">SKU</label>
+          <input type="text" pInputText id="SKU" [(ngModel)]="product.SKU" required fluid />
+        </div>
+
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-6">
+            <label for="UnitPrice" class="block font-bold mb-3">Unit Price</label>
+            <p-inputnumber
+              id="UnitPrice"
+              [(ngModel)]="product.UnitPrice"
+              mode="currency"
+              currency="USD"
+              locale="en-US"
+              fluid
+            ></p-inputnumber>
+          </div>
+
+          <div class="col-span-6">
+            <label for="CostPrice" class="block font-bold mb-3">Cost Price</label>
+            <p-inputnumber
+              id="CostPrice"
+              [(ngModel)]="product.CostPrice"
+              mode="currency"
+              currency="USD"
+              locale="en-US"
+              fluid
+            ></p-inputnumber>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-6">
+            <label for="CategoryId" class="block font-bold mb-3">Category ID</label>
+            <p-inputnumber id="CategoryId" [(ngModel)]="product.CategoryId" fluid></p-inputnumber>
+          </div>
+          <div class="col-span-6">
+            <label for="SupplierId" class="block font-bold mb-3">Supplier ID</label>
+            <p-inputnumber id="SupplierId" [(ngModel)]="product.SupplierId" fluid></p-inputnumber>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-6">
+            <label for="MinStock" class="block font-bold mb-3">Min Stock</label>
+            <p-inputnumber id="MinStock" [(ngModel)]="product.MinStock" fluid></p-inputnumber>
+          </div>
+          <div class="col-span-6">
+            <label for="MaxStock" class="block font-bold mb-3">Max Stock</label>
+            <p-inputnumber id="MaxStock" [(ngModel)]="product.MaxStock" fluid></p-inputnumber>
+          </div>
+        </div>
+
+        <div>
+          <label for="ReorderLevel" class="block font-bold mb-3">Reorder Level</label>
+          <p-inputnumber id="ReorderLevel" [(ngModel)]="product.ReorderLevel" fluid></p-inputnumber>
+        </div>
+
+        <div>
+          <label class="block font-bold mb-3">Active Status</label>
+          <p-select
+            [(ngModel)]="product.IsActive"
+            [options]="[
+              { label: 'Active', value: true },
+              { label: 'Inactive', value: false }
+            ]"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select Status"
+            fluid
+          ></p-select>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <p-button label="Cancel" icon="pi pi-times" text (onClick)="hideDialog()" />
+      <p-button label="Save" icon="pi pi-check" (onClick)="saveProduct()" />
+    </ng-template>
+  </p-dialog>
+
+  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+</main>
