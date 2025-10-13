@@ -61,7 +61,7 @@ export class CategoryDetail {
   categories: Category[] = [];
   selectedCategories: Category[] = [];
 
-  supplier: Category = {
+  category: Category = {
     categoryId: 0,
     categoryName: '',
     parentCategoryName: '',
@@ -135,11 +135,11 @@ export class CategoryDetail {
     ];
   }
 
-  category: Category = {
-    categoryId: 0,
-    categoryName: '',
-    parentCategoryName: '',
-  };
+  // category: Category = {
+  //   categoryId: 0,
+  //   categoryName: '',
+  //   parentCategoryName: '',
+  // };
 
   // 🟢 Utility to create a new blank product
   createEmptyCategory(): Category {
@@ -170,7 +170,7 @@ export class CategoryDetail {
       if (this.category.categoryId) {
         // Update existing
         const index = this.findIndexById(this.category.categoryId);
-        if (index !== -1) this.categories[index] = this.supplier;
+        if (index !== -1) this.categories[index] = this.category;
 
         this.messageService.add({
           severity: 'success',
@@ -189,13 +189,13 @@ export class CategoryDetail {
 
       this.categories = [...this.categories];
       this.categoryDialog = false;
-      this.supplier = this.createEmptyCategory();
+      this.category = this.createEmptyCategory();
     }
   }
 
   // 🟢 Edit
-  editCategory(supplier: Category) {
-    this.supplier = { ...supplier };
+  editCategory(category: Category) {
+    this.category = { ...category };
     this.categoryDialog = true;
   }
 
@@ -254,5 +254,12 @@ export class CategoryDetail {
 
   createId(): number {
     return Math.floor(Math.random() * 10000) + 100;
+  }
+  getStatusLabel(isActive: boolean): string {
+    return isActive ? 'Active' : 'Inactive';
+  }
+
+  getSeverity(isActive: boolean): 'success' | 'danger' {
+    return isActive ? 'success' : 'danger';
   }
 }
