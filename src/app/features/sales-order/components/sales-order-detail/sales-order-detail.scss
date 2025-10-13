@@ -1,0 +1,13 @@
+/* Make sure expanded rows render properly */
+:host ::ng-deep .p-row-expanded + .p-rowexpansion {
+  display: table-row !important;
+  visibility: visible !important;
+}
+
+:host ::ng-deep .p-rowexpansion > td {
+  padding: 1rem !important;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr {
+  transition: all 0.2s ease;
+}
