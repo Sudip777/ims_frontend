@@ -12,6 +12,7 @@ import { CustomerDetail } from './features/customer/components/customer-detail/c
 import { PurchaseOrderComponent } from './features/purchase-order/components/purchase-order-detail/purchase-order-detail';
 import { SalesOrderDetail } from './features/sales-order/components/sales-order-detail/sales-order-detail';
 import { InventoryDetail } from './features/inventory/components/inventory-detail/inventory-detail';
+import { Notfound } from './shared/components/not-found/not-found';
 
 export const routes: Routes = [
   { path: '', component: MainLayout },
@@ -36,5 +37,5 @@ export const routes: Routes = [
   },
 
   // Fallback
-  { path: '**', redirectTo: '' },
+  { path: '**', component: Notfound },
 ];
