@@ -44,7 +44,7 @@
       </div>
     </ng-template>
 
-    <ng-template pTemplate="header">
+    <ng-template #header>
       <tr>
         <th style="width: 3rem"></th>
         <th>Order ID</th>
@@ -93,7 +93,7 @@
       </tr>
     </ng-template>
 
-    <ng-template pTemplate="rowexpansion" let-order>
+    <ng-template #expandedrow let-order>
       <tr>
         <td colspan="8">
           <div class="p-4 bg-gray-50 rounded-lg">
