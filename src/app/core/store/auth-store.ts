@@ -4,22 +4,20 @@ import { catchError, concatMap, map, pipe, throwError } from 'rxjs';
 import { injectLocalStorage } from 'ngxtension/inject-local-storage';
 import { explicitEffect } from 'ngxtension/explicit-effect';
 import { createEffect } from 'ngxtension/create-effect';
-import { AuthService } from '../services/api';
 import { MessageService } from 'primeng/api';
 import { jwtDecode } from 'jwt-decode';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthPayload, AuthService } from '../services/auth';
 
 export interface TokenDecoded {
-  id: string;
-  username: string;
-  iat: number;
-  exp: number;
-  role: string;
-}
-
-export interface AuthPayload {
-  username: string;
-  password: string;
+  sub: string; // "JwtSubject"
+  jti: string; // Token ID
+  UserId: string; // "13"
+  Username: string; // "yy"
+  role: string; // "ADMIN"
+  exp: number; // Expiration timestamp
+  iss: string; // "JwtIssuer"
+  aud: string;
 }
 
 @Injectable({
@@ -30,7 +28,7 @@ export class AuthStore {
   private messageService = inject(MessageService);
   private router = inject(Router);
 
-  token = injectLocalStorage<string | null>('token', {
+  token = injectLocalStorage<string | null>('accessToken', {
     storageSync: true,
   });
 
@@ -46,7 +44,7 @@ export class AuthStore {
       [this.token],
       ([token]) => {
         if (token) {
-          this.router.navigateByUrl('/dashboard');
+          this.router.navigateByUrl('/dashboard/overview');
         } else {
           this.router.navigateByUrl('/login');
         }
@@ -71,7 +69,9 @@ export class AuthStore {
       concatMap((payload) =>
         this.auth.login(payload).pipe(
           map((response) => {
-            this.token.set(response.token);
+            const token = response.result.access_token;
+            console.log('💾 Storing access token:', token);
+            this.token.set(token);
 
             // ✅ Success toast
             this.messageService.add({
@@ -85,7 +85,6 @@ export class AuthStore {
             return response;
           }),
           catchError((err: HttpErrorResponse) => {
-            // ✅ Typed error
             if (err.status === 401) {
               this.messageService.add({
                 severity: 'error',
@@ -121,4 +120,20 @@ export class AuthStore {
     this.token.set(null);
     this.router.navigateByUrl('/login');
   }
+
+  // Computed signals for easier access
+  userId = computed(() => {
+    const decoded = this.tokenDecoded();
+    return decoded?.UserId || null;
+  });
+
+  username = computed(() => {
+    const decoded = this.tokenDecoded();
+    return decoded?.Username || null;
+  });
+
+  userRole = computed(() => {
+    const decoded = this.tokenDecoded();
+    return decoded?.role || null;
+  });
 }

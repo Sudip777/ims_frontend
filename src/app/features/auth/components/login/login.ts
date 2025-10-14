@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { IconComponent } from '../../../../shared/icons/components/icon.component';
 import { TextFieldComponent } from '../../../../shared/components/text-field/text-field';
 import { AuthRoutingModule } from '../../auth-routing-module';
-import { AuthStore } from '../../../../core/auth/store/auth-store';
+import { AuthStore } from '../../../../core/store/auth-store';
 import { ToastModule } from 'primeng/toast';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -29,7 +29,6 @@ export class Login {
   isLoading = false;
   errorMessage = '';
 
-  // === Injected Services ===
   private fb = inject(FormBuilder);
   private authStore = inject(AuthStore);
 
@@ -40,13 +39,11 @@ export class Login {
     });
   }
 
-  // === Form Field Validation ===
   isFieldInvalid(fieldName: string): boolean {
     const field = this.loginForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched));
   }
 
-  // === Login Handler ===
   onSubmit(): void {
     if (this.loginForm.invalid) {
       Object.keys(this.loginForm.controls).forEach((key) => {
@@ -61,7 +58,6 @@ export class Login {
     const { username, password } = this.loginForm.value;
     console.log(username, password, 'asas');
 
-    // ✅ Correct usage for current ngxtension version
     this.authStore.login({ username, password });
 
     // Optional loading animation delay
