@@ -25,7 +25,7 @@
         <p class="text-gray-600 text-sm font-sm">Welcome back! Please enter your details.</p>
       </div>
 
-      <form class="space-y-5" [formGroup]="loginForm">
+      <form class="space-y-5" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <app-text-field
           label="Username"
           placeholder="Enter your username"
@@ -55,13 +55,13 @@
         </div>
 
         <button
-          type="button"
+          type="submit"
           class="w-full text-white bg-colors-ims-primary border bg-ims-primary py-3 hover:bg-colors-ims-primary-hover transition-colors text-sm font-medium cursor-pointer rounded-md shadow-md"
         >
-          Signup
+          Login
         </button>
 
-        <button
+        <!-- <button
           type="button"
           class="w-full bg-white border border-gray-300 text-gray-700 py-3 hover:bg-gray-50 transition-colors flex items-center justify-center gap-3 text-sm font-medium rounded-md shadow-md"
         >
@@ -84,12 +84,14 @@
             />
           </svg>
           Sign in with Google
-        </button>
+        </button> -->
       </form>
 
       <p class="text-center text-sm text-gray-600 mt-6">
         Don't have an account?
-        <a href="#" class="text-purple-600 hover:text-purple-700 font-medium">Sign up</a>
+        <a href="#" class="text-purple-600 hover:text-purple-700 font-medium" routerLink="/register"
+          >Sign up</a
+        >
       </p>
     </div>
   </section>
