@@ -106,9 +106,9 @@
     [rows]="10"
     [paginator]="true"
     [rowsPerPageOptions]="[5, 10, 20]"
-    [globalFilterFields]="['Name', 'SKU']"
+    [globalFilterFields]="['name', 'sku']"
     [(selection)]="selectedProducts"
-    dataKey="ProductId"
+    dataKey="productId"
     [rowHover]="true"
     [tableStyle]="{ 'min-width': '80rem' }"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
@@ -135,17 +135,21 @@
           />
         </div>
         <ng-template pTemplate="end">
-          <!-- <div class="flex gap-2">
-        <p-fileUpload
-          mode="basic"
-          accept="image/*"
-          [maxFileSize]="1000000"
-          chooseLabel="Import
+          <div class="flex gap-2">
+            <p-fileUpload
+              mode="basic"
+              accept="image/*"
+              [maxFileSize]="1000000"
+              chooseLabel="Import
           auto
-          customUpload
-        ></p-fileUpload>
-        <p-button label="Export CSV" icon="pi pi-upload" (onClick)="exportCSV($event)"></p-button>
-      </div> -->
+          customUpload"
+            ></p-fileUpload>
+            <p-button
+              label="Export CSV"
+              icon="pi pi-upload"
+              (onClick)="exportCSV($event)"
+            ></p-button>
+          </div>
 
           <div>
             <p-button label=" Add New" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
@@ -165,22 +169,18 @@
         <th style="width: 3rem">
           <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
         </th>
-        <th pSortableColumn="ProductId">ID <p-sortIcon field="ProductId"></p-sortIcon></th>
-        <th pSortableColumn="SKU">SKU <p-sortIcon field="SKU"></p-sortIcon></th>
-        <th pSortableColumn="Name">Name <p-sortIcon field="Name"></p-sortIcon></th>
-        <th>Image</th>
-        <th pSortableColumn="UnitPrice">Unit Price <p-sortIcon field="UnitPrice"></p-sortIcon></th>
-        <th pSortableColumn="CostPrice">Cost Price <p-sortIcon field="CostPrice"></p-sortIcon></th>
-        <th pSortableColumn="CategoryId">
-          Category ID <p-sortIcon field="CategoryId"></p-sortIcon>
-        </th>
-        <th pSortableColumn="SupplierId">
-          Supplier ID <p-sortIcon field="SupplierId"></p-sortIcon>
-        </th>
+        <th pSortableColumn="ProductId">Product ID</th>
+        <th pSortableColumn="sku">SKU</th>
+        <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+        <!-- <th>Image</th> -->
+        <th pSortableColumn="unitPrice">Unit Price <p-sortIcon field="unitPrice"></p-sortIcon></th>
+        <th pSortableColumn="costPrice">Cost Price <p-sortIcon field="costPrice"></p-sortIcon></th>
+        <th pSortableColumn="categoryId">Category Name</th>
+        <th pSortableColumn="supplierId">Supplier Name</th>
         <th>Stock (Min–Max)</th>
         <th>Reorder Level</th>
         <th>Status</th>
-        <th pSortableColumn="CreatedAt">Created At <p-sortIcon field="CreatedAt"></p-sortIcon></th>
+        <th pSortableColumn="CreatedAt">Created At <p-sortIcon field="createdAt"></p-sortIcon></th>
         <th style="min-width: 8rem">Actions</th>
       </tr>
     </ng-template>
@@ -190,30 +190,22 @@
         <td style="width: 3rem">
           <p-tableCheckbox [value]="product"></p-tableCheckbox>
         </td>
-        <td>{{ product.ProductId }}</td>
-        <td>{{ product.SKU }}</td>
-        <td>{{ product.Name }}</td>
-        <td>
-          <img
-            [src]="product.Image"
-            [alt]="product.Name"
-            style="width: 64px"
-            class="rounded shadow-sm"
-          />
-        </td>
-        <td>{{ product.UnitPrice | currency : 'USD' }}</td>
-        <td>{{ product.CostPrice | currency : 'USD' }}</td>
-        <td>{{ product.CategoryId || '-' }}</td>
-        <td>{{ product.SupplierId }}</td>
-        <td>{{ product.MinStock }} - {{ product.MaxStock }}</td>
-        <td>{{ product.ReorderLevel }}</td>
+        <td>{{ product.productId }}</td>
+        <td>{{ product.sku }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.unitPrice | currency : 'NPR ' }}</td>
+        <td>{{ product.costPrice | currency : 'NPR ' }}</td>
+        <td>{{ product.categoryName || 'N/A' }}</td>
+        <td>{{ product.supplierName || 'N/A' }}</td>
+        <td>{{ product.minStock }} - {{ product.maxStock }}</td>
+        <td>{{ product.reorderLevel }}</td>
         <td>
           <p-tag
-            [value]="getStatusLabel(product.IsActive)"
-            [severity]="getSeverity(product.IsActive)"
+            [value]="getStatusLabel(product.isActive)"
+            [severity]="getSeverity(product.isActive)"
           ></p-tag>
         </td>
-        <td>{{ product.CreatedAt | date : 'mediumDate' }}</td>
+        <td>{{ product.createdAt | date : 'mediumDate' }}</td>
         <td>
           <p-button
             icon="pi pi-pencil"
@@ -242,100 +234,94 @@
     [modal]="true"
   >
     <ng-template pTemplate="content">
-      <div class="flex flex-col gap-6">
-        <img
-          [src]="product.Image"
-          [alt]="product.Name"
-          class="block m-auto pb-4 rounded-lg shadow"
-          *ngIf="product?.Image"
+      <div>
+        <label for="Name" class="block font-bold mb-3">Product Name</label>
+        <input
+          type="text"
+          pInputText
+          id="Name"
+          [(ngModel)]="product.name"
+          required
+          autofocus
+          fluid
         />
 
-        <div>
-          <label for="Name" class="block font-bold mb-3">Product Name</label>
-          <input
-            type="text"
-            pInputText
-            id="Name"
-            [(ngModel)]="product.Name"
-            required
-            autofocus
+        <small class="text-red-500" *ngIf="submitted && !product.name as showError">
+          Name is required.
+        </small>
+      </div>
+
+      <div>
+        <label for="sku" class="block font-bold mb-3">SKU</label>
+        <input type="text" pInputText id="SKU" [(ngModel)]="product.sku" required fluid />
+      </div>
+
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6">
+          <label for="UnitPrice" class="block font-bold mb-3">Unit Price</label>
+          <p-inputnumber
+            id="UnitPrice"
+            [(ngModel)]="product.unitPrice"
+            mode="currency"
+            currency="USD"
+            locale="en-US"
             fluid
-          />
-          <small class="text-red-500" *ngIf="submitted && !product.Name">Name is required.</small>
+          ></p-inputnumber>
         </div>
 
-        <div>
-          <label for="SKU" class="block font-bold mb-3">SKU</label>
-          <input type="text" pInputText id="SKU" [(ngModel)]="product.SKU" required fluid />
-        </div>
-
-        <div class="grid grid-cols-12 gap-4">
-          <div class="col-span-6">
-            <label for="UnitPrice" class="block font-bold mb-3">Unit Price</label>
-            <p-inputnumber
-              id="UnitPrice"
-              [(ngModel)]="product.UnitPrice"
-              mode="currency"
-              currency="USD"
-              locale="en-US"
-              fluid
-            ></p-inputnumber>
-          </div>
-
-          <div class="col-span-6">
-            <label for="CostPrice" class="block font-bold mb-3">Cost Price</label>
-            <p-inputnumber
-              id="CostPrice"
-              [(ngModel)]="product.CostPrice"
-              mode="currency"
-              currency="USD"
-              locale="en-US"
-              fluid
-            ></p-inputnumber>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-12 gap-4">
-          <div class="col-span-6">
-            <label for="CategoryId" class="block font-bold mb-3">Category ID</label>
-            <p-inputnumber id="CategoryId" [(ngModel)]="product.CategoryId" fluid></p-inputnumber>
-          </div>
-          <div class="col-span-6">
-            <label for="SupplierId" class="block font-bold mb-3">Supplier ID</label>
-            <p-inputnumber id="SupplierId" [(ngModel)]="product.SupplierId" fluid></p-inputnumber>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-12 gap-4">
-          <div class="col-span-6">
-            <label for="MinStock" class="block font-bold mb-3">Min Stock</label>
-            <p-inputnumber id="MinStock" [(ngModel)]="product.MinStock" fluid></p-inputnumber>
-          </div>
-          <div class="col-span-6">
-            <label for="MaxStock" class="block font-bold mb-3">Max Stock</label>
-            <p-inputnumber id="MaxStock" [(ngModel)]="product.MaxStock" fluid></p-inputnumber>
-          </div>
-        </div>
-
-        <div>
-          <label for="ReorderLevel" class="block font-bold mb-3">Reorder Level</label>
-          <p-inputnumber id="ReorderLevel" [(ngModel)]="product.ReorderLevel" fluid></p-inputnumber>
-        </div>
-
-        <div>
-          <label class="block font-bold mb-3">Active Status</label>
-          <p-select
-            [(ngModel)]="product.IsActive"
-            [options]="[
-              { label: 'Active', value: true },
-              { label: 'Inactive', value: false }
-            ]"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Select Status"
+        <div class="col-span-6">
+          <label for="CostPrice" class="block font-bold mb-3">Cost Price</label>
+          <p-inputnumber
+            id="CostPrice"
+            [(ngModel)]="product.costPrice"
+            mode="currency"
+            currency="NPR"
+            locale="en-US"
             fluid
-          ></p-select>
+          ></p-inputnumber>
         </div>
+      </div>
+
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6">
+          <label for="CategoryId" class="block font-bold mb-3">Category Name</label>
+          <p-inputnumber id="CategoryId" [(ngModel)]="product.categoryId" fluid></p-inputnumber>
+        </div>
+        <div class="col-span-6">
+          <label for="SupplierId" class="block font-bold mb-3">Supplier Name</label>
+          <p-inputnumber id="SupplierId" [(ngModel)]="product.supplierId" fluid></p-inputnumber>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6">
+          <label for="MinStock" class="block font-bold mb-3">Min Stock</label>
+          <p-inputnumber id="MinStock" [(ngModel)]="product.minStock" fluid></p-inputnumber>
+        </div>
+        <div class="col-span-6">
+          <label for="MaxStock" class="block font-bold mb-3">Max Stock</label>
+          <p-inputnumber id="MaxStock" [(ngModel)]="product.maxStock" fluid></p-inputnumber>
+        </div>
+      </div>
+
+      <div>
+        <label for="ReorderLevel" class="block font-bold mb-3">Reorder Level</label>
+        <p-inputnumber id="ReorderLevel" [(ngModel)]="product.reorderLevel" fluid></p-inputnumber>
+      </div>
+
+      <div>
+        <label class="block font-bold mb-3">Active Status</label>
+        <p-select
+          [(ngModel)]="product.isActive"
+          [options]="[
+            { label: 'Active', value: true },
+            { label: 'Inactive', value: false }
+          ]"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select Status"
+          fluid
+        ></p-select>
       </div>
     </ng-template>
 
