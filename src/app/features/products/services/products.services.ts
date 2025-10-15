@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Product } from '../models/product.model';
-import { ApiService } from '../../../core/services/api';
-import { ApiResponse, Meta } from '../../../core/models/api-response.model';
+import { Product, ProductRequest, ProductUpdate } from '../models/product.model';
+import { ApiService } from '../../../core/services/api.services';
+import { Meta, PaginatedApiResponse } from '../../../core/models/api-response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -9,20 +9,22 @@ import { ApiResponse, Meta } from '../../../core/models/api-response.model';
 export class ProductsService {
   constructor(private api: ApiService) {}
 
-  getAllProducts() {
-    return this.api.get<ApiResponse<Product[], Meta>>('/products');
+  getAllProducts(page = 1, pageSize = 10) {
+    return this.api.get<PaginatedApiResponse<Product[], Meta>>(
+      `/products?page=${page}&pageSize=${pageSize}`
+    );
   }
 
   getProductById(id: number) {
     return this.api.get<Product>(`/products/${id}`);
   }
 
-  createProduct(product: Product) {
-    return this.api.post<Product>('/products', product);
+  createProduct(product: ProductRequest) {
+    return this.api.post<ProductRequest>('/products', product);
   }
 
-  updateProduct(product: Product) {
-    return this.api.put<Product>(`/products/${product.productId}`, product);
+  updateProduct(id: number, product: ProductUpdate) {
+    return this.api.put<Product>(`/products/${id}`, product);
   }
 
   deleteProduct(id: number) {

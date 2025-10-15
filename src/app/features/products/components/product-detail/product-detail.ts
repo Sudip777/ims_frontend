@@ -1,33 +1,36 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-// PrimeNG Modules
-import { TableModule } from 'primeng/table';
-import { ToolbarModule } from 'primeng/toolbar';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
+import { Product, ProductRequest, ProductUpdate } from '../../models/product.model';
+import { ProductsService } from '../../services/products.services';
+import { CategoryService } from '../../../category/services/category.services';
+import { SupplierService } from '../../../supplier/services/supplier.services';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { FileUploadModule } from 'primeng/fileupload';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ToastModule } from 'primeng/toast';
-import { RadioButtonModule } from 'primeng/radiobutton';
-import { SelectModule } from 'primeng/select';
-import { TextareaModule } from 'primeng/textarea';
+import { DatePickerModule } from 'primeng/datepicker';
+import { DialogModule } from 'primeng/dialog';
+import { FileUploadModule } from 'primeng/fileupload';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { DatePickerModule } from 'primeng/datepicker';
-
-// Services
-import { ConfirmationService, MessageService } from 'primeng/api';
-
-// Shared components
-import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { SelectModule } from 'primeng/select';
+import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { Product } from '../../models/product.model';
-import { ProductsService } from '../../services/products.services';
-import { AuthStore } from '../../../../core/store/auth-store';
+import { TextareaModule } from 'primeng/textarea';
+import { ToastModule } from 'primeng/toast';
+import { ToolbarModule } from 'primeng/toolbar';
+import { NotificationService } from '../../../../core/services/notification.services';
+
+interface AutoCompleteCompleteEvent {
+  originalEvent: Event;
+  query: string;
+}
 
 @Component({
   selector: 'app-product-detail',
@@ -37,8 +40,6 @@ import { AuthStore } from '../../../../core/store/auth-store';
   imports: [
     CommonModule,
     FormsModule,
-
-    // PrimeNG
     TableModule,
     ToolbarModule,
     ButtonModule,
@@ -55,62 +56,218 @@ import { AuthStore } from '../../../../core/store/auth-store';
     InputIconModule,
     DatePickerModule,
     TagModule,
-
-    // Custom
+    AutoCompleteModule,
     MetricCardComponent,
   ],
   providers: [ConfirmationService, MessageService],
 })
 export class ProductDetail {
-  timePeriods = ['1d', '7d', '1m', '3m', '6m', '1y'];
-  selectedPeriod = '1m';
-  date: Date | null = null;
+  private readonly categoryService = inject(CategoryService);
+  private readonly supplierService = inject(SupplierService);
+  private readonly productsService = inject(ProductsService);
+  private readonly confirmationService = inject(ConfirmationService);
+  private readonly notificationService = inject(NotificationService);
+
   products: Product[] = [];
   selectedProducts: Product[] = [];
-  product: Product = {
-    productId: 0,
-    name: '',
-    supplierName: null,
-    sku: '',
-    unitPrice: 0,
-    costPrice: 0,
-    supplierId: 0,
-    categoryId: 0,
-    categoryName: '',
-    reorderLevel: 0,
-    minStock: 0,
-    maxStock: 0,
-    isActive: true,
-    createdAt: new Date(),
-  };
+  items: any[] = [];
+  supplierItems: any[] = [];
+  filteredItems: any[] = [];
+  filteredSupplierItems: any[] = [];
   productDialog = false;
   submitted = false;
+  isEditMode = false;
+  selectedCategory: number | null = null;
+  selectedSupplier: number | null = null;
 
-  constructor(
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService,
-    private productsService: ProductsService,
-    private authStore: AuthStore
-  ) {}
+  product: Product = this.createEmptyProduct();
+
+  totalCount = 0;
+  pageSize = 10;
+  page = 1;
 
   ngOnInit() {
-    // Debug: Check if token exists
-    const token = this.authStore.token();
-    console.log('Token exists:', !!token);
-    console.log('Token preview:', token ? token.substring(0, 20) + '...' : 'No token');
-    this.productsService.getAllProducts().subscribe({
-      next: (data) => {
-        this.products = data.result.data;
-        console.log(data.result.data, 'dataa');
+    this.loadProducts();
+    this.loadCategories();
+    this.loadSuppliers();
+  }
+
+  private loadProducts(page = 1, pageSize = 10): void {
+    this.productsService.getAllProducts(page, pageSize).subscribe({
+      next: (res) => {
+        this.products = res.result.data;
+        this.totalCount = res.result.meta.totalCount;
+        this.page = res.result.meta.page;
+        this.pageSize = res.result.meta.pageSize;
       },
-      error: (err) => {
-        console.error('Error fetching products', err);
+      error: () => {
+        this.notificationService.error('Error!!', 'Failed to Load Products');
       },
     });
   }
 
-  // 🟢 Utility to create a new blank product
-  createEmptyProduct(): Product {
+  private loadCategories(): void {
+    this.categoryService.getAllCategories().subscribe({
+      next: (res) => {
+        this.items = res.result.map((val: any) => ({
+          label: val.categoryName,
+          value: val.categoryId,
+        }));
+      },
+      error: () => {
+        this.notificationService.error('Error!!', 'Failed to Load Categories');
+      },
+    });
+  }
+
+  private loadSuppliers(): void {
+    this.supplierService.getAllSuppliers().subscribe({
+      next: (res) => {
+        this.supplierItems = res.result.map((val: any) => ({
+          label: val.name,
+          value: val.supplierId,
+        }));
+      },
+      error: () => {
+        this.notificationService.error('Error!!', 'Failed to Load Suppliers');
+      },
+    });
+  }
+
+  onPageChange(event: any): void {
+    const page = event.first / event.rows + 1;
+    const pageSize = event.rows;
+    this.loadProducts(page, pageSize);
+  }
+
+  openNew(): void {
+    this.isEditMode = false;
+    this.product = this.createEmptyProduct();
+    this.selectedCategory = null;
+    this.selectedSupplier = null;
+    this.submitted = false;
+    this.productDialog = true;
+  }
+
+  editProduct(product: Product): void {
+    this.isEditMode = true;
+    this.product = { ...product };
+    this.selectedCategory = product.categoryId;
+    this.selectedSupplier = product.supplierId;
+    this.productDialog = true;
+  }
+
+  hideDialog(): void {
+    this.productDialog = false;
+    this.product = this.createEmptyProduct();
+    this.selectedCategory = null;
+    this.selectedSupplier = null;
+    this.submitted = false;
+  }
+
+  saveProduct(): void {
+    this.submitted = true;
+
+    if (!this.product.name || !this.product.sku) {
+      this.notificationService.warn('Validation Error', 'Name and SKU are required');
+      return;
+    }
+
+    const request = this.buildProductRequest();
+
+    if (this.isEditMode) {
+      this.updateProduct(request);
+    } else {
+      this.createProduct(request);
+    }
+  }
+
+  private createProduct(request: ProductRequest): void {
+    this.productsService.createProduct(request).subscribe({
+      next: () => {
+        this.notificationService.success('Success', 'Product created successfully');
+        this.hideDialog();
+        this.loadProducts();
+      },
+      error: (err) => {
+        this.notificationService.error('Error', err.error?.message || 'Failed to create product');
+      },
+    });
+  }
+
+  private updateProduct(request: ProductUpdate): void {
+    this.productsService.updateProduct(this.product.productId, request).subscribe({
+      next: () => {
+        this.notificationService.success('Success', 'Product updated successfully');
+        this.hideDialog();
+        this.loadProducts();
+      },
+      error: (err) => {
+        this.notificationService.error('Error', err.error?.message || 'Failed to update product');
+      },
+    });
+  }
+
+  deleteProduct(product: Product): void {
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete "${product.name}"?`,
+      header: 'Confirm Deletion',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.productsService.deleteProduct(product.productId).subscribe({
+          next: () => {
+            this.notificationService.success('Success', 'Product deleted successfully');
+            this.loadProducts();
+          },
+          error: () => {
+            this.notificationService.error('Error', 'Failed to delete product');
+          },
+        });
+      },
+    });
+  }
+
+  deleteSelectedProducts(): void {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete the selected products?',
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.products = this.products.filter((val) => !this.selectedProducts.includes(val));
+        this.selectedProducts = [];
+
+        this.notificationService.success('Success', 'Products deleted successfully');
+      },
+    });
+  }
+
+  exportCSV(event?: Event) {
+    console.log('Export CSV clicked', event);
+
+    this.notificationService.info('Export', 'CSV Export Starteed...', 3000);
+  }
+
+  search(event: AutoCompleteCompleteEvent): void {
+    const query = event.query.toLowerCase();
+    this.filteredItems =
+      this.items.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+  }
+
+  searchSupplier(event: AutoCompleteCompleteEvent): void {
+    const query = event.query.toLowerCase();
+    this.filteredSupplierItems =
+      this.supplierItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+  }
+
+  getStatusLabel(isActive: boolean): string {
+    return isActive ? 'Active' : 'Inactive';
+  }
+
+  getSeverity(isActive: boolean): 'success' | 'danger' {
+    return isActive ? 'success' : 'danger';
+  }
+
+  private createEmptyProduct(): Product {
     return {
       productId: 0,
       name: '',
@@ -125,125 +282,21 @@ export class ProductDetail {
       minStock: 0,
       maxStock: 0,
       isActive: true,
-      createdAt: new Date(),
     };
   }
 
-  // 🟢 Open dialog for new product
-  openNew() {
-    this.product = this.createEmptyProduct();
-    this.submitted = false;
-    this.productDialog = true;
-  }
-
-  // 🟢 Hide dialog
-  hideDialog() {
-    this.productDialog = false;
-    this.submitted = false;
-  }
-
-  // 🟢 Save (Create or Update)
-  saveProduct() {
-    this.submitted = true;
-
-    if (this.product.name.trim()) {
-      if (this.product.productId) {
-        // Update existing
-        const index = this.findIndexById(this.product.productId);
-        if (index !== -1) this.products[index] = this.product;
-
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Product Updated',
-          life: 3000,
-        });
-      } else {
-        // Create new
-        this.product.productId = this.createId();
-        this.products.push(this.product);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Product Created',
-          life: 3000,
-        });
-      }
-
-      this.products = [...this.products];
-      this.productDialog = false;
-      this.product = this.createEmptyProduct();
-    }
-  }
-
-  // 🟢 Edit
-  editProduct(product: Product) {
-    this.product = { ...product };
-    this.productDialog = true;
-  }
-
-  // 🟢 Delete single
-  deleteProduct(product: Product) {
-    this.confirmationService.confirm({
-      message: `Are you sure you want to delete "${product.name}"?`,
-      header: 'Confirm Deletion',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.products = this.products.filter((p) => p.productId !== product.productId);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Product Deleted',
-          life: 3000,
-        });
-      },
-    });
-  }
-
-  // 🟢 Delete multiple
-  deleteSelectedProducts() {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete the selected products?',
-      header: 'Confirm',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.products = this.products.filter((val) => !this.selectedProducts.includes(val));
-        this.selectedProducts = [];
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Products Deleted',
-          life: 3000,
-        });
-      },
-    });
-  }
-
-  // 🟢 Export CSV placeholder
-  exportCSV(event?: Event) {
-    console.log('Export CSV clicked', event);
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Export',
-      detail: 'CSV Export started...',
-      life: 3000,
-    });
-  }
-
-  // 🟢 Helpers
-  findIndexById(id: number): number {
-    return this.products.findIndex((p) => p.productId === id);
-  }
-
-  createId(): number {
-    return Math.floor(Math.random() * 10000) + 100;
-  }
-
-  getStatusLabel(isActive: boolean): string {
-    return isActive ? 'Active' : 'Inactive';
-  }
-
-  getSeverity(isActive: boolean): 'success' | 'danger' {
-    return isActive ? 'success' : 'danger';
+  private buildProductRequest(): ProductRequest {
+    return {
+      name: this.product.name,
+      sku: this.product.sku,
+      supplierId: this.selectedSupplier || this.product.supplierId,
+      categoryId: this.selectedCategory || this.product.categoryId,
+      unitPrice: this.product.unitPrice,
+      costPrice: this.product.costPrice,
+      reorderLevel: this.product.reorderLevel,
+      minStock: this.product.minStock,
+      maxStock: this.product.maxStock,
+      isActive: this.product.isActive,
+    };
   }
 }

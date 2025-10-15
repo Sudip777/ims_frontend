@@ -4,7 +4,6 @@ import { OnboardingComponent } from './features/onboarding/components/onboarding
 import { Login } from './features/auth/components/login/login';
 import { DashboardOverview } from './features/dashboard/components/dashboard-overview/dashboard-overview';
 import { DashboardLayout } from './layout/dashboard-layout/dashboard-layout';
-import { ProductDetail } from './features/products/components/product-detail/product-detail';
 import { SupplierDetail } from './features/supplier/components/supplier-detail/supplier-detail';
 import { CategoryDetail } from './features/category/components/category-detail/category-detail';
 import { WarehouseDetail } from './features/warehouse/components/warehouse-detail/warehouse-detail';
@@ -13,13 +12,11 @@ import { PurchaseOrderComponent } from './features/purchase-order/components/pur
 import { SalesOrderDetail } from './features/sales-order/components/sales-order-detail/sales-order-detail';
 import { InventoryDetail } from './features/inventory/components/inventory-detail/inventory-detail';
 import { Notfound } from './shared/components/not-found/not-found';
-import { Register } from './features/auth/components/register/register';
 
 export const routes: Routes = [
   { path: '', component: MainLayout },
   { path: 'onboarding', component: OnboardingComponent },
   { path: 'login', component: Login },
-  // { path: 'register', component: Register },
 
   {
     path: 'dashboard',
@@ -27,7 +24,14 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: '', pathMatch: 'full' },
       { path: 'overview', component: DashboardOverview },
-      { path: 'product', component: ProductDetail },
+      {
+        path: 'product',
+        loadComponent: () =>
+          import('./features/products/components/product-detail/product-detail').then(
+            (m) => m.ProductDetail
+          ),
+      },
+
       { path: 'supplier', component: SupplierDetail },
       { path: 'category', component: CategoryDetail },
       { path: 'warehouse', component: WarehouseDetail },

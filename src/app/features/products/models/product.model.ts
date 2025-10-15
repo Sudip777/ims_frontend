@@ -12,5 +12,10 @@ export interface Product {
   minStock: number;
   maxStock: number;
   isActive: boolean;
-  createdAt: Date;
 }
+
+export interface ProductRequest
+  extends Omit<Product, 'productId' | 'categoryName' | 'supplierName'> {}
+
+export interface ProductUpdate
+  extends Omit<Product, 'categoryName' | 'supplierName' | 'productId'> {}

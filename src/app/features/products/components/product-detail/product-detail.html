@@ -97,7 +97,7 @@
     </div>
   </div>
 
-  <p-toast></p-toast>
+  <p-toast position="bottom-right"></p-toast>
 
   <!--  Table -->
   <p-table
@@ -113,6 +113,11 @@
     [tableStyle]="{ 'min-width': '80rem' }"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
     [showCurrentPageReport]="true"
+    [paginator]="true"
+    [rows]="pageSize"
+    [totalRecords]="totalCount"
+    [lazy]="true"
+    (onLazyLoad)="onPageChange($event)"
   >
     <ng-template pTemplate="caption">
       <div class="flex items-center justify-between">
@@ -166,9 +171,9 @@
 
     <ng-template pTemplate="header">
       <tr>
-        <th style="width: 3rem">
+        <!-- <th style="width: 3rem">
           <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-        </th>
+        </th> -->
         <th pSortableColumn="ProductId">Product ID</th>
         <th pSortableColumn="sku">SKU</th>
         <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
@@ -187,9 +192,9 @@
 
     <ng-template pTemplate="body" let-product>
       <tr>
-        <td style="width: 3rem">
+        <!-- <td style="width: 3rem">
           <p-tableCheckbox [value]="product"></p-tableCheckbox>
-        </td>
+        </td> -->
         <td>{{ product.productId }}</td>
         <td>{{ product.sku }}</td>
         <td>{{ product.name }}</td>
@@ -230,7 +235,8 @@
   <p-dialog
     [(visible)]="productDialog"
     [style]="{ width: '480px' }"
-    header="Product Details"
+    [header]="isEditMode ? 'Update Product Details' : 'Add Product Details'"
+    [draggable]="false"
     [modal]="true"
   >
     <ng-template pTemplate="content">
@@ -263,7 +269,7 @@
             id="UnitPrice"
             [(ngModel)]="product.unitPrice"
             mode="currency"
-            currency="USD"
+            currency="NPR"
             locale="en-US"
             fluid
           ></p-inputnumber>
@@ -284,12 +290,30 @@
 
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-6">
-          <label for="CategoryId" class="block font-bold mb-3">Category Name</label>
-          <p-inputnumber id="CategoryId" [(ngModel)]="product.categoryId" fluid></p-inputnumber>
+          <label for="categoryName" class="block font-bold mb-3">Category Name</label>
+          <!-- <p-inputnumber id="CategoryId" [(ngModel)]="product.categoryId" fluid></p-inputnumber> -->
+          <div class="card flex justify-center">
+            <p-autocomplete
+              [(ngModel)]="selectedCategory"
+              [suggestions]="filteredItems"
+              (completeMethod)="search($event)"
+              optionLabel="label"
+              placeholder="Select a Category"
+              [dropdown]="true"
+            />
+          </div>
         </div>
         <div class="col-span-6">
-          <label for="SupplierId" class="block font-bold mb-3">Supplier Name</label>
-          <p-inputnumber id="SupplierId" [(ngModel)]="product.supplierId" fluid></p-inputnumber>
+          <label for="supplierName" class="block font-bold mb-3">Supplier Name</label>
+          <!-- <p-inputnumber id="SupplierId" [(ngModel)]="product.supplierId" fluid></p-inputnumber> -->
+          <p-autocomplete
+            [(ngModel)]="selectedSupplier"
+            [suggestions]="filteredSupplierItems"
+            (completeMethod)="searchSupplier($event)"
+            optionLabel="label"
+            placeholder="Select a Supplier"
+            [dropdown]="true"
+          />
         </div>
       </div>
 

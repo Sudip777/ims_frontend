@@ -56,11 +56,11 @@ export class Login {
     this.errorMessage = '';
 
     const { username, password } = this.loginForm.value;
-    console.log(username, password, 'asas');
+    console.log(username, 'asas');
 
     this.authStore.login({ username, password });
 
     // Optional loading animation delay
-    setTimeout(() => (this.isLoading = false), 800);
+    // setTimeout(() => (this.isLoading = false), 800);
   }
 }

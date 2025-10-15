@@ -7,7 +7,7 @@ import { createEffect } from 'ngxtension/create-effect';
 import { MessageService } from 'primeng/api';
 import { jwtDecode } from 'jwt-decode';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AuthPayload, AuthService } from '../services/auth';
+import { AuthPayload, AuthService } from '../services/auth.services';
 
 export interface TokenDecoded {
   sub: string; // "JwtSubject"
@@ -70,10 +70,8 @@ export class AuthStore {
         this.auth.login(payload).pipe(
           map((response) => {
             const token = response.result.access_token;
-            console.log('💾 Storing access token:', token);
             this.token.set(token);
 
-            // ✅ Success toast
             this.messageService.add({
               severity: 'success',
               summary: 'Login Successful',
@@ -81,7 +79,6 @@ export class AuthStore {
               life: 3000,
             });
 
-            this.router.navigateByUrl('/dashboard/overview');
             return response;
           }),
           catchError((err: HttpErrorResponse) => {
