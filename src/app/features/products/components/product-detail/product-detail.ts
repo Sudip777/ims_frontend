@@ -26,6 +26,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { NotificationService } from '../../../../core/services/notification.services';
+import { ExportService } from '../../../../core/services/export.services';
 
 interface AutoCompleteCompleteEvent {
   originalEvent: Event;
@@ -67,6 +68,7 @@ export class ProductDetail {
   private readonly productsService = inject(ProductsService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly notificationService = inject(NotificationService);
+  private readonly exportService = inject(ExportService);
 
   products: Product[] = [];
   selectedProducts: Product[] = [];
@@ -242,10 +244,18 @@ export class ProductDetail {
     });
   }
 
-  exportCSV(event?: Event) {
-    console.log('Export CSV clicked', event);
+  exportExcel() {
+    try {
+      this.exportService.exportToExcel(this.products, {
+        fileName: 'Products_Excel_Report',
+        sheetName: 'Product Data',
+        title: 'The Unity Ware Excel Report',
+      });
 
-    this.notificationService.info('Export', 'CSV Export Starteed...', 3000);
+      this.notificationService.success('Export', 'Excel Export Completed');
+    } catch (error) {
+      this.notificationService.error('Export', 'Excel Export Failed');
+    }
   }
 
   search(event: AutoCompleteCompleteEvent): void {

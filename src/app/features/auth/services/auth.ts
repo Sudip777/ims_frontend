@@ -6,9 +6,4 @@ import { Injectable } from '@angular/core';
 })
 export class Auth {
   constructor(private http: HttpClient) {}
-
-  // signUp() {
-  //   const url = 'https://localhost:7024/api/auth/login';
-  //   return this.http.post(url);
-  // }
 }

@@ -18,7 +18,6 @@ export class ApiService {
     });
 
     if (token) {
-      // Ensure token doesn't already have 'Bearer ' prefix
       const formattedToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
       headers = headers.set('Authorization', formattedToken);
     } else {
@@ -39,7 +38,6 @@ export class ApiService {
         catchError((err) => {
           if (err.status === 401) {
             console.error('Unauthorized - Token may be invalid or expired');
-            // Optionally redirect to login or refresh token
           }
           return throwError(() => err);
         })

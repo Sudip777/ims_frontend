@@ -212,26 +212,22 @@ export class CustomerDetail {
       CreatedByUserId: 0,
     };
   }
-  // 🟢 Open dialog for new product
   openNew() {
     this.customer = this.createEmptyCustomer();
     this.submitted = false;
     this.customerDialog = true;
   }
 
-  // 🟢 Hide dialog
   hideDialog() {
     this.customerDialog = false;
     this.submitted = false;
   }
 
-  // 🟢 Save (Create or Update)
   saveCustomer() {
     this.submitted = true;
 
     if (this.customer.Name.trim()) {
       if (this.customer.CustomerId) {
-        // Update existing
         const index = this.findIndexById(this.customer.CustomerId);
         if (index !== -1) this.customers[index] = this.customer;
 
@@ -256,13 +252,11 @@ export class CustomerDetail {
     }
   }
 
-  // 🟢 Edit
   editCustomer(customer: Customer) {
     this.customer = { ...customer };
     this.customerDialog = true;
   }
 
-  // 🟢 Delete single
   deleteCustomer(customer: Customer) {
     this.confirmationService.confirm({
       message: `Are you sure you want to delete "${customer.Name}"?`,
@@ -280,7 +274,6 @@ export class CustomerDetail {
     });
   }
 
-  // 🟢 Delete multiple
   deleteSelectedCustomers() {
     this.confirmationService.confirm({
       message: 'Are you sure you want to delete the selected Suppliers?',
@@ -299,7 +292,6 @@ export class CustomerDetail {
     });
   }
 
-  // 🟢 Export CSV placeholder
   exportCSV(event?: Event) {
     console.log('Export CSV clicked', event);
     this.messageService.add({
@@ -310,7 +302,6 @@ export class CustomerDetail {
     });
   }
 
-  // 🟢 Helpers
   findIndexById(id: number): number {
     return this.customers.findIndex((p) => p.CustomerId === id);
   }

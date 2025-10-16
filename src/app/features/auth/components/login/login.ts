@@ -59,8 +59,5 @@ export class Login {
     console.log(username, 'asas');
 
     this.authStore.login({ username, password });
-
-    // Optional loading animation delay
-    // setTimeout(() => (this.isLoading = false), 800);
   }
 }

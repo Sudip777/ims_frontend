@@ -6,7 +6,6 @@ export enum Role {
   User = 'user',
 }
 @Directive({
-  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: '[role]',
   standalone: true,
   hostDirectives: [NgIf],

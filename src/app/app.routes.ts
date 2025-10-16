@@ -20,7 +20,7 @@ export const routes: Routes = [
 
   {
     path: 'dashboard',
-    component: DashboardLayout, // Contains sidebar + router-outlet
+    component: DashboardLayout,
     children: [
       { path: '', redirectTo: '', pathMatch: 'full' },
       { path: 'overview', component: DashboardOverview },

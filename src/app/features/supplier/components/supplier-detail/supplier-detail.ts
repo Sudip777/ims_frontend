@@ -21,6 +21,9 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { SupplierService } from '../../services/supplier.services';
 import { NotificationService } from '../../../../core/services/notification.services';
+import { saveAs } from 'file-saver';
+import { ExportService } from '../../../../core/services/export.services';
+
 interface Supplier {
   supplierId: number;
   name: string;
@@ -67,7 +70,7 @@ export class SupplierDetail {
   private readonly supplierService = inject(SupplierService);
   private readonly notificationService = inject(NotificationService);
   private readonly confirmationService = inject(ConfirmationService);
-  private readonly messageService = inject(MessageService);
+  private readonly exportService = inject(ExportService);
 
   // input properties same as props in React
   timePeriods = ['1d', '7d', '1m', '3m', '6m', '1y'];
@@ -202,7 +205,6 @@ export class SupplierDetail {
     });
   }
 
-  // 🟢 Delete multiple
   deleteSelectedSuppliers() {
     this.confirmationService.confirm({
       message: 'Are you sure you want to delete the selected Suppliers?',
@@ -215,16 +217,18 @@ export class SupplierDetail {
       },
     });
   }
+  exportExcel() {
+    try {
+      this.exportService.exportToExcel(this.items, {
+        fileName: 'Suppliers_Excel_Report',
+        sheetName: 'Supplier Data',
+        title: 'The Unity Ware Excel Report',
+      });
 
-  // 🟢 Export CSV placeholder
-  exportCSV(event?: Event) {
-    console.log('Export CSV clicked', event);
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Export',
-      detail: 'CSV Export started...',
-      life: 3000,
-    });
+      this.notificationService.success('Export', 'Excel Export Completed');
+    } catch (error) {
+      this.notificationService.error('Export', 'Excel Export Failed');
+    }
   }
 
   getStatusLabel(isActive: boolean): string {

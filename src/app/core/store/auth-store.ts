@@ -118,7 +118,6 @@ export class AuthStore {
     this.router.navigateByUrl('/login');
   }
 
-  // Computed signals for easier access
   userId = computed(() => {
     const decoded = this.tokenDecoded();
     return decoded?.UserId || null;

@@ -14,8 +14,6 @@ export interface Product {
   isActive: boolean;
 }
 
-export interface ProductRequest
-  extends Omit<Product, 'productId' | 'categoryName' | 'supplierName'> {}
+export type ProductRequest = Omit<Product, 'productId' | 'categoryName' | 'supplierName'>;
 
-export interface ProductUpdate
-  extends Omit<Product, 'categoryName' | 'supplierName' | 'productId'> {}
+export type ProductUpdate = Omit<Product, 'categoryName' | 'supplierName' | 'productId'>; // put update so
