@@ -85,6 +85,7 @@ export class ProductDetail {
   totalCount = 0;
   pageSize = 10;
   page = 1;
+  date: Date | null = null;
 
   ngOnInit() {
     this.loadProducts();
