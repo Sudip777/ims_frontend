@@ -35,13 +35,7 @@
         [rows]="10"
         [paginator]="true"
         [rowsPerPageOptions]="[5, 10, 20]"
-        [globalFilterFields]="[
-          'ProductName',
-          'WarehouseName',
-          'InventoryId',
-          'Quantity',
-          'ReorderLevel'
-        ]"
+        [globalFilterFields]="['productName', 'warehouseName', 'quantity', 'reorderLevel']"
         [(selection)]="inventories"
         dataKey="customerId"
         [rowHover]="true"
@@ -50,23 +44,24 @@
         [showCurrentPageReport]="true"
       >
         <ng-template pTemplate="caption">
-          <div class="flex items-center justify-between">
-            <p-iconfield>
+          <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p-iconfield class="w-full md:w-auto">
               <p-inputicon class="pi pi-search" />
               <input
                 pInputText
                 type="text"
                 (input)="dt.filterGlobal($any($event.target).value, 'contains')"
                 placeholder="Search..."
+                class="w-full md:w-64"
               />
             </p-iconfield>
-            <div class="flex">
-              <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+            <div class="flex gap-2">
+              <p-button label="Add" icon="pi pi-plus" (onClick)="openNew()" />
               <p-button
                 class="hidden md:flex"
                 icon="pi pi-upload"
                 label="Export"
-                (onClick)="exportCSV($event)"
+                (onClick)="exportExcel()"
               />
             </div>
           </div>
@@ -76,18 +71,18 @@
           <tr>
             <th>Inventory ID</th>
             <th>PID</th>
-            <th pSortableColumn="ProductName">
-              Product Name <p-sortIcon field="ProductName"></p-sortIcon>
+            <th pSortableColumn="productName">
+              Product Name <p-sortIcon field="productName"></p-sortIcon>
             </th>
             <th>WID</th>
-            <th pSortableColumn="WarehouseName">
-              Warehouse Name <p-sortIcon field="WarehouseName"></p-sortIcon>
+            <th pSortableColumn="warehouseName">
+              Warehouse Name <p-sortIcon field="warehouseName"></p-sortIcon>
             </th>
-            <th pSortableColumn="Quantity">Quantity <p-sortIcon field="Quantity"></p-sortIcon></th>
-            <th pSortableColumn="ReorderLevel">
-              Reorder Level<p-sortIcon field="ReorderLevel"></p-sortIcon>
+            <th pSortableColumn="quantity">Quantity <p-sortIcon field="quantity"></p-sortIcon></th>
+            <th pSortableColumn="reorderLevel">
+              Reorder Level<p-sortIcon field="reorderLevel"></p-sortIcon>
             </th>
-            <th pSortableColumn="Created By">Created By</th>
+            <!-- <th pSortableColumn="Created By">Created By</th> -->
 
             <th style="min-width: 8rem">Actions</th>
           </tr>
@@ -95,29 +90,30 @@
 
         <ng-template pTemplate="body" let-inventory>
           <tr>
-            <td>{{ inventory.InventoryId }}</td>
-            <td>{{ inventory.ProductId }}</td>
-            <td>{{ inventory.ProductName }}</td>
-            <td>{{ inventory.WarehouseId }}</td>
-            <td>{{ inventory.WarehouseName }}</td>
-            <td>{{ inventory.Quantity }}</td>
-            <td>{{ inventory.ReorderLevel }}</td>
-            <td>{{ inventory.CreatedByUserId }}</td>
+            <td>{{ inventory.inventoryId }}</td>
+            <td>{{ inventory.productId }}</td>
+            <td>{{ inventory.productName }}</td>
+            <td>{{ inventory.warehouseId }}</td>
+            <td>{{ inventory.warehouseName }}</td>
+            <td>{{ inventory.quantity }}</td>
+            <td>{{ inventory.reorderLevel }}</td>
+            <!-- <td>{{ inventory.createdByUserId }}</td> -->
             <td>
               <p-button
                 icon="pi pi-pencil"
                 class="mr-2"
                 [rounded]="true"
                 [outlined]="true"
-                (onClick)="editCustomer(inventory)"
+                (onClick)="editInventory(inventory)"
               ></p-button>
-              <p-button
+              <!--TODO Later-->
+              <!-- <p-button
                 icon="pi pi-trash"
                 severity="danger"
                 [rounded]="true"
                 [outlined]="true"
                 (onClick)="deleteInventory(inventory)"
-              ></p-button>
+              ></p-button> -->
             </td>
           </tr>
         </ng-template>
@@ -128,41 +124,35 @@
   <p-dialog
     [(visible)]="inventoryDialog"
     [style]="{ width: '480px' }"
-    header="Inventory Details"
+    [header]="isEditMode ? 'Update Inventory Details' : 'Add Inventory Details'"
     [modal]="true"
   >
     <ng-template pTemplate="content">
       <div class="flex flex-col gap-6">
+        <label for="productId" class="block font-bold mb-3">Product Name</label>
         <div>
-          <label for="ProductId" class="block font-bold mb-3">Product Id</label>
-          <input
-            type="text"
-            pInputText
-            id="ProductId"
-            [(ngModel)]="inventory.ProductId"
-            required
-            autofocus
-            fluid
+          <p-autocomplete
+            [(ngModel)]="selectedProducts"
+            [suggestions]="filteredItems"
+            (completeMethod)="searchProduct($event)"
+            optionLabel="label"
+            placeholder="Select a product"
+            [dropdown]="true"
+            [disabled]="isEditMode"
           />
-          <small class="text-red-500" *ngIf="submitted && !inventory.ProductId"
-            >Product Id is required.</small
-          >
         </div>
 
         <div>
-          <label for="WarehouseId" class="block font-bold mb-3">Warehouse Id</label>
-          <input
-            type="text"
-            pInputText
-            id="WarehouseId"
-            [(ngModel)]="inventory.WarehouseId"
-            required
-            autofocus
-            fluid
+          <label for="WarehouseId" class="block font-bold mb-3">Warehouse Name</label>
+          <p-autocomplete
+            [(ngModel)]="selectedWarehouse"
+            [suggestions]="filteredWarehouseItems"
+            (completeMethod)="searchWarehouse($event)"
+            optionLabel="label"
+            placeholder="Select a warehouse"
+            [dropdown]="true"
+            [disabled]="isEditMode"
           />
-          <small class="text-red-500" *ngIf="submitted && !inventory.WarehouseId"
-            >Warehouse Id is required.</small
-          >
         </div>
 
         <div>
@@ -171,13 +161,14 @@
             type="number"
             pInputText
             id="Quantity"
-            [(ngModel)]="inventory.Quantity"
+            [(ngModel)]="inventory.quantity"
             required
             autofocus
             fluid
+            class="w-6"
           />
-          <small class="text-red-500" *ngIf="submitted && !inventory.Quantity"
-            >Quantiry is required.</small
+          <small class="text-red-500" *ngIf="submitted && !inventory.quantity"
+            >Quantity is required.</small
           >
         </div>
       </div>

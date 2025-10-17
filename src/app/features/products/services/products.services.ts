@@ -9,7 +9,7 @@ import { Meta, PaginatedApiResponse } from '../../../core/models/api-response.mo
 export class ProductsService {
   constructor(private api: ApiService) {}
 
-  getAllProducts(page = 1, pageSize = 10) {
+  getAllProducts(page = 1, pageSize = 100) {
     return this.api.get<PaginatedApiResponse<Product[], Meta>>(
       `/products?page=${page}&pageSize=${pageSize}`
     );
