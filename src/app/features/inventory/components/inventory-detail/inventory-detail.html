@@ -1,184 +1,130 @@
-<main>
-  <div>
-    <h1 class="font-heading font-medium p-2 tracking-tight text-2xl">Inventory Overview</h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
-      <app-metric-card
-        title="Active customers"
-        value="100"
-        [percentage]="12"
-        [isPrimary]="true"
-        trend="up"
-      ></app-metric-card>
-      <app-metric-card
-        title="Inactive customers"
-        value="20"
-        [percentage]="2"
-        trend="down"
-      ></app-metric-card>
-      <app-metric-card
-        title="Deleted customers"
-        value="10"
-        [percentage]="2"
-        trend="up"
-      ></app-metric-card>
+<main class="p-6 space-y-6">
+  <div class="max-w-6xl mx-auto space-y-6">
+    <div>
+      <h1 class="font-heading font-medium p-2 text-2xl">Inventory Overview</h1>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <app-metric-card
+          title="Active customers"
+          value="100"
+          [percentage]="12"
+          [isPrimary]="true"
+          trend="up"
+        ></app-metric-card>
+        <app-metric-card
+          title="Inactive customers"
+          value="20"
+          [percentage]="2"
+          trend="down"
+        ></app-metric-card>
+        <app-metric-card
+          title="Deleted customers"
+          value="10"
+          [percentage]="2"
+          trend="up"
+        ></app-metric-card>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto bg-white rounded-2xl shadw-md">
+      <h2 class="font-heading font-medium p-2 text-2xl">Inventory Detail</h2>
+    </div>
+    <div class="overflow-y-auto max-h-[500px]">
+      <p-table
+        #dt
+        [value]="inventories"
+        [rows]="10"
+        [paginator]="true"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        [globalFilterFields]="[
+          'ProductName',
+          'WarehouseName',
+          'InventoryId',
+          'Quantity',
+          'ReorderLevel'
+        ]"
+        [(selection)]="inventories"
+        dataKey="customerId"
+        [rowHover]="true"
+        [tableStyle]="{ 'min-width': '40rem' }"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} customers"
+        [showCurrentPageReport]="true"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex items-center justify-between">
+            <p-iconfield>
+              <p-inputicon class="pi pi-search" />
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Search..."
+              />
+            </p-iconfield>
+            <div class="flex">
+              <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+              <p-button
+                class="hidden md:flex"
+                icon="pi pi-upload"
+                label="Export"
+                (onClick)="exportCSV($event)"
+              />
+            </div>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Inventory ID</th>
+            <th>PID</th>
+            <th pSortableColumn="ProductName">
+              Product Name <p-sortIcon field="ProductName"></p-sortIcon>
+            </th>
+            <th>WID</th>
+            <th pSortableColumn="WarehouseName">
+              Warehouse Name <p-sortIcon field="WarehouseName"></p-sortIcon>
+            </th>
+            <th pSortableColumn="Quantity">Quantity <p-sortIcon field="Quantity"></p-sortIcon></th>
+            <th pSortableColumn="ReorderLevel">
+              Reorder Level<p-sortIcon field="ReorderLevel"></p-sortIcon>
+            </th>
+            <th pSortableColumn="Created By">Created By</th>
+
+            <th style="min-width: 8rem">Actions</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-inventory>
+          <tr>
+            <td>{{ inventory.InventoryId }}</td>
+            <td>{{ inventory.ProductId }}</td>
+            <td>{{ inventory.ProductName }}</td>
+            <td>{{ inventory.WarehouseId }}</td>
+            <td>{{ inventory.WarehouseName }}</td>
+            <td>{{ inventory.Quantity }}</td>
+            <td>{{ inventory.ReorderLevel }}</td>
+            <td>{{ inventory.CreatedByUserId }}</td>
+            <td>
+              <p-button
+                icon="pi pi-pencil"
+                class="mr-2"
+                [rounded]="true"
+                [outlined]="true"
+                (onClick)="editCustomer(inventory)"
+              ></p-button>
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                [rounded]="true"
+                [outlined]="true"
+                (onClick)="deleteInventory(inventory)"
+              ></p-button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
   </div>
 
-  <div class="flex justify-between">
-    <h2 class="font-heading font-medium p-2 text-2xl">Inventory Detail</h2>
-    <div class="flex flex-col lg:flex-row lg:items-center gap-3 mb-6">
-      <div class="hidden lg:inline-flex bg-white rounded-lg overflow-x-auto">
-        <button
-          *ngFor="let period of timePeriods"
-          (click)="selectedPeriod = period"
-          [ngClass]="
-            selectedPeriod === period
-              ? 'bg-gray-50 text-gray-900'
-              : 'text-gray-600 hover:bg-ims-primary-hover-light bg-white'
-          "
-          class="px-4 lg:px-5 py-2.5 text-sm font-medium transition-colors border-r border-gray-300 cursor-pointer whitespace-nowrap"
-          type="button"
-        >
-          {{ period }}
-        </button>
-      </div>
-
-      <div class="flex items-center gap-3 lg:ml-auto">
-        <button
-          class="hidden lg:inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm"
-        >
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 22 22"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M11 7V15M7 11H15M21 11C21 16.5228 16.5228 21 11 21C5.47715 21 1 16.5228 1 11C1 5.47715 5.47715 1 11 1C16.5228 1 21 5.47715 21 11Z"
-              stroke="#101828"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          Add Metrics
-        </button>
-
-        <p-datepicker
-          [(ngModel)]="date"
-          dateFormat="dd M yy"
-          showIcon="true"
-          placeholder="Select date"
-          class="lg:w-auto"
-        ></p-datepicker>
-      </div>
-    </div>
-  </div>
-
-  <p-toast></p-toast>
-
-  <p-table
-    #dt
-    [value]="inventories"
-    [rows]="10"
-    [paginator]="true"
-    [rowsPerPageOptions]="[5, 10, 20]"
-    [globalFilterFields]="[
-      'ProductName',
-      'WarehouseName',
-      'InventoryId',
-      'Quantity',
-      'ReorderLevel'
-    ]"
-    [(selection)]="inventories"
-    dataKey="customerId"
-    [rowHover]="true"
-    [tableStyle]="{ 'min-width': '80rem' }"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} customers"
-    [showCurrentPageReport]="true"
-  >
-    <ng-template pTemplate="caption">
-      <div class="flex items-center justify-between">
-        <p-iconfield>
-          <p-inputicon class="pi pi-search" />
-          <input
-            pInputText
-            type="text"
-            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-            placeholder="Search..."
-          />
-        </p-iconfield>
-        <div class="flex">
-          <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
-          <p-button
-            class="hidden md:flex"
-            icon="pi pi-upload"
-            label="Export"
-            (onClick)="exportCSV($event)"
-          />
-        </div>
-      </div>
-    </ng-template>
-
-    <ng-template pTemplate="header">
-      <tr>
-        <th style="width: 3rem">
-          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-        </th>
-        <th>Inventory ID</th>
-        <th>Product ID</th>
-        <th pSortableColumn="ProductName">
-          Product Name <p-sortIcon field="ProductName"></p-sortIcon>
-        </th>
-        <th>Warehouse ID</th>
-        <th pSortableColumn="WarehouseName">
-          Warehouse Name <p-sortIcon field="WarehouseName"></p-sortIcon>
-        </th>
-        <th pSortableColumn="Quantity">Quantity <p-sortIcon field="Quantity"></p-sortIcon></th>
-        <th pSortableColumn="ReorderLevel">
-          Reorder Level<p-sortIcon field="ReorderLevel"></p-sortIcon>
-        </th>
-        <th pSortableColumn="Created By">Created By</th>
-
-        <th style="min-width: 8rem">Actions</th>
-      </tr>
-    </ng-template>
-
-    <ng-template pTemplate="body" let-inventory>
-      <tr>
-        <td style="width: 3rem">
-          <p-tableCheckbox [value]="inventory"></p-tableCheckbox>
-        </td>
-        <td>{{ inventory.InventoryId }}</td>
-        <td>{{ inventory.ProductId }}</td>
-        <td>{{ inventory.ProductName }}</td>
-        <td>{{ inventory.WarehouseId }}</td>
-        <td>{{ inventory.WarehouseName }}</td>
-        <td>{{ inventory.Quantity }}</td>
-        <td>{{ inventory.ReorderLevel }}</td>
-        <td>{{ inventory.CreatedByUserId }}</td>
-        <td>
-          <p-button
-            icon="pi pi-pencil"
-            class="mr-2"
-            [rounded]="true"
-            [outlined]="true"
-            (onClick)="editCustomer(inventory)"
-          ></p-button>
-          <p-button
-            icon="pi pi-trash"
-            severity="danger"
-            [rounded]="true"
-            [outlined]="true"
-            (onClick)="deleteInventory(inventory)"
-          ></p-button>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
-
-  <!-- Inventory Dialog -->
   <p-dialog
     [(visible)]="inventoryDialog"
     [style]="{ width: '480px' }"
