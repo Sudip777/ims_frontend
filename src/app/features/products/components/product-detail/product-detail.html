@@ -1,234 +1,195 @@
-<main>
-  <div>
-    <h1 class="font-heading font-medium p-2 tracking-tight text-2xl">Product's Overview</h1>
+<main class="p-6 space-y-6">
+  <div class="max-w-6xl mx-auto space-y-6">
+    <div>
+      <h1 class="font-heading font-medium text-2xl mb-4">Product's Overview</h1>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
-      <app-metric-card
-        title="Active Products"
-        value="100"
-        [percentage]="12"
-        [isPrimary]="true"
-        trend="up"
-      ></app-metric-card>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <app-metric-card
+          title="Active Products"
+          value="100"
+          [percentage]="12"
+          [isPrimary]="true"
+          trend="up"
+        ></app-metric-card>
 
-      <app-metric-card
-        title="Out of Stock"
-        value="100"
-        [percentage]="2"
-        trend="down"
-      ></app-metric-card>
+        <app-metric-card
+          title="Out of Stock"
+          value="100"
+          [percentage]="2"
+          trend="down"
+        ></app-metric-card>
 
-      <app-metric-card
-        title="Products Booked"
-        value="270"
-        [percentage]="2"
-        trend="up"
-      ></app-metric-card>
-      <app-metric-card
-        title="Products Billed"
-        value="270"
-        [percentage]="2"
-        trend="up"
-      ></app-metric-card>
-      <app-metric-card
-        title="Products Billed"
-        value="270"
-        [percentage]="2"
-        trend="up"
-      ></app-metric-card>
-      <app-metric-card
-        title="Products Deleted"
-        value="270"
-        [percentage]="2"
-        trend="up"
-      ></app-metric-card>
-    </div>
-  </div>
-
-  <div class="flex justify-between">
-    <h1 class="font-heading font-medium p-2 tracking-tight text-2xl">Products</h1>
-    <div class="flex flex-col lg:flex-row lg:items-center gap-3 mb-6">
-      <div class="hidden lg:inline-flex bg-white rounded-lg overflow-x-auto">
-        <!-- <button
-          *ngFor="let period of timePeriods"
-          (click)="selectedPeriod = period"
-          [ngClass]="
-            selectedPeriod === period
-              ? 'bg-gray-50 text-gray-900'
-              : 'text-gray-600 hover:bg-ims-primary-hover-light bg-white'
-          "
-          class="px-4 lg:px-5 py-2.5 text-sm font-medium transition-colors border-r border-gray-300 cursor-pointer whitespace-nowrap"
-          type="button"
-        >
-          {{ period }}
-        </button> -->
-      </div>
-
-      <div class="flex items-center gap-3 lg:ml-auto">
-        <button
-          class="hidden :inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm"
-        >
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 22 22"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M11 7V15M7 11H15M21 11C21 16.5228 16.5228 21 11 21C5.47715 21 1 16.5228 1 11C1 5.47715 5.47715 1 11 1C16.5228 1 21 5.47715 21 11Z"
-              stroke="#101828"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          Add Metrics
-        </button>
-
-        <p-datepicker
-          [(ngModel)]="date"
-          dateFormat="dd M yy"
-          showIcon="true"
-          placeholder="Select date"
-          class="lg:w-auto"
-        ></p-datepicker>
+        <app-metric-card
+          title="Products Booked"
+          value="270"
+          [percentage]="2"
+          trend="up"
+        ></app-metric-card>
+        <app-metric-card
+          title="Products Billed"
+          value="270"
+          [percentage]="2"
+          trend="up"
+        ></app-metric-card>
+        <app-metric-card
+          title="Products Billed"
+          value="270"
+          [percentage]="2"
+          trend="up"
+        ></app-metric-card>
+        <app-metric-card
+          title="Products Deleted"
+          value="270"
+          [percentage]="2"
+          trend="up"
+        ></app-metric-card>
       </div>
     </div>
-  </div>
 
-  <p-toast position="bottom-right"></p-toast>
-
-  <p-table
-    #dt
-    [value]="products"
-    [rows]="10"
-    [paginator]="true"
-    [rowsPerPageOptions]="[5, 10, 20]"
-    [globalFilterFields]="['name', 'sku']"
-    [(selection)]="selectedProducts"
-    dataKey="productId"
-    [rowHover]="true"
-    [tableStyle]="{ 'min-width': '40rem' }"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-    [showCurrentPageReport]="true"
-    [paginator]="true"
-    [rows]="pageSize"
-    [totalRecords]="totalCount"
-    [lazy]="true"
-    (onLazyLoad)="onPageChange($event)"
-  >
-    <ng-template pTemplate="caption">
-      <div class="flex items-center justify-between">
-        <p-iconfield>
-          <p-inputicon class="pi pi-search" />
-          <input
-            pInputText
-            type="text"
-            (input)="dt.filterGlobal($event.target.value, 'contains')"
-            placeholder="Search..."
-          />
-        </p-iconfield>
-        <div>
-          <p-button label=" Add " icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
-          <p-button
-            class="bg-ims-primary"
-            icon="pi pi-upload"
-            label="Export"
-            (onClick)="exportExcel()"
-          />
-        </div>
-        <ng-template pTemplate="end">
-          <div class="flex gap-2">
-            <p-fileUpload
-              mode="basic"
-              accept="image/*"
-              [maxFileSize]="1000000"
-              chooseLabel="Import
+    <div>
+      <h2 class="font-heading font-medium text-2xl mb-4">Product Details</h2>
+    </div>
+    <div class="overflow-x-auto bg-white rounded-2xl shadow-md">
+      <p-table
+        #dt
+        [value]="products"
+        [rows]="10"
+        [paginator]="true"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        [globalFilterFields]="['name', 'sku']"
+        [(selection)]="selectedProducts"
+        dataKey="productId"
+        [rowHover]="true"
+        [tableStyle]="{ 'min-width': '40rem' }"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+        [showCurrentPageReport]="true"
+        [paginator]="true"
+        [rows]="pageSize"
+        [totalRecords]="totalCount"
+        [lazy]="true"
+        (onLazyLoad)="onPageChange($event)"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex items-center justify-between">
+            <p-iconfield>
+              <p-inputicon class="pi pi-search" />
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($event.target.value, 'contains')"
+                placeholder="Search..."
+              />
+            </p-iconfield>
+            <div>
+              <p-button label=" Add " icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+              <p-button
+                class="bg-ims-primary"
+                icon="pi pi-upload"
+                label="Export"
+                (onClick)="exportExcel()"
+              />
+            </div>
+            <ng-template pTemplate="end">
+              <div class="flex gap-2">
+                <p-fileUpload
+                  mode="basic"
+                  accept="image/*"
+                  [maxFileSize]="1000000"
+                  chooseLabel="Import
           auto
           customUpload"
-            ></p-fileUpload>
-            <!-- <p-button
+                ></p-fileUpload>
+                <!-- <p-button
               label="Export CSV"
               icon="pi pi-upload"
               (onClick)="($event)"
             ></p-button> -->
-          </div>
+              </div>
 
-          <div>
-            <p-button label=" Add New" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
-            <p-button
-              class="bg-ims-primary"
-              icon="pi pi-upload"
-              label="Export CSV"
-              (onClick)="exportExcel()"
-            />
+              <div>
+                <p-button label=" Add New" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+                <p-button
+                  class="bg-ims-primary"
+                  icon="pi pi-upload"
+                  label="Export CSV"
+                  (onClick)="exportExcel()"
+                />
+              </div>
+            </ng-template>
           </div>
         </ng-template>
-      </div>
-    </ng-template>
 
-    <ng-template pTemplate="header">
-      <tr>
-        <!-- <th style="width: 3rem">
+        <ng-template pTemplate="header">
+          <tr>
+            <!-- <th style="width: 3rem">
           <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
         </th> -->
-        <th pSortableColumn="ProductId">Product ID</th>
-        <th pSortableColumn="sku">SKU</th>
-        <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
-        <!-- <th>Image</th> -->
-        <th pSortableColumn="unitPrice">Unit Price <p-sortIcon field="unitPrice"></p-sortIcon></th>
-        <th pSortableColumn="costPrice">Cost Price <p-sortIcon field="costPrice"></p-sortIcon></th>
-        <th pSortableColumn="categoryId">Category Name</th>
-        <th pSortableColumn="supplierId">Supplier Name</th>
-        <th>Stock (Min–Max)</th>
-        <th>Reorder Level</th>
-        <th>Status</th>
-        <th pSortableColumn="CreatedAt">Created At <p-sortIcon field="createdAt"></p-sortIcon></th>
-        <th style="min-width: 8rem">Actions</th>
-      </tr>
-    </ng-template>
+            <th pSortableColumn="ProductId">Product ID</th>
+            <th pSortableColumn="sku">SKU</th>
+            <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+            <!-- <th>Image</th> -->
+            <th pSortableColumn="unitPrice">
+              Unit Price <p-sortIcon field="unitPrice"></p-sortIcon>
+            </th>
+            <th pSortableColumn="costPrice">
+              Cost Price <p-sortIcon field="costPrice"></p-sortIcon>
+            </th>
+            <th pSortableColumn="categoryId">Category Name</th>
+            <th pSortableColumn="supplierId">Supplier Name</th>
+            <th>Stock (Min–Max)</th>
+            <th>Reorder Level</th>
+            <th>Status</th>
+            <th pSortableColumn="CreatedAt">
+              Created At <p-sortIcon field="createdAt"></p-sortIcon>
+            </th>
+            <th style="min-width: 8rem">Actions</th>
+          </tr>
+        </ng-template>
 
-    <ng-template pTemplate="body" let-product>
-      <tr>
-        <!-- <td style="width: 3rem">
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <!-- <td style="width: 3rem">
           <p-tableCheckbox [value]="product"></p-tableCheckbox>
         </td> -->
-        <td>{{ product.productId }}</td>
-        <td>{{ product.sku }}</td>
-        <td>{{ product.name }}</td>
-        <td>{{ product.unitPrice | currency : 'NPR ' }}</td>
-        <td>{{ product.costPrice | currency : 'NPR ' }}</td>
-        <td>{{ product.categoryName || 'N/A' }}</td>
-        <td>{{ product.supplierName || 'N/A' }}</td>
-        <td>{{ product.minStock }} - {{ product.maxStock }}</td>
-        <td>{{ product.reorderLevel }}</td>
-        <td>
-          <p-tag
-            [value]="getStatusLabel(product.isActive)"
-            [severity]="getSeverity(product.isActive)"
-          ></p-tag>
-        </td>
-        <td>{{ product.createdAt | date : 'mediumDate' }}</td>
-        <td>
-          <p-button
-            icon="pi pi-pencil"
-            class="mr-2"
-            [rounded]="true"
-            [outlined]="true"
-            (onClick)="editProduct(product)"
-          ></p-button>
-          <p-button
-            icon="pi pi-trash"
-            severity="danger"
-            [rounded]="true"
-            [outlined]="true"
-            (onClick)="deleteProduct(product)"
-          ></p-button>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+            <td>{{ product.productId }}</td>
+            <td>{{ product.sku }}</td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.unitPrice | currency : 'NPR ' }}</td>
+            <td>{{ product.costPrice | currency : 'NPR ' }}</td>
+            <td>{{ product.categoryName || 'N/A' }}</td>
+            <td>{{ product.supplierName || 'N/A' }}</td>
+            <td>{{ product.minStock }} - {{ product.maxStock }}</td>
+            <td>{{ product.reorderLevel }}</td>
+            <td>
+              <p-tag
+                [value]="getStatusLabel(product.isActive)"
+                [severity]="getSeverity(product.isActive)"
+              ></p-tag>
+            </td>
+            <td>{{ product.createdAt | date : 'mediumDate' }}</td>
+            <td>
+              <p-button
+                icon="pi pi-pencil"
+                class="mr-2"
+                [rounded]="true"
+                [outlined]="true"
+                (onClick)="editProduct(product)"
+              ></p-button>
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                [rounded]="true"
+                [outlined]="true"
+                (onClick)="deleteProduct(product)"
+              ></p-button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <p-toast position="bottom-right"></p-toast>
 
   <p-dialog
     [(visible)]="productDialog"
