@@ -290,7 +290,7 @@
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-6">
           <label for="categoryName" class="block font-bold mb-3">Category Name</label>
-          <!-- <p-inputnumber id="CategoryId" [(ngModel)]="product.categoryId" fluid></p-inputnumber> -->
+
           <div class="card flex justify-center">
             <p-autocomplete
               [(ngModel)]="selectedCategory"
@@ -304,7 +304,6 @@
         </div>
         <div class="col-span-6">
           <label for="supplierName" class="block font-bold mb-3">Supplier Name</label>
-          <!-- <p-inputnumber id="SupplierId" [(ngModel)]="product.supplierId" fluid></p-inputnumber> -->
           <p-autocomplete
             [(ngModel)]="selectedSupplier"
             [suggestions]="filteredSupplierItems"
