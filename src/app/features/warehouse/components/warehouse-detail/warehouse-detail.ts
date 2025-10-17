@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -8,7 +9,6 @@ import { DialogModule } from 'primeng/dialog';
 import { FileUploadModule } from 'primeng/fileupload';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { SelectModule } from 'primeng/select';
@@ -18,223 +18,195 @@ import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { WarehouseService } from '../../services/warehouse.services';
+import { NotificationService } from '../../../../core/services/notification.services';
+import { ExportService } from '../../../../core/services/export.services';
+
 interface Warehouse {
   warehouseId: number;
   name: string;
-  createdBy: string;
+  createdByUserId: number;
 }
+
+type WarehouseRequest = Omit<Warehouse, 'warehouseId' | 'createdByUserId'>;
+
 @Component({
   selector: 'app-warehouse-detail',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-
-    // PrimeNG
     TableModule,
     ToolbarModule,
     ButtonModule,
     DialogModule,
     InputTextModule,
-    InputNumberModule,
-    FileUploadModule,
+    InputIconModule,
+    IconFieldModule,
     ConfirmDialogModule,
     ToastModule,
+    FileUploadModule,
     RadioButtonModule,
     SelectModule,
     TextareaModule,
-    IconFieldModule,
-    InputIconModule,
     DatePickerModule,
     TagModule,
-
-    // Custom
     MetricCardComponent,
   ],
   templateUrl: './warehouse-detail.html',
-  styleUrl: './warehouse-detail.scss',
+  // styleUrl: './warehouse-detail.scss',
 })
 export class WarehouseDetail {
-  timePeriods = ['1d', '7d', '1m', '3m', '6m', '1y'];
-  selectedPeriod = '1m';
-  date: Date | null = null;
+  private readonly warehouseService = inject(WarehouseService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly confirmationService = inject(ConfirmationService);
+  private readonly exportService = inject(ExportService);
+
   warehouses: Warehouse[] = [];
   selectedWarehouses: Warehouse[] = [];
+  warehouseDialog = false;
+  submitted = false;
+  isEditMode = false;
 
   warehouse: Warehouse = {
     warehouseId: 0,
     name: '',
-    createdBy: '',
+    createdByUserId: 0,
   };
-  warehouseDialog = false;
-  submitted = false;
 
-  constructor(
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService
-  ) {}
-  ngOnInit() {
-    this.warehouses = [
-      {
-        warehouseId: 1,
-        name: 'Kathmandu Central Warehouse',
-        createdBy: 'Admin - Bikash Shrestha',
+  ngOnInit(): void {
+    this.loadWarehouses();
+  }
+
+  private loadWarehouses(): void {
+    this.warehouseService.getAllWarehouses().subscribe({
+      next: (res) => {
+        this.warehouses = res.result;
       },
-      {
-        warehouseId: 2,
-        name: 'Pokhara Lakeside Storage',
-        createdBy: 'Admin - Anisha Gurung',
+      error: () => {
+        this.notificationService.error('Error', 'Failed to Load Warehouses');
       },
-      {
-        warehouseId: 3,
-        name: 'Biratnagar Distribution Hub',
-        createdBy: 'System - Deepak Rai',
-      },
-      {
-        warehouseId: 4,
-        name: 'Chitwan Agro Supplies Depot',
-        createdBy: 'Admin - Pramila Thapa',
-      },
-      {
-        warehouseId: 5,
-        name: 'Lalitpur Electronics Hub',
-        createdBy: 'System - Roshan Maharjan',
-      },
-      {
-        warehouseId: 6,
-        name: 'Butwal Home Essentials Warehouse',
-        createdBy: 'Admin - Sabina KC',
-      },
-      {
-        warehouseId: 7,
-        name: 'Dharan Fashion Storage',
-        createdBy: 'Admin - Kishor Limbu',
-      },
-      {
-        warehouseId: 8,
-        name: 'Janakpur FMCG Warehouse',
-        createdBy: 'System - Manju Yadav',
-      },
-      {
-        warehouseId: 9,
-        name: 'Hetauda Furniture & Fixtures Depot',
-        createdBy: 'Admin - Ramesh Tamang',
-      },
-      {
-        warehouseId: 10,
-        name: 'Nepalgunj Automotive Parts Storage',
-        createdBy: 'Admin - Suresh Chaudhary',
-      },
-      {
-        warehouseId: 11,
-        name: 'Bhaktapur Handicrafts Warehouse',
-        createdBy: 'System - Kiran Manandhar',
-      },
-    ];
+    });
   }
 
   createEmptyWarehouse(): Warehouse {
     return {
       warehouseId: 0,
       name: '',
-      createdBy: '',
+      createdByUserId: 0,
     };
   }
-  openNew() {
+
+  openNew(): void {
+    this.isEditMode = false;
     this.warehouse = this.createEmptyWarehouse();
     this.submitted = false;
     this.warehouseDialog = true;
   }
 
-  hideDialog() {
-    this.warehouseDialog = false;
-    this.submitted = false;
-  }
-
-  saveWarehouse() {
-    this.submitted = true;
-
-    if (this.warehouse.name.trim()) {
-      if (this.warehouse.warehouseId) {
-        const index = this.findIndexById(this.warehouse.warehouseId);
-        if (index !== -1) this.warehouses[index] = this.warehouse;
-
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'warehouse Updated',
-          life: 3000,
-        });
-      } else {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'warehouse Created',
-          life: 3000,
-        });
-      }
-
-      this.warehouses = [...this.warehouses];
-      this.warehouseDialog = false;
-      this.warehouse = this.createEmptyWarehouse();
-    }
-  }
-
-  editWarehouse(warehouse: Warehouse) {
+  editWarehouse(warehouse: Warehouse): void {
+    this.isEditMode = true;
     this.warehouse = { ...warehouse };
     this.warehouseDialog = true;
   }
 
-  deleteWarehouse(warehouse: Warehouse) {
-    this.confirmationService.confirm({
-      message: `Are you sure you want to delete "${warehouse.name}"?`,
-      header: 'Confirm Deletion',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.warehouses = this.warehouses.filter((p) => p.warehouseId !== warehouse.warehouseId);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Warehouse Deleted',
-          life: 3000,
-        });
+  hideDialog(): void {
+    this.warehouseDialog = false;
+    this.submitted = false;
+    this.warehouse = this.createEmptyWarehouse();
+  }
+
+  saveWarehouse(): void {
+    this.submitted = true;
+
+    if (!this.warehouse.name) {
+      this.notificationService.warn('Validation Error', 'Warehouse name is required');
+      return;
+    }
+
+    const req: WarehouseRequest = this.makeWarehouseRequest();
+
+    if (this.isEditMode) {
+      this.updateWarehouse(req);
+    } else {
+      this.createWarehouse(req);
+    }
+  }
+
+  private createWarehouse(req: WarehouseRequest): void {
+    this.warehouseService.createWarehouse(req).subscribe({
+      next: () => {
+        this.notificationService.success('Success', 'Warehouse Created Successfully');
+        this.hideDialog();
+        this.loadWarehouses();
+      },
+      error: (err) => {
+        this.notificationService.error('Error', err.error?.message || 'Failed to Create Warehouse');
       },
     });
   }
 
-  deleteSelectedWarehouses() {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete the selected Warehouses?',
-      header: 'Confirm',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.warehouses = this.warehouses.filter((val) => !this.selectedWarehouses.includes(val));
-        this.selectedWarehouses = [];
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Suppliers Deleted',
-          life: 3000,
-        });
+  private updateWarehouse(req: WarehouseRequest): void {
+    this.warehouseService.updateWarehouse(req, this.warehouse.warehouseId).subscribe({
+      next: () => {
+        this.notificationService.success('Success', 'Warehouse Updated Successfully');
+        this.hideDialog();
+        this.loadWarehouses();
+      },
+      error: (err) => {
+        this.notificationService.error('Error', err.error?.message || 'Failed to Update Warehouse');
       },
     });
   }
 
-  exportCSV(event?: Event) {
-    console.log('Export CSV clicked', event);
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Export',
-      detail: 'CSV Export started...',
-      life: 3000,
-    });
+  // deleteWarehouse(warehouse: Warehouse): void {
+  //   this.confirmationService.confirm({
+  //     message: `Are you sure you want to delete "${warehouse.name}"?`,
+  //     header: 'Confirm Deletion',
+  //     icon: 'pi pi-exclamation-triangle',
+  //     accept: () => {
+  //       this.warehouseService.deleteWarehouse(warehouse.warehouseId).subscribe({
+  //         next: () => {
+  //           this.notificationService.success('Success', 'Warehouse Deleted Successfully');
+  //           this.loadWarehouses();
+  //         },
+  //         error: () => {
+  //           this.notificationService.error('Error', 'Failed to Delete Warehouse');
+  //         },
+  //       });
+  //     },
+  //   });
+  // }
+
+  // deleteSelectedWarehouses(): void {
+  //   this.confirmationService.confirm({
+  //     message: 'Are you sure you want to delete the selected Warehouses?',
+  //     header: 'Confirm',
+  //     icon: 'pi pi-exclamation-triangle',
+  //     accept: () => {
+  //       this.warehouses = this.warehouses.filter((val) => !this.selectedWarehouses.includes(val));
+  //       this.selectedWarehouses = [];
+  //       this.notificationService.success('Success', 'Selected Warehouses Deleted');
+  //     },
+  //   });
+  // }
+
+  exportExcel(): void {
+    try {
+      this.exportService.exportToExcel(this.warehouses, {
+        fileName: 'Warehouses_Excel_Report',
+        sheetName: 'Warehouse Data',
+        title: 'The Unity Ware Excel Report',
+      });
+      this.notificationService.success('Export', 'Excel Export Completed');
+    } catch {
+      this.notificationService.error('Export', 'Excel Export Failed');
+    }
   }
 
-  findIndexById(id: number): number {
-    return this.warehouses.findIndex((p) => p.warehouseId === id);
-  }
-
-  createId(): number {
-    return Math.floor(Math.random() * 10000) + 100;
+  private makeWarehouseRequest(): WarehouseRequest {
+    return {
+      name: this.warehouse.name,
+    };
   }
 }
