@@ -78,7 +78,6 @@
 
   <p-toast></p-toast>
 
-  <!--  Table -->
   <p-table
     #dt
     [value]="categories"
@@ -116,7 +115,6 @@
       </div>
     </ng-template>
 
-    <!-- Header -->
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 3rem">
@@ -130,7 +128,6 @@
       </tr>
     </ng-template>
 
-    <!-- Body -->
     <ng-template pTemplate="body" let-category>
       <tr>
         <td style="width: 3rem">
@@ -159,7 +156,6 @@
     </ng-template>
   </p-table>
 
-  <!-- Supplier Dialog -->
   <p-dialog
     [(visible)]="categoryDialog"
     [style]="{ width: '480px' }"

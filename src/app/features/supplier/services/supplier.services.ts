@@ -16,12 +16,12 @@ export class SupplierService {
     return this.api.get<SupplierResponse>(`/suppliers/${id}`);
   }
 
-  createSupplier(supplier: SupplierResponse) {
-    return this.api.post<SupplierResponse>('/suppliers', supplier);
+  createSupplier(supplier: SupplierRequest) {
+    return this.api.post<SupplierRequest>('/suppliers', supplier);
   }
 
-  updateSupplier(supplier: SupplierResponse) {
-    return this.api.put<SupplierResponse>(`/suppliers/${supplier.supplierId}`, supplier);
+  updateSupplier(id: number, supplier: SupplierRequest) {
+    return this.api.put<SupplierRequest>(`/suppliers/${id}`, supplier);
   }
 
   deleteSupplier(id: number) {

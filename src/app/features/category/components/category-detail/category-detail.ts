@@ -30,7 +30,6 @@ interface Category {
     CommonModule,
     FormsModule,
 
-    // PrimeNG
     TableModule,
     ToolbarModule,
     ButtonModule,
@@ -75,7 +74,6 @@ export class CategoryDetail {
   ) {}
 
   ngOnInit() {
-    // Category data
     this.categories = [
       {
         categoryId: 1,
@@ -135,13 +133,6 @@ export class CategoryDetail {
     ];
   }
 
-  // category: Category = {
-  //   categoryId: 0,
-  //   categoryName: '',
-  //   parentCategoryName: '',
-  // };
-
-  // 🟢 Utility to create a new blank product
   createEmptyCategory(): Category {
     return {
       categoryId: 0,
@@ -149,26 +140,22 @@ export class CategoryDetail {
       parentCategoryName: '',
     };
   }
-  // 🟢 Open dialog for new product
   openNew() {
     this.category = this.createEmptyCategory();
     this.submitted = false;
     this.categoryDialog = true;
   }
 
-  // 🟢 Hide dialog
   hideDialog() {
     this.categoryDialog = false;
     this.submitted = false;
   }
 
-  // 🟢 Save (Create or Update)
   saveCategory() {
     this.submitted = true;
 
     if (this.category.categoryName.trim()) {
       if (this.category.categoryId) {
-        // Update existing
         const index = this.findIndexById(this.category.categoryId);
         if (index !== -1) this.categories[index] = this.category;
 
@@ -193,13 +180,11 @@ export class CategoryDetail {
     }
   }
 
-  // 🟢 Edit
   editCategory(category: Category) {
     this.category = { ...category };
     this.categoryDialog = true;
   }
 
-  // 🟢 Delete single
   deleteCategory(category: Category) {
     this.confirmationService.confirm({
       message: `Are you sure you want to delete "${category.categoryName}"?`,
@@ -217,7 +202,6 @@ export class CategoryDetail {
     });
   }
 
-  // 🟢 Delete multiple
   deleteSelectedCategories() {
     this.confirmationService.confirm({
       message: 'Are you sure you want to delete the selected Suppliers?',
@@ -236,7 +220,6 @@ export class CategoryDetail {
     });
   }
 
-  // 🟢 Export CSV placeholder
   exportCSV(event?: Event) {
     console.log('Export CSV clicked', event);
     this.messageService.add({
@@ -247,7 +230,6 @@ export class CategoryDetail {
     });
   }
 
-  // 🟢 Helpers
   findIndexById(id: number): number {
     return this.categories.findIndex((p) => p.categoryId === id);
   }

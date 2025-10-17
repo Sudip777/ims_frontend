@@ -133,7 +133,6 @@ export class WarehouseDetail {
     ];
   }
 
-  // 🟢 Utility to create a new blank product
   createEmptyWarehouse(): Warehouse {
     return {
       warehouseId: 0,
@@ -141,26 +140,22 @@ export class WarehouseDetail {
       createdBy: '',
     };
   }
-  // 🟢 Open dialog for new product
   openNew() {
     this.warehouse = this.createEmptyWarehouse();
     this.submitted = false;
     this.warehouseDialog = true;
   }
 
-  // 🟢 Hide dialog
   hideDialog() {
     this.warehouseDialog = false;
     this.submitted = false;
   }
 
-  // 🟢 Save (Create or Update)
   saveWarehouse() {
     this.submitted = true;
 
     if (this.warehouse.name.trim()) {
       if (this.warehouse.warehouseId) {
-        // Update existing
         const index = this.findIndexById(this.warehouse.warehouseId);
         if (index !== -1) this.warehouses[index] = this.warehouse;
 
@@ -185,13 +180,11 @@ export class WarehouseDetail {
     }
   }
 
-  // 🟢 Edit
   editWarehouse(warehouse: Warehouse) {
     this.warehouse = { ...warehouse };
     this.warehouseDialog = true;
   }
 
-  // 🟢 Delete single
   deleteWarehouse(warehouse: Warehouse) {
     this.confirmationService.confirm({
       message: `Are you sure you want to delete "${warehouse.name}"?`,
@@ -209,7 +202,6 @@ export class WarehouseDetail {
     });
   }
 
-  // 🟢 Delete multiple
   deleteSelectedWarehouses() {
     this.confirmationService.confirm({
       message: 'Are you sure you want to delete the selected Warehouses?',
@@ -228,7 +220,6 @@ export class WarehouseDetail {
     });
   }
 
-  // 🟢 Export CSV placeholder
   exportCSV(event?: Event) {
     console.log('Export CSV clicked', event);
     this.messageService.add({
@@ -239,7 +230,6 @@ export class WarehouseDetail {
     });
   }
 
-  // 🟢 Helpers
   findIndexById(id: number): number {
     return this.warehouses.findIndex((p) => p.warehouseId === id);
   }

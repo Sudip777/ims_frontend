@@ -49,7 +49,7 @@
     <h1 class="font-heading font-medium p-2 tracking-tight text-2xl">Products</h1>
     <div class="flex flex-col lg:flex-row lg:items-center gap-3 mb-6">
       <div class="hidden lg:inline-flex bg-white rounded-lg overflow-x-auto">
-        <button
+        <!-- <button
           *ngFor="let period of timePeriods"
           (click)="selectedPeriod = period"
           [ngClass]="
@@ -61,7 +61,7 @@
           type="button"
         >
           {{ period }}
-        </button>
+        </button> -->
       </div>
 
       <div class="flex items-center gap-3 lg:ml-auto">
@@ -99,7 +99,6 @@
 
   <p-toast position="bottom-right"></p-toast>
 
-  <!--  Table -->
   <p-table
     #dt
     [value]="products"
@@ -136,7 +135,7 @@
             class="bg-ims-primary"
             icon="pi pi-upload"
             label="Export"
-            (onClick)="exportCSV($event)"
+            (onClick)="exportExcel()"
           />
         </div>
         <ng-template pTemplate="end">
@@ -149,11 +148,11 @@
           auto
           customUpload"
             ></p-fileUpload>
-            <p-button
+            <!-- <p-button
               label="Export CSV"
               icon="pi pi-upload"
-              (onClick)="exportCSV($event)"
-            ></p-button>
+              (onClick)="($event)"
+            ></p-button> -->
           </div>
 
           <div>
@@ -162,7 +161,7 @@
               class="bg-ims-primary"
               icon="pi pi-upload"
               label="Export CSV"
-              (onClick)="exportCSV($event)"
+              (onClick)="exportExcel()"
             />
           </div>
         </ng-template>
@@ -231,7 +230,6 @@
     </ng-template>
   </p-table>
 
-  <!--  Dialog -->
   <p-dialog
     [(visible)]="productDialog"
     [style]="{ width: '480px' }"

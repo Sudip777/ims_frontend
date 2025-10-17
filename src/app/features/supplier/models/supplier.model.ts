@@ -8,3 +8,6 @@ interface SupplierResponse {
   createdAt: string;
   createdByUserId: number;
 }
+
+interface SupplierRequest
+  extends Omit<SupplierResponse, 'supplierId' | 'createdAt' | 'createdByUserId'> {}

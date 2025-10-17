@@ -210,26 +210,22 @@ export class InventoryDetail {
       CreatedByUserId: 0,
     };
   }
-  // 🟢 Open dialog for new product
   openNew() {
     this.inventory = this.createEmptyInventory();
     this.submitted = false;
     this.inventoryDialog = true;
   }
 
-  // 🟢 Hide dialog
   hideDialog() {
     this.inventoryDialog = false;
     this.submitted = false;
   }
 
-  // 🟢 Save (Create or Update)
   saveInventory() {
     this.submitted = true;
 
     if (this.inventory.ProductName.trim()) {
       if (this.inventory.InventoryId) {
-        // Update existing
         const index = this.findIndexById(this.inventory.InventoryId);
         if (index !== -1) this.inventories[index] = this.inventory;
 
@@ -254,13 +250,11 @@ export class InventoryDetail {
     }
   }
 
-  // 🟢 Edit
   editCustomer(inventory: Inventory) {
     this.inventory = { ...inventory };
     this.inventoryDialog = true;
   }
 
-  // 🟢 Delete single
   deleteInventory(inventory: Inventory) {
     this.confirmationService.confirm({
       message: `Are you sure you want to delete "${inventory.InventoryId}"?`,
@@ -278,7 +272,6 @@ export class InventoryDetail {
     });
   }
 
-  // 🟢 Delete multiple
   deleteSelectedInventories() {
     this.confirmationService.confirm({
       message: 'Are you sure you want to delete the selected Suppliers?',
@@ -299,7 +292,6 @@ export class InventoryDetail {
     });
   }
 
-  // 🟢 Export CSV placeholder
   exportCSV(event?: Event) {
     console.log('Export CSV clicked', event);
     this.messageService.add({
@@ -310,7 +302,6 @@ export class InventoryDetail {
     });
   }
 
-  // 🟢 Helpers
   findIndexById(id: number): number {
     return this.inventories.findIndex((p) => p.InventoryId === id);
   }
