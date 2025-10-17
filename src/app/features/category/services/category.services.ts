@@ -14,7 +14,7 @@ export class CategoryService {
   }
 
   getCategoryById(id: number) {
-    return this.api.get<CategoryResponse>(`/categories/${id}`);
+    return this.api.get<ApiResponse<CategoryResponse>>(`/categories/${id}`);
   }
 
   createCategory(category: CategoryResponse) {
