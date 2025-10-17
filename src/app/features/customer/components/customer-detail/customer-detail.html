@@ -29,15 +29,15 @@
       <div class="overflow-y-auto max-h-[500px]">
         <p-table
           #dt
-          [value]="customers"
+          [value]="items"
           [rows]="10"
           [paginator]="true"
           [rowsPerPageOptions]="[5, 10, 20]"
-          [globalFilterFields]="['Name', 'customerId', 'isActive']"
+          [globalFilterFields]="['name', 'customerId', 'isActive']"
           [(selection)]="customers"
           dataKey="customerId"
           [rowHover]="true"
-          [tableStyle]="{ 'min-width': '80rem' }"
+          [tableStyle]="{ 'min-width': '40rem' }"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} customers"
           [showCurrentPageReport]="true"
         >
@@ -58,7 +58,7 @@
                   class="hidden md:flex"
                   icon="pi pi-upload"
                   label="Export"
-                  (onClick)="exportCSV($event)"
+                  (onClick)="exportExcel()"
                 />
               </div>
             </div>
@@ -84,15 +84,15 @@
 
           <ng-template pTemplate="body" let-customer>
             <tr>
-              <td>{{ customer.CustomerId }}</td>
-              <td>{{ customer.Name }}</td>
-              <td>{{ customer.Email }}</td>
-              <td>{{ customer.Phone }}</td>
-              <td>{{ customer.Address }}</td>
+              <td>{{ customer.customerId }}</td>
+              <td>{{ customer.name }}</td>
+              <td>{{ customer.email }}</td>
+              <td>{{ customer.phone }}</td>
+              <td>{{ customer.address }}</td>
               <td>
                 <p-tag
-                  [value]="getStatusLabel(customer.Status)"
-                  [severity]="getSeverity(customer.Status)"
+                  [value]="getStatusLabel(customer.isActive)"
+                  [severity]="getSeverity(customer.isActive)"
                 ></p-tag>
               </td>
               <td>
@@ -132,33 +132,33 @@
             type="text"
             pInputText
             id="name"
-            [(ngModel)]="customer.Name"
+            [(ngModel)]="customer.name"
             required
             autofocus
             fluid
           />
-          <small class="text-red-500" *ngIf="submitted && !customer.Name">Name is required.</small>
+          <small class="text-red-500" *ngIf="submitted && !customer.name">Name is required.</small>
         </div>
 
         <div>
           <label for="email" class="block font-bold mb-3">Email</label>
-          <input type="email" pInputText id="email" [(ngModel)]="customer.Email" required fluid />
+          <input type="email" pInputText id="email" [(ngModel)]="customer.email" required fluid />
         </div>
 
         <div>
           <label for="phone" class="block font-bold mb-3">Phone</label>
-          <input type="text" pInputText id="phone" [(ngModel)]="customer.Phone" required fluid />
+          <input type="text" pInputText id="phone" [(ngModel)]="customer.phone" required fluid />
         </div>
 
         <div>
           <label for="address" class="block font-bold mb-3">Address</label>
-          <textarea pTextarea id="address" [(ngModel)]="customer.Address" rows="3" fluid></textarea>
+          <textarea pTextarea id="address" [(ngModel)]="customer.address" rows="3" fluid></textarea>
         </div>
 
         <div>
           <label class="block font-bold mb-3">Active Status</label>
           <p-select
-            [(ngModel)]="customer.Status"
+            [(ngModel)]="customer.isActive"
             [options]="[
               { label: 'Active', value: true },
               { label: 'Inactive', value: false }
