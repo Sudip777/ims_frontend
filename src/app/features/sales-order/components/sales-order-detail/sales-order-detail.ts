@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -57,13 +63,15 @@ interface Order {
     IconFieldModule,
     InputIconModule,
     PaginatorModule,
-    TableModule,
+    ReactiveFormsModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './sales-order-detail.html',
   styleUrls: ['./sales-order-detail.scss'],
 })
 export class SalesOrderDetail {
+  salesOrderForm: FormGroup;
+
   orders: Order[] = [];
   order: Order = this.createEmptyOrder();
   orderDialog = false;
@@ -78,8 +86,25 @@ export class SalesOrderDetail {
 
   constructor(
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
-  ) {}
+    private messageService: MessageService,
+    private formBuilder: FormBuilder
+  ) {
+    this.salesOrderForm = this.formBuilder.group({
+      customerName: ['', Validators.required],
+      orderDate: ['', Validators.required],
+      email: ['', [Validators.required]],
+      statusId: ['', [Validators.required]],
+      totalAmount: ['', Validators.required],
+      orderDetails: [
+        {
+          productName: ['', Validators.required],
+          warehouseId: ['', Validators.required],
+          quantity: ['', Validators.required],
+          unitPrice: ['', Validators.required],
+        },
+      ],
+    });
+  }
 
   ngOnInit() {
     // Mock Data
