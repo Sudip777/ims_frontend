@@ -5,7 +5,7 @@ import { ApiResponse } from '../../../core/models/api-response.model';
 @Injectable({
   providedIn: 'root',
 })
-export class CustomerServive {
+export class CustomerService {
   private api = inject(ApiService);
 
   getAllCustomers() {

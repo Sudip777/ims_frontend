@@ -21,7 +21,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { NotificationService } from '../../../../core/services/notification.services';
 import { ExportService } from '../../../../core/services/export.services';
-import { CustomerServive } from '../../services/customer.services';
+import { CustomerService } from '../../services/customer.services';
 
 interface CustomerResponse {
   customerId: number;
@@ -65,7 +65,7 @@ type CustomerRequest = Omit<CustomerResponse, 'customerId' | 'createdAt' | 'crea
 })
 export class CustomerDetail {
   // DI
-  private readonly customerService = inject(CustomerServive);
+  private readonly customerService = inject(CustomerService);
   private readonly notificationService = inject(NotificationService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly exportService = inject(ExportService);

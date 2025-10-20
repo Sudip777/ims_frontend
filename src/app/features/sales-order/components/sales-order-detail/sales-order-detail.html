@@ -11,10 +11,10 @@
     [paginator]="true"
     [rowsPerPageOptions]="[5, 10, 20]"
     [rowHover]="true"
-    [tableStyle]="{ 'min-width': '90rem' }"
+    [tableStyle]="{ 'min-width': '40rem' }"
     [showCurrentPageReport]="true"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} orders"
-    [value]="orders"
+    [value]="items"
     dataKey="orderId"
     [expandedRowKeys]="expandedRows"
     (onRowExpand)="onRowExpand($event)"
@@ -56,48 +56,48 @@
       </tr>
     </ng-template>
 
-    <ng-template pTemplate="body" let-order let-expanded="expanded">
+    <ng-template pTemplate="body" let-items let-expanded="expanded">
       <tr>
         <td>
           <p-button
             type="button"
             pRipple
-            [pRowToggler]="order"
+            [pRowToggler]="items"
             [text]="true"
             [rounded]="true"
             [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
           ></p-button>
         </td>
-        <td>{{ order.orderId }}</td>
-        <td>{{ order.customerName }}</td>
-        <td>{{ order.orderDate | date : 'mediumDate' }}</td>
-        <td><p-tag [value]="order.statusName"></p-tag></td>
-        <td>{{ order.totalAmount | currency }}</td>
-        <td>{{ order.createdByUserId }}</td>
+        <td>{{ items.orderId }}</td>
+        <td>{{ items.customerName }}</td>
+        <td>{{ items.orderDate | date : 'mediumDate' }}</td>
+        <td><p-tag [value]="items.statusName"></p-tag></td>
+        <td>{{ items.totalAmount | currency }}</td>
+        <td>{{ items.createdByUserId }}</td>
         <td class="flex gap-2">
           <p-button
             icon="pi pi-pencil"
             [rounded]="true"
             [outlined]="true"
-            (onClick)="editOrder(order)"
+            (onClick)="editOrder(items)"
           ></p-button>
           <p-button
             icon="pi pi-trash"
             severity="danger"
             [rounded]="true"
             [outlined]="true"
-            (onClick)="deleteOrder(order)"
+            (onClick)="deleteOrder(items)"
           ></p-button>
         </td>
       </tr>
     </ng-template>
 
-    <ng-template #expandedrow let-order>
+    <ng-template #expandedrow let-items>
       <tr>
         <td colspan="8">
           <div class="p-4 bg-gray-50 rounded-lg">
-            <h5 class="font-semibold mb-3">Order Details for {{ order.orderId }}</h5>
-            <p-table [value]="order.orderDetails" dataKey="orderDetailId">
+            <h5 class="font-semibold mb-3">Order Details for {{ items.orderId }}</h5>
+            <p-table [value]="items.orderDetails" dataKey="orderDetailId">
               <ng-template pTemplate="header">
                 <tr>
                   <th>Product</th>
@@ -135,44 +135,62 @@
     [modal]="true"
     [draggable]="false"
   >
-    <form [formGroup]="salesOrderForm" (ngSubmit)="saveOrder()">
-      <ng-template pTemplate="content">
+    <ng-template pTemplate="content">
+      <form [formGroup]="salesOrderForm" (ngSubmit)="saveOrder()">
         <div class="flex flex-col gap-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block font-bold mb-3">Customer Name</label>
-              <input pInputText formControlName="order.customerName" placeholder="Customer Name" />
+              <input
+                pInputText
+                formControlName="customerName"
+                placeholder="Customer Name"
+                class="w-full"
+              />
+              <small
+                class="text-red-500"
+                *ngIf="submitted && salesOrderForm.get('customerName')?.invalid"
+              >
+                Customer name is required
+              </small>
             </div>
             <div>
               <label class="block font-bold mb-3">Order Date</label>
               <p-datepicker
-                formControlName="order.orderDate"
+                formControlName="orderDate"
                 dateFormat="yy-mm-dd"
-                showIcon="true"
+                [showIcon]="true"
+                class="w-full"
               ></p-datepicker>
             </div>
             <div>
               <label class="block font-bold mb-3">Status</label>
               <p-select
-                formControlName="order.statusId"
+                formControlName="statusId"
                 [options]="statusOptions"
                 optionLabel="label"
                 optionValue="value"
                 placeholder="Select Status"
+                class="w-full"
               ></p-select>
             </div>
-            <div>
+            <!-- <div>
               <label class="block font-bold mb-3">Total Amount</label>
               <p-inputnumber
-                formControlName="order.totalAmount"
+                formControlName="totalAmount"
                 mode="currency"
                 currency="USD"
+                class="w-full"
               ></p-inputnumber>
-            </div>
+            </div> -->
           </div>
 
           <h4 class="font-semibold mt-4">Order Items</h4>
-          <p-table [value]="order.orderDetails" editable="true">
+          <small class="text-red-500" *ngIf="submitted && orderDetails.length === 0">
+            At least one order item is required
+          </small>
+
+          <p-table [value]="orderDetails.controls">
             <ng-template pTemplate="header">
               <tr>
                 <th>Product</th>
@@ -183,57 +201,78 @@
                 <th>Actions</th>
               </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-detail let-rowIndex="rowIndex">
-              <tr>
+
+            <ng-template pTemplate="body" let-detailControl let-rowIndex="rowIndex">
+              <tr [formGroup]="detailControl">
                 <td>
                   <input
                     pInputText
-                    formControlName="orderDetails.productName"
+                    formControlName="productName"
                     placeholder="Product"
+                    class="w-full"
                   />
                 </td>
                 <td>
-                  <input pInputText formControlName="detail.warehouseId" placeholder="Warehouse" />
-                </td>
-                <td>
-                  <p-inputnumber formControlName="detail.quantity"></p-inputnumber>
-                </td>
-                <td>
                   <p-inputnumber
-                    formControlName="detail.unitPrice"
-                    mode="currency"
-                    currency="USD"
+                    formControlName="warehouseId"
+                    placeholder="Warehouse"
+                    class="w-full"
                   ></p-inputnumber>
                 </td>
                 <td>
-                  {{ detail.quantity * detail.unitPrice | currency }}
+                  <p-inputnumber formControlName="quantity" class="w-full"></p-inputnumber>
+                </td>
+                <td>
+                  <p-inputnumber
+                    formControlName="unitPrice"
+                    mode="currency"
+                    currency="USD"
+                    class="w-full"
+                  ></p-inputnumber>
+                </td>
+                <td>
+                  {{
+                    detailControl.get('quantity')?.value * detailControl.get('unitPrice')?.value
+                      | currency
+                  }}
                 </td>
                 <td>
                   <p-button
                     icon="pi pi-trash"
-                    text
+                    [text]="true"
                     severity="danger"
                     (onClick)="removeOrderDetail(rowIndex)"
                   ></p-button>
                 </td>
               </tr>
             </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6" class="text-center">
+                  No items added yet. Click "Add Item" to start.
+                </td>
+              </tr>
+            </ng-template>
           </p-table>
+
           <div class="mt-2">
             <p-button icon="pi pi-plus" label="Add Item" (onClick)="addOrderDetail()"></p-button>
           </div>
         </div>
-      </ng-template>
-      <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" text (onClick)="hideDialog()" />
-        <p-button
-          label="Save"
-          icon="pi pi-check"
-          type="submit"
-          [disabled]="salesOrderForm.invalid"
-        />
-      </ng-template>
-    </form>
+      </form>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <p-button label="Cancel" icon="pi pi-times" [text]="true" (onClick)="hideDialog()" />
+      <p-button
+        label="Save"
+        icon="pi pi-check"
+        type="submit"
+        [disabled]="salesOrderForm.invalid"
+        (onClick)="saveOrder()"
+      />
+    </ng-template>
   </p-dialog>
 
   <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
