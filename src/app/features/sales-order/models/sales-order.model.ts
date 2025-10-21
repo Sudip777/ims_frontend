@@ -2,7 +2,7 @@ export interface OrderResponse {
   orderId: number;
   orderDate: Date;
   totalAmount: number;
-  customerId: number;
+  customerId: number | null;
   customerName: string;
   statusId: number;
   statusName: string;
@@ -18,8 +18,11 @@ export interface OrderDetail {
   warehouseId: number;
   productName: string;
 }
-
-export type OrderRequest = Omit<
-  OrderResponse,
-  'orderId' | 'createdByUserId' | 'statusName' | 'totalAmount'
->;
+export interface OrderDetailRequest extends Omit<OrderDetail, 'orderDetailId' | 'productName'> {}
+export interface OrderRequest
+  extends Omit<
+    OrderResponse,
+    'createdByUserId' | 'statusName' | 'totalAmount' | 'customerName' | 'orderDate' | 'orderDetails'
+  > {
+  orderDetails: OrderDetailRequest[];
+}

@@ -26,7 +26,7 @@ export class ExportService {
     const {
       fileName = `export_${new Date().getTime()}`,
       sheetName = 'Sheet1',
-      title = 'Unity Ware Excel Data',
+      title = 'The Unity Ware Excel Report',
     } = options;
 
     try {
