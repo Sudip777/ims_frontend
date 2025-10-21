@@ -8,6 +8,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -17,18 +18,19 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
-
 import { PaginatorModule } from 'primeng/paginator';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
-import { ApiService } from '../../../../core/services/api.services';
+
+import { ExportService } from '../../../../core/services/export.services';
 import { NotificationService } from '../../../../core/services/notification.services';
 import { CustomerService } from '../../../customer/services/customer.services';
-import { WarehouseService } from '../../../warehouse/services/warehouse.services';
-import { SalesOrderService } from '../../services/sales-order.services';
 import { ProductsService } from '../../../products/services/products.services';
+import { WarehouseService } from '../../../warehouse/services/warehouse.services';
+import { OrderRequest } from '../../models/sales-order.model';
+import { SalesOrderService } from '../../services/sales-order.services';
 
 interface OrderDetail {
   orderDetailId: number;
@@ -43,7 +45,7 @@ interface Order {
   orderId: number;
   orderDate: Date | string;
   customerName: string;
-  customerId: number;
+  customerId: number | null;
   statusId: number;
   statusName: string;
   totalAmount: number;
@@ -57,41 +59,57 @@ interface Order {
   imports: [
     CommonModule,
     FormsModule,
-    TableModule,
-    DialogModule,
+    ReactiveFormsModule,
+    AutoCompleteModule,
     ButtonModule,
-    InputTextModule,
-    InputNumberModule,
     ConfirmDialogModule,
-    ToastModule,
-    SelectModule,
     DatePickerModule,
-    TagModule,
+    DialogModule,
     IconFieldModule,
     InputIconModule,
+    InputNumberModule,
+    InputTextModule,
     PaginatorModule,
+    SelectModule,
     TableModule,
-    ReactiveFormsModule,
+    TagModule,
+    ToastModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './sales-order-detail.html',
   styleUrls: ['./sales-order-detail.scss'],
 })
 export class SalesOrderDetail {
-  private order = inject(SalesOrderService);
-  private notification = inject(NotificationService);
-  private fb = inject(FormBuilder);
-  private customer = inject(CustomerService);
-  private warehouse = inject(WarehouseService);
-  private product = inject(ProductsService);
+  private readonly orderService = inject(SalesOrderService);
+  private readonly notification = inject(NotificationService);
+  private readonly fb = inject(FormBuilder);
+  private readonly customerService = inject(CustomerService);
+  private readonly warehouseService = inject(WarehouseService);
+  private readonly productService = inject(ProductsService);
+  private readonly exportService = inject(ExportService);
+  private readonly confirmationService = inject(ConfirmationService);
+  private readonly messageService = inject(MessageService);
 
   salesOrderForm: FormGroup;
-
   orders: Order[] = [];
+  items: any[] = [];
+  customerItems: any[] = [];
+  warehouseItems: any[] = [];
+  productItems: any[] = [];
+  filteredItems: any[] = [];
+  filteredWarehouseItems: any[] = [];
+  filteredProductItems: any[] = [];
+
+  order: Order = this.createEmptyOrder();
+  selectedCustomer: any = null;
+  selectedWarehouse: any = null;
+  selectedProduct: any = null;
+
   orderDialog = false;
   submitted = false;
+  isEditMode = false;
+
   expandedRows: { [key: number]: boolean } = {};
-  items: any[] = [];
   totalCount = 0;
   pageSize = 10;
   page = 1;
@@ -102,45 +120,56 @@ export class SalesOrderDetail {
     { label: 'Completed', value: 3 },
   ];
 
-  constructor(
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService
-  ) {
+  constructor() {
     this.salesOrderForm = this.createOrderForm();
   }
 
-  createOrderForm(): FormGroup {
-    return this.fb.group({
-      orderId: [0],
-      customerName: ['', Validators.required],
-      orderDate: [new Date(), Validators.required],
-      statusId: [1, Validators.required],
-      totalAmount: [0, [Validators.required, Validators.min(0)]],
-      orderDetails: this.fb.array([], Validators.required),
-    });
+  ngOnInit() {
+    this.loadOrderDetails();
+    this.loadCustomers();
+    this.loadWarehouses();
+    this.loadProducts();
   }
 
   get orderDetails(): FormArray {
     return this.salesOrderForm.get('orderDetails') as FormArray;
   }
 
-  createOrderDetailFormGroup(detail?: OrderDetail): FormGroup {
+  private createOrderForm(): FormGroup {
     return this.fb.group({
-      orderDetailId: [detail?.orderDetailId || Math.floor(Math.random() * 10000)],
-      productId: [detail?.productId || 0],
+      customerId: [null, Validators.required],
+      orderDate: [new Date(), Validators.required],
+      statusId: [1, Validators.required],
+      orderDetails: this.fb.array([], Validators.required),
+    });
+  }
+
+  private createOrderDetailFormGroup(detail?: OrderDetail): FormGroup {
+    return this.fb.group({
+      productId: [detail?.productId || null],
       productName: [detail?.productName || '', Validators.required],
-      warehouseId: [detail?.warehouseId || 0, Validators.required],
+      warehouseId: [detail?.warehouseId || null, Validators.required],
       quantity: [detail?.quantity || 1, [Validators.required, Validators.min(1)]],
       unitPrice: [detail?.unitPrice || 0, [Validators.required, Validators.min(0)]],
     });
   }
 
-  ngOnInit() {
-    this.loadOrderDetails();
+  private createEmptyOrder(): Order {
+    return {
+      orderId: 0,
+      customerId: null,
+      statusId: 0,
+      orderDetails: [],
+      orderDate: '',
+      customerName: '',
+      totalAmount: 0,
+      statusName: '',
+      createdByUserId: 0,
+    };
   }
 
-  private loadOrderDetails() {
-    this.order.getAllSalesOrder().subscribe({
+  private loadOrderDetails(page = 1, pageSize = 10) {
+    this.orderService.getAllSalesOrder(page, pageSize).subscribe({
       next: (res) => {
         this.items = res.result.data;
         this.totalCount = res.result.meta.totalCount;
@@ -153,59 +182,113 @@ export class SalesOrderDetail {
       },
     });
   }
-  toggleAll(expand: boolean) {
-    if (expand) {
-      this.expandedRows = this.orders.reduce((acc, o) => {
-        acc[o.orderId] = true;
-        return acc;
-      }, {} as { [key: number]: boolean });
-    } else {
-      this.expandedRows = {};
-    }
-    this.orders = [...this.orders];
-  }
 
-  onRowExpand(event: { data: Order }) {
-    if (event.data) {
-      this.expandedRows[event.data.orderId] = true;
-      this.expandedRows = { ...this.expandedRows };
-      this.orders = [...this.orders];
-    }
-  }
-
-  onRowCollapse(event: { data: Order }) {
-    if (event.data) {
-      const { [event.data.orderId]: _, ...rest } = this.expandedRows;
-      this.expandedRows = rest;
-      this.orders = [...this.orders];
-    }
-  }
-
-  exportCSV() {
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Export',
-      detail: 'Export to CSV started...',
-      life: 3000,
+  private loadCustomers(): void {
+    this.customerService.getAllCustomers().subscribe({
+      next: (res) => {
+        this.customerItems = res.result.map((val: any) => ({
+          label: val.name,
+          value: val.customerId,
+        }));
+        console.log(this.items, 'itemss');
+      },
+      error: () => {
+        this.notification.error('Error!!', 'Failed to Load Categories');
+      },
     });
+  }
+
+  private loadWarehouses(): void {
+    this.warehouseService.getAllWarehouses().subscribe({
+      next: (res) => {
+        this.warehouseItems = res.result.map((val: any) => ({
+          label: val.name,
+          value: val.warehouseId,
+        }));
+        console.log(this.items, 'itemss');
+      },
+      error: () => {
+        this.notification.error('Error!!', 'Failed to Load Categories');
+      },
+    });
+  }
+
+  private loadProducts(): void {
+    this.productService.getAllProducts().subscribe({
+      next: (res) => {
+        this.productItems = res.result.data.map((val: any) => ({
+          label: val.name,
+          value: val.productId,
+        }));
+        console.log(this.items, 'itemss');
+      },
+      error: () => {
+        this.notification.error('Error!!', 'Failed to Load Products');
+      },
+    });
+  }
+
+  private createSalesOrder(orderRequest: OrderRequest): void {
+    this.orderService.createSalesOrder(orderRequest).subscribe({
+      next: () => {
+        this.notification.success('Success', 'Order Created Successfully');
+        this.hideDialog();
+        this.loadOrderDetails();
+      },
+      error: (err) => {
+        this.notification.error('Error', `${err.error.message}` || 'Failed to Create Order');
+      },
+    });
+  }
+
+  private updateSalesOrder(orderRequest: OrderRequest): void {
+    this.orderService.updateSalesOrder(this.order.orderId, orderRequest).subscribe({
+      next: () => {
+        this.notification.success('Success', 'Order Updated Successfully');
+        this.hideDialog();
+        this.loadOrderDetails();
+        this.isEditMode = false;
+      },
+      error: (err) => {
+        this.notification.error('Error!', err.error?.message || 'Failed to Update Order Details');
+      },
+    });
+  }
+
+  private buildSalesOrderRequest(): OrderRequest & { orderId?: number } {
+    const formValue = this.salesOrderForm.value;
+
+    return {
+      orderId: this.order?.orderId ?? undefined,
+      customerId: formValue.customerId?.value ?? formValue.customerId,
+      statusId: formValue.statusId,
+      orderDetails: formValue.orderDetails.map((detail: any) => ({
+        productId: detail.productId?.value ?? detail.productId,
+        warehouseId: detail.warehouseId?.value ?? detail.warehouseId,
+        quantity: detail.quantity,
+        unitPrice: detail.unitPrice,
+      })),
+    };
   }
 
   openNew() {
     this.salesOrderForm.reset({
       orderId: 0,
-      customerName: '',
+      customerId: null,
       orderDate: new Date(),
       statusId: 1,
-      totalAmount: 0,
     });
+    this.selectedCustomer = null;
     this.orderDetails.clear();
-    this.submitted = false;
+    this.addOrderDetail();
+    this.isEditMode = false;
     this.orderDialog = true;
   }
 
   hideDialog() {
     this.orderDialog = false;
     this.submitted = false;
+    this.selectedCustomer = null;
   }
 
   addOrderDetail() {
@@ -216,76 +299,80 @@ export class SalesOrderDetail {
     this.orderDetails.removeAt(index);
   }
 
+  searchCustomer(event: AutoCompleteCompleteEvent): void {
+    const query = event.query.toLowerCase();
+    this.filteredItems =
+      this.customerItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+  }
+
+  searchWarehouse(event: AutoCompleteCompleteEvent): void {
+    const query = event.query.toLowerCase();
+    this.filteredWarehouseItems =
+      this.warehouseItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+  }
+
+  searchProduct(event: AutoCompleteCompleteEvent): void {
+    const query = event.query.toLowerCase();
+    this.filteredProductItems =
+      this.productItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+  }
+
   saveOrder() {
     this.submitted = true;
 
-    if (this.salesOrderForm.invalid) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Validation Error',
-        detail: 'Please fill all required fields and add at least one order item',
-        life: 3000,
-      });
-      return;
-    }
+    const orderRequest = this.buildSalesOrderRequest();
+    console.log('Sending order request:', orderRequest);
 
-    const formValue = this.salesOrderForm.value;
-    const orderId = formValue.orderId;
-
-    const statusOption = this.statusOptions.find((s) => s.value === formValue.statusId);
-
-    const order: Order = {
-      orderId: orderId || this.createId(),
-      orderDate: formValue.orderDate,
-      customerName: formValue.customerName,
-      customerId: 0,
-      statusId: formValue.statusId,
-      statusName: statusOption?.label || 'Pending',
-      totalAmount: formValue.totalAmount,
-      createdByUserId: 10,
-      orderDetails: formValue.orderDetails,
-    };
-
-    if (orderId) {
-      const index = this.orders.findIndex((o) => o.orderId === orderId);
-      if (index !== -1) {
-        this.orders[index] = order;
-      }
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Successful',
-        detail: 'Order Updated',
-        life: 3000,
-      });
+    if (this.isEditMode) {
+      this.updateSalesOrder(orderRequest);
     } else {
-      this.orders.push(order);
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Successful',
-        detail: 'Order Created',
-        life: 3000,
-      });
+      this.createSalesOrder(orderRequest);
     }
-
-    this.orders = [...this.orders];
-    this.orderDialog = false;
   }
 
   editOrder(order: Order) {
+    this.isEditMode = true;
+    this.orderDialog = true;
+    this.order = order;
+
     this.salesOrderForm.patchValue({
       orderId: order.orderId,
-      customerName: order.customerName,
-      orderDate: new Date(order.orderDate),
-      statusId: order.statusId,
-      totalAmount: order.totalAmount,
+      orderDate: order.orderDate ? new Date(order.orderDate) : new Date(),
+      statusId: order.statusId ?? 1,
+    });
+
+    const customerOption = this.customerItems.find((c) => c.value === order.customerId);
+    this.selectedCustomer = customerOption ?? null;
+    this.salesOrderForm.patchValue({
+      customerId: this.selectedCustomer,
     });
 
     this.orderDetails.clear();
-    order.orderDetails.forEach((detail) => {
-      this.orderDetails.push(this.createOrderDetailFormGroup(detail));
-    });
 
-    this.orderDialog = true;
+    if (order.orderDetails && order.orderDetails.length > 0) {
+      for (const d of order.orderDetails) {
+        const productOption = this.productItems.find((p) => p.value === d.productId);
+        const warehouseOption = this.warehouseItems.find((w) => w.value === d.warehouseId);
+
+        const fg = this.fb.group({
+          productId: [
+            productOption ?? { label: d.productName, value: d.productId },
+            Validators.required,
+          ],
+          productName: [d.productName, Validators.required],
+          warehouseId: [
+            warehouseOption ?? { label: d.productName ?? '', value: d.warehouseId },
+            Validators.required,
+          ],
+          quantity: [d.quantity, [Validators.required, Validators.min(1)]],
+          unitPrice: [d.unitPrice, [Validators.required, Validators.min(0)]],
+        });
+
+        this.orderDetails.push(fg);
+      }
+    } else {
+      this.addOrderDetail();
+    }
   }
 
   deleteOrder(order: Order) {
@@ -305,7 +392,38 @@ export class SalesOrderDetail {
     });
   }
 
-  createId(): number {
-    return Math.floor(Math.random() * 10000) + 1000;
+  onRowExpand(event: { data: Order }) {
+    if (event.data) {
+      this.expandedRows[event.data.orderId] = true;
+      this.expandedRows = { ...this.expandedRows };
+      this.orders = [...this.orders];
+    }
+  }
+
+  onRowCollapse(event: { data: Order }) {
+    if (event.data) {
+      const { [event.data.orderId]: _, ...rest } = this.expandedRows;
+      this.expandedRows = rest;
+      this.orders = [...this.orders];
+    }
+  }
+
+  onPageChange(event: any): void {
+    const page = event.first / event.rows + 1;
+    const pageSize = event.rows;
+    this.loadOrderDetails(page, pageSize);
+  }
+
+  exportCSV() {
+    try {
+      this.exportService.exportToExcel(this.orders),
+        {
+          fileName: 'Sales_Order_Excel_Export',
+          sheetName: 'Sales Order Data',
+        };
+      this.notification.success('Export', 'Excel Export Completed');
+    } catch (e) {
+      this.notification.error('Export', 'Excel Export Failed');
+    }
   }
 }

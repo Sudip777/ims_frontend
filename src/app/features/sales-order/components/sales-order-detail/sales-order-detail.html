@@ -1,22 +1,23 @@
-<main>
+<main class="p-6 space-y-6">
   <div>
     <h1 class="font-heading font-medium p-2 tracking-tight text-2xl">Orders Overview</h1>
   </div>
 
-  <p-toast></p-toast>
-
   <p-table
     #dt
-    [rows]="10"
-    [paginator]="true"
-    [rowsPerPageOptions]="[5, 10, 20]"
-    [rowHover]="true"
-    [tableStyle]="{ 'min-width': '40rem' }"
-    [showCurrentPageReport]="true"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} orders"
     [value]="items"
     dataKey="orderId"
+    [lazy]="true"
+    [paginator]="true"
+    [rows]="pageSize"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [totalRecords]="totalCount"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} orders"
+    [globalFilterFields]="['productId', 'warehouseId', 'customerId']"
+    [tableStyle]="{ 'min-width': '40rem' }"
     [expandedRowKeys]="expandedRows"
+    (onLazyLoad)="onPageChange($event)"
     (onRowExpand)="onRowExpand($event)"
     (onRowCollapse)="onRowCollapse($event)"
   >
@@ -130,7 +131,7 @@
 
   <p-dialog
     [(visible)]="orderDialog"
-    [style]="{ width: '800px' }"
+    [style]="{ width: '900px' }"
     header="Order Details"
     [modal]="true"
     [draggable]="false"
@@ -141,18 +142,21 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block font-bold mb-3">Customer Name</label>
-              <input
-                pInputText
-                formControlName="customerName"
-                placeholder="Customer Name"
-                class="w-full"
-              />
-              <small
+              <div class="card flex justify-center">
+                <p-autocomplete
+                  formControlName="customerId"
+                  [suggestions]="filteredItems"
+                  (completeMethod)="searchCustomer($event)"
+                  optionLabel="label"
+                  placeholder="Search Customer "
+                />
+              </div>
+              <!-- <small
                 class="text-red-500"
                 *ngIf="submitted && salesOrderForm.get('customerName')?.invalid"
               >
                 Customer name is required
-              </small>
+              </small> -->
             </div>
             <div>
               <label class="block font-bold mb-3">Order Date</label>
@@ -170,19 +174,10 @@
                 [options]="statusOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Select Status"
-                class="w-full"
+                placeholder="Select Order Status"
+                [disabled]="true"
               ></p-select>
             </div>
-            <!-- <div>
-              <label class="block font-bold mb-3">Total Amount</label>
-              <p-inputnumber
-                formControlName="totalAmount"
-                mode="currency"
-                currency="USD"
-                class="w-full"
-              ></p-inputnumber>
-            </div> -->
           </div>
 
           <h4 class="font-semibold mt-4">Order Items</h4>
@@ -205,29 +200,34 @@
             <ng-template pTemplate="body" let-detailControl let-rowIndex="rowIndex">
               <tr [formGroup]="detailControl">
                 <td>
-                  <input
-                    pInputText
-                    formControlName="productName"
-                    placeholder="Product"
-                    class="w-full"
+                  <p-autocomplete
+                    formControlName="productId"
+                    [suggestions]="filteredProductItems"
+                    (completeMethod)="searchProduct($event)"
+                    optionLabel="label"
+                    placeholder="Search Product "
+                    appendTo="body"
                   />
                 </td>
                 <td>
-                  <p-inputnumber
+                  <p-autocomplete
                     formControlName="warehouseId"
-                    placeholder="Warehouse"
-                    class="w-full"
-                  ></p-inputnumber>
+                    [suggestions]="filteredWarehouseItems"
+                    (completeMethod)="searchWarehouse($event)"
+                    optionLabel="label"
+                    placeholder="Search Warehouse "
+                    appendTo="body"
+                  />
                 </td>
                 <td>
-                  <p-inputnumber formControlName="quantity" class="w-full"></p-inputnumber>
+                  <p-inputnumber formControlName="quantity" size="small"></p-inputnumber>
                 </td>
                 <td>
                   <p-inputnumber
                     formControlName="unitPrice"
                     mode="currency"
-                    currency="USD"
-                    class="w-full"
+                    currency="NPR"
+                    size="small"
                   ></p-inputnumber>
                 </td>
                 <td>
@@ -265,13 +265,7 @@
 
     <ng-template pTemplate="footer">
       <p-button label="Cancel" icon="pi pi-times" [text]="true" (onClick)="hideDialog()" />
-      <p-button
-        label="Save"
-        icon="pi pi-check"
-        type="submit"
-        [disabled]="salesOrderForm.invalid"
-        (onClick)="saveOrder()"
-      />
+      <p-button label="Save" icon="pi pi-check" type="submit" (onClick)="saveOrder()" />
     </ng-template>
   </p-dialog>
 

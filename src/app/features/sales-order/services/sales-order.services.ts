@@ -9,17 +9,19 @@ import { PaginatedApiResponse, Meta } from '../../../core/models/api-response.mo
 export class SalesOrderService {
   private apiService = inject(ApiService);
 
-  getAllSalesOrder() {
-    return this.apiService.get<PaginatedApiResponse<OrderResponse[], Meta>>('/orders');
+  getAllSalesOrder(page = 1, pageSize = 100) {
+    return this.apiService.get<PaginatedApiResponse<OrderResponse[], Meta>>(
+      `/orders?page=${page}&pageSize=${pageSize}`
+    );
   }
   createSalesOrder(salesOrder: OrderRequest) {
     return this.apiService.post<OrderRequest>('/orders', salesOrder);
   }
 
-  updateSalesOrder(salesOrder: OrderRequest) {
-    return this.apiService.put<OrderRequest>('/orders', salesOrder);
+  updateSalesOrder(id: number, salesOrder: OrderRequest) {
+    return this.apiService.put<OrderRequest>(`/orders/${id}`, salesOrder);
   }
   deleteSalesOrder(id: number) {
-    return this.apiService.delete('/orders');
+    return this.apiService.delete(`/orders/${id}`);
   }
 }
