@@ -178,7 +178,10 @@ export class SalesOrderDetail {
         console.log(res.result.data);
       },
       error: (err) => {
-        this.notification.error('Error!!', `${err.message}` || 'Failed to Load Order Details');
+        this.notification.error(
+          'Error!!',
+          `${err.error.message}` || 'Failed to Load Order Details'
+        );
       },
     });
   }
