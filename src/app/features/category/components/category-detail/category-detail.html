@@ -107,7 +107,8 @@
 
   <p-dialog
     [(visible)]="categoryDialog"
-    [style]="{ width: '480px' }"
+    [style]="{ width: '70vw' }"
+    [breakpoints]="{ '1024px': '78vw', '768px': '78vw', '425px': '94vw' }"
     header="Category Details"
     [modal]="true"
     [draggable]="false"

@@ -74,6 +74,7 @@ interface Order {
     TableModule,
     TagModule,
     ToastModule,
+    //custom made
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './sales-order-detail.html',

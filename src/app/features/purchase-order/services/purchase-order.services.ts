@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../../core/services/api.services';
 import { Meta, PaginatedApiResponse } from '../../../core/models/api-response.model';
-import { PurchaseOrder } from '../models/purchase-order.model';
+import { PurchaseOrder, PurchaseOrderRequest } from '../models/purchase-order.model';
 
 @Injectable({
   providedIn: 'root',
@@ -13,10 +13,13 @@ export class PurchaseOrderService {
       `/purchaseorders?page=${page}&pageSize=${pageSize}`
     );
   }
-  updatePurchaseOrder(purchaseOrder: PurchaseOrder, id: number) {
-    return this.apiService.put('/purchaseorders', purchaseOrder);
+  updatePurchaseOrder(id: number, purchaseOrder: PurchaseOrderRequest) {
+    return this.apiService.put(`/purchaseorders/${id}`, purchaseOrder);
   }
   deletePurchaseOrder(id: number) {
-    return this.apiService.delete('/purchaseorders');
+    return this.apiService.delete(`/purchaseorders/${id}`);
+  }
+  createPurchaseOrder(purchaseOrder: PurchaseOrderRequest) {
+    return this.apiService.post('/purchaseorders', purchaseOrder);
   }
 }
