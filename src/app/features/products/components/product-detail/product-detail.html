@@ -69,7 +69,7 @@
         (onLazyLoad)="onPageChange($event)"
       >
         <ng-template pTemplate="caption">
-          <div class="flex items-center justify-between">
+          <div class="flex gap-4 md:justify-between">
             <p-iconfield>
               <p-inputicon class="pi pi-search" />
               <input
@@ -80,41 +80,11 @@
               />
             </p-iconfield>
             <div>
-              <p-button label=" Add " icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
-              <p-button
-                class="bg-ims-primary"
-                icon="pi pi-upload"
-                label="Export"
-                (onClick)="exportExcel()"
-              />
-            </div>
-            <ng-template pTemplate="end">
               <div class="flex gap-2">
-                <p-fileUpload
-                  mode="basic"
-                  accept="image/*"
-                  [maxFileSize]="1000000"
-                  chooseLabel="Import
-          auto
-          customUpload"
-                ></p-fileUpload>
-                <!-- <p-button
-              label="Export CSV"
-              icon="pi pi-upload"
-              (onClick)="($event)"
-            ></p-button> -->
+                <p-button label=" Add " icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+                <p-button icon="pi pi-upload" label="Export" (onClick)="exportExcel()" />
               </div>
-
-              <div>
-                <p-button label=" Add New" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
-                <p-button
-                  class="bg-ims-primary"
-                  icon="pi pi-upload"
-                  label="Export CSV"
-                  (onClick)="exportExcel()"
-                />
-              </div>
-            </ng-template>
+            </div>
           </div>
         </ng-template>
 

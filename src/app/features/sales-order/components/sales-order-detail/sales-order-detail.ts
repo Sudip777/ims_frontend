@@ -31,6 +31,7 @@ import { ProductsService } from '../../../products/services/products.services';
 import { WarehouseService } from '../../../warehouse/services/warehouse.services';
 import { OrderRequest } from '../../models/sales-order.model';
 import { SalesOrderService } from '../../services/sales-order.services';
+import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 
 interface OrderDetail {
   orderDetailId: number;
@@ -74,7 +75,7 @@ interface Order {
     TableModule,
     TagModule,
     ToastModule,
-    //custom made
+    MetricCardComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './sales-order-detail.html',
@@ -112,7 +113,7 @@ export class SalesOrderDetail {
 
   expandedRows: { [key: number]: boolean } = {};
   totalCount = 0;
-  pageSize = 10;
+  pageSize = 5;
   page = 1;
 
   statusOptions = [
@@ -169,7 +170,7 @@ export class SalesOrderDetail {
     };
   }
 
-  private loadOrderDetails(page = 1, pageSize = 10) {
+  private loadOrderDetails(page = 1, pageSize = 5) {
     this.orderService.getAllSalesOrder(page, pageSize).subscribe({
       next: (res) => {
         this.items = res.result.data;

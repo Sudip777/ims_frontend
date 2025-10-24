@@ -24,10 +24,10 @@
         ></app-metric-card>
       </div>
     </div>
-    <div class="">
+    <div>
       <h2 class="font-heading font-medium text-2xl mb-4">Category Details</h2>
 
-      <div class="overflow-y-auto max-h-[500px] bg-white rounded-2xl shadow-md">
+      <div class="overflow-x-auto bg-white rounded-2xl shadow-md">
         <p-table
           #dt
           [value]="categories"
@@ -43,7 +43,7 @@
           [showCurrentPageReport]="true"
         >
           <ng-template pTemplate="caption">
-            <div class="flex items-center justify-between">
+            <div class="flex gap-4 md:justify-between">
               <p-iconfield>
                 <p-inputicon class="pi pi-search" />
                 <input
@@ -53,14 +53,9 @@
                   placeholder="Search..."
                 />
               </p-iconfield>
-              <div class="flex">
+              <div class="flex gap-2">
                 <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
-                <p-button
-                  class="hidden md:flex"
-                  icon="pi pi-upload"
-                  label="Export"
-                  (onClick)="exportCSV($event)"
-                />
+                <p-button icon="pi pi-upload" label="Export" (onClick)="exportCSV($event)" />
               </div>
             </div>
           </ng-template>

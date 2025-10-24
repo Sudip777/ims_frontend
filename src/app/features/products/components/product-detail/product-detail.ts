@@ -85,7 +85,7 @@ export class ProductDetail {
   product: Product = this.createEmptyProduct();
 
   totalCount = 0;
-  pageSize = 10;
+  pageSize = 5;
   page = 1;
   date: Date | null = null;
 
@@ -95,7 +95,7 @@ export class ProductDetail {
     this.loadSuppliers();
   }
 
-  private loadProducts(page = 1, pageSize = 10): void {
+  private loadProducts(page = 1, pageSize = 5): void {
     this.productsService.getAllProducts(page, pageSize).subscribe({
       next: (res) => {
         this.products = res.result.data;

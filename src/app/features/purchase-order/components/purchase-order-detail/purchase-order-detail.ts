@@ -33,6 +33,7 @@ import {
   PurchaseOrderDetailRequest,
   PurchaseOrderRequest,
 } from '../../models/purchase-order.model';
+import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 
 export interface PurchaseOrderDetail {
   purchaseOrderDetailId: number;
@@ -75,6 +76,7 @@ interface PurchaseOrder {
     TableModule,
     TagModule,
     ToastModule,
+    MetricCardComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './purchase-order-detail.html',
@@ -107,7 +109,7 @@ export class PurchaseOrderDetail {
 
   expandedRows: { [key: number]: boolean } = {};
   totalCount = 0;
-  pageSize = 10;
+  pageSize = 5;
   page = 1;
 
   statusOptions = [
@@ -163,7 +165,7 @@ export class PurchaseOrderDetail {
     };
   }
 
-  private loadPurchaseOrders(page = 1, pageSize = 100) {
+  private loadPurchaseOrders(page = 1, pageSize = 5) {
     this.purchaseOrderService.getAllPurchaseOrders(page, pageSize).subscribe({
       next: (res) => {
         this.purchaseOrders = res.result.data;
