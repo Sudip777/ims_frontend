@@ -4,20 +4,20 @@
       <h1 class="font-heading font-medium text-2xl mb-4">Warehouse Overview</h1>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <app-metric-card
-          title="Active Categories"
+          title="Active Warehouse"
           value="100"
           [percentage]="12"
           [isPrimary]="true"
           trend="up"
         ></app-metric-card>
         <app-metric-card
-          title="Inactive Categories"
+          title="Inactive Warehouse"
           value="20"
           [percentage]="2"
           trend="down"
         ></app-metric-card>
         <app-metric-card
-          title="Deleted Categories"
+          title="Deleted Warehouse"
           value="10"
           [percentage]="2"
           trend="up"
@@ -44,8 +44,8 @@
           class="rounded-2xl shadow-md"
         >
           <ng-template pTemplate="caption">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-              <p-iconfield class="w-full md:w-auto">
+            <div class="flex gap-2 md:justify-between">
+              <p-iconfield>
                 <p-inputicon class="pi pi-search" />
                 <input
                   pInputText
@@ -57,12 +57,7 @@
               </p-iconfield>
               <div class="flex gap-2">
                 <p-button label="Add" icon="pi pi-plus" (onClick)="openNew()" />
-                <p-button
-                  class="hidden md:flex"
-                  icon="pi pi-upload"
-                  label="Export"
-                  (onClick)="exportExcel()"
-                />
+                <p-button icon="pi pi-upload" label="Export" (onClick)="exportExcel()" />
               </div>
             </div>
           </ng-template>

@@ -43,7 +43,7 @@
           [showCurrentPageReport]="true"
         >
           <ng-template pTemplate="caption">
-            <div class="flex items-center justify-between">
+            <div class="flex gap-4 md:justify-between">
               <p-iconfield>
                 <p-inputicon class="pi pi-search" />
                 <input
@@ -53,14 +53,9 @@
                   placeholder="Search..."
                 />
               </p-iconfield>
-              <div class="flex">
+              <div class="flex gap-2">
                 <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
-                <p-button
-                  class="hidden md:flex"
-                  icon="pi pi-upload"
-                  label="Export"
-                  (onClick)="exportExcel()"
-                />
+                <p-button icon="pi pi-upload" label="Export" (onClick)="exportExcel()" />
               </div>
             </div>
           </ng-template>

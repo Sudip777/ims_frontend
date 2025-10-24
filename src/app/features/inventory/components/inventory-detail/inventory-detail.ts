@@ -26,6 +26,7 @@ import { WarehouseService } from '../../../warehouse/services/warehouse.services
 import { ProductsService } from '../../../products/services/products.services';
 import { Product } from '../../../products/models/product.model';
 import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 interface InventoryResponse {
   inventoryId: number;
@@ -64,6 +65,7 @@ type InventoryRequest = Pick<InventoryResponse, 'productId' | 'warehouseId' | 'q
     TagModule,
     AutoCompleteModule,
     MetricCardComponent,
+    ToggleSwitchModule,
   ],
   templateUrl: './inventory-detail.html',
   styleUrl: './inventory-detail.scss',
@@ -74,7 +76,6 @@ export class InventoryDetail {
   private readonly notificationService = inject(NotificationService);
   private readonly productService = inject(ProductsService);
   private readonly warehouseService = inject(WarehouseService);
-  private readonly confirmationService = inject(ConfirmationService);
   private readonly exportService = inject(ExportService);
 
   // UI state
@@ -90,6 +91,7 @@ export class InventoryDetail {
   selectedWarehouse: number | null = null;
   filteredItems: any[] = [];
   filteredWarehouseItems: any[] = [];
+  checked: boolean = false;
 
   ngOnInit(): void {
     this.loadInventories();
@@ -100,7 +102,11 @@ export class InventoryDetail {
   private loadInventories(): void {
     this.inventoryService.getAllInventories().subscribe({
       next: (res) => {
-        this.inventories = res.result.data;
+        this.inventories = res.result.data.map((item: any) => ({
+          ...item,
+          isDisabled: item.quantity <= item.reorderLevel, // auto-disable low-stock items
+        }));
+
         console.log(this.inventories, 'iiiiiiiii');
       },
       error: () => {
@@ -149,7 +155,13 @@ export class InventoryDetail {
       createdbyUserId: 0,
     };
   }
-
+  onToggleChange(inventory: any) {
+    if (inventory.isDisabled) {
+      console.log(`Inventory ${inventory.inventoryId} is locked (low stock or manually disabled).`);
+    } else {
+      console.log(`Inventory ${inventory.inventoryId} is unlocked for editing.`);
+    }
+  }
   openNew(): void {
     this.isEditMode = false;
     this.inventory = this.createEmptyInventory();

@@ -1,133 +1,157 @@
 <main class="p-6 space-y-6">
-  <div>
-    <h1 class="font-heading font-medium p-2 tracking-tight text-2xl">Orders Overview</h1>
-  </div>
-
-  <p-table
-    #dt
-    [value]="items"
-    dataKey="orderId"
-    [lazy]="true"
-    [paginator]="true"
-    [rows]="pageSize"
-    [rowsPerPageOptions]="[5, 10, 20]"
-    [totalRecords]="totalCount"
-    [showCurrentPageReport]="true"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} orders"
-    [globalFilterFields]="['productId', 'warehouseId', 'customerId']"
-    [tableStyle]="{ 'min-width': '40rem' }"
-    [expandedRowKeys]="expandedRows"
-    (onLazyLoad)="onPageChange($event)"
-    (onRowExpand)="onRowExpand($event)"
-    (onRowCollapse)="onRowCollapse($event)"
-  >
-    <ng-template pTemplate="caption">
-      <div class="flex items-center justify-between">
-        <p-iconfield>
-          <p-inputicon class="pi pi-search" />
-          <input
-            pInputText
-            type="text"
-            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-            placeholder="Search..."
-          />
-        </p-iconfield>
-        <div class="flex">
-          <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
-          <p-button
-            class="hidden md:flex"
-            icon="pi pi-upload"
-            label="Export"
-            (onClick)="exportCSV()"
-          />
-        </div>
+  <div class="max-w-6xl mx-auto space-y-6">
+    <div>
+      <h1 class="font-heading font-medium p-2 text-2xl">Sales Order Overview</h1>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <app-metric-card
+          title="Active Sales Orders"
+          value="100"
+          [percentage]="12"
+          [isPrimary]="true"
+          trend="up"
+        ></app-metric-card>
+        <app-metric-card
+          title="Inactive Sales Orders"
+          value="20"
+          [percentage]="2"
+          trend="down"
+        ></app-metric-card>
+        <app-metric-card
+          title="Deleted Sales Orders"
+          value="10"
+          [percentage]="2"
+          trend="up"
+        ></app-metric-card>
       </div>
-    </ng-template>
+    </div>
 
-    <ng-template #header>
-      <tr>
-        <th style="width: 3rem"></th>
-        <th>Order ID</th>
-        <th>Customer</th>
-        <th>Date</th>
-        <th>Status</th>
-        <th>Total Amount</th>
-        <th>Created By</th>
-        <th>Actions</th>
-      </tr>
-    </ng-template>
+    <div class="overflow-x-auto bg-white rounded-2xl shadw-md">
+      <h2 class="font-heading font-medium p-2 text-2xl">Sales Order Details</h2>
+    </div>
 
-    <ng-template pTemplate="body" let-items let-expanded="expanded">
-      <tr>
-        <td>
-          <p-button
-            type="button"
-            pRipple
-            [pRowToggler]="items"
-            [text]="true"
-            [rounded]="true"
-            [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-          ></p-button>
-        </td>
-        <td>{{ items.orderId }}</td>
-        <td>{{ items.customerName }}</td>
-        <td>{{ items.orderDate | date : 'mediumDate' }}</td>
-        <td><p-tag [value]="items.statusName"></p-tag></td>
-        <td>{{ items.totalAmount | currency }}</td>
-        <td>{{ items.createdByUserId }}</td>
-        <td class="flex gap-2">
-          <p-button
-            icon="pi pi-pencil"
-            [rounded]="true"
-            [outlined]="true"
-            (onClick)="editOrder(items)"
-          ></p-button>
-          <p-button
-            icon="pi pi-trash"
-            severity="danger"
-            [rounded]="true"
-            [outlined]="true"
-            (onClick)="deleteOrder(items)"
-          ></p-button>
-        </td>
-      </tr>
-    </ng-template>
-
-    <ng-template #expandedrow let-items>
-      <tr>
-        <td colspan="8">
-          <div class="p-4 bg-gray-50 rounded-lg">
-            <h5 class="font-semibold mb-3">Order Details for {{ items.orderId }}</h5>
-            <p-table [value]="items.orderDetails" dataKey="orderDetailId">
-              <ng-template pTemplate="header">
-                <tr>
-                  <th>Product</th>
-                  <th>Warehouse</th>
-                  <th>Quantity</th>
-                  <th>Unit Price</th>
-                  <th>Total</th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-detail>
-                <tr>
-                  <td>{{ detail.productName }}</td>
-                  <td>{{ detail.warehouseId }}</td>
-                  <td>{{ detail.quantity }}</td>
-                  <td>{{ detail.unitPrice | currency }}</td>
-                  <td>{{ detail.quantity * detail.unitPrice | currency }}</td>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="emptymessage">
-                <tr>
-                  <td colspan="5">No order details available.</td>
-                </tr>
-              </ng-template>
-            </p-table>
+    <div class="overflow-x-auto rounded-2xl shadow-md">
+      <p-table
+        #dt
+        [value]="items"
+        dataKey="orderId"
+        [lazy]="true"
+        [paginator]="true"
+        [rows]="pageSize"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        [totalRecords]="totalCount"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} orders"
+        [globalFilterFields]="['productId', 'warehouseId', 'customerId']"
+        [tableStyle]="{ 'min-width': '40rem' }"
+        [expandedRowKeys]="expandedRows"
+        (onLazyLoad)="onPageChange($event)"
+        (onRowExpand)="onRowExpand($event)"
+        (onRowCollapse)="onRowCollapse($event)"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex gap-2 md:justify-between">
+            <p-iconfield>
+              <p-inputicon class="pi pi-search" />
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Search..."
+              />
+            </p-iconfield>
+            <div class="flex gap-2">
+              <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+              <p-button icon="pi pi-upload" label="Export" (onClick)="exportCSV()" />
+            </div>
           </div>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+        </ng-template>
+
+        <ng-template #header>
+          <tr>
+            <th style="width: 3rem"></th>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Total Amount</th>
+            <th>Created By</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-items let-expanded="expanded">
+          <tr>
+            <td>
+              <p-button
+                type="button"
+                pRipple
+                [pRowToggler]="items"
+                [text]="true"
+                [rounded]="true"
+                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+              ></p-button>
+            </td>
+            <td>{{ items.orderId }}</td>
+            <td>{{ items.customerName }}</td>
+            <td>{{ items.orderDate | date : 'mediumDate' }}</td>
+            <td><p-tag [value]="items.statusName"></p-tag></td>
+            <td>{{ items.totalAmount | currency }}</td>
+            <td>{{ items.createdByUserId }}</td>
+            <td class="flex gap-2">
+              <p-button
+                icon="pi pi-pencil"
+                [rounded]="true"
+                [outlined]="true"
+                (onClick)="editOrder(items)"
+              ></p-button>
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                [rounded]="true"
+                [outlined]="true"
+                (onClick)="deleteOrder(items)"
+              ></p-button>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template #expandedrow let-items>
+          <tr>
+            <td colspan="8">
+              <div class="p-4 bg-gray-50 rounded-lg">
+                <h5 class="font-semibold mb-3">Order Details for {{ items.orderId }}</h5>
+                <p-table [value]="items.orderDetails" dataKey="orderDetailId">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Product</th>
+                      <th>Warehouse</th>
+                      <th>Quantity</th>
+                      <th>Unit Price</th>
+                      <th>Total</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-detail>
+                    <tr>
+                      <td>{{ detail.productName }}</td>
+                      <td>{{ detail.warehouseId }}</td>
+                      <td>{{ detail.quantity }}</td>
+                      <td>{{ detail.unitPrice | currency }}</td>
+                      <td>{{ detail.quantity * detail.unitPrice | currency }}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="5">No order details available.</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
 
   <p-dialog
     [(visible)]="orderDialog"
