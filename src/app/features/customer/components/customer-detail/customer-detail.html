@@ -120,7 +120,8 @@
 
   <p-dialog
     [(visible)]="customerDialog"
-    [style]="{ width: '480px' }"
+    [style]="{ width: '70vw' }"
+    [breakpoints]="{ '1024px': '78vw', '768px': '78vw', '425px': '94vw' }"
     header="customer Details"
     [modal]="true"
     [draggable]="false"

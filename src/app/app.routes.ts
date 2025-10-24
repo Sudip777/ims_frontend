@@ -8,7 +8,7 @@ import { SupplierDetail } from './features/supplier/components/supplier-detail/s
 import { CategoryDetail } from './features/category/components/category-detail/category-detail';
 import { WarehouseDetail } from './features/warehouse/components/warehouse-detail/warehouse-detail';
 import { CustomerDetail } from './features/customer/components/customer-detail/customer-detail';
-import { PurchaseOrderComponent } from './features/purchase-order/components/purchase-order-detail/purchase-order-detail';
+import { PurchaseOrderDetail } from './features/purchase-order/components/purchase-order-detail/purchase-order-detail';
 import { SalesOrderDetail } from './features/sales-order/components/sales-order-detail/sales-order-detail';
 import { InventoryDetail } from './features/inventory/components/inventory-detail/inventory-detail';
 import { Notfound } from './shared/components/not-found/not-found';
@@ -36,7 +36,7 @@ export const routes: Routes = [
       { path: 'category', component: CategoryDetail },
       { path: 'warehouse', component: WarehouseDetail },
       { path: 'customer', component: CustomerDetail },
-      { path: 'purchase-order', component: PurchaseOrderComponent },
+      { path: 'purchase-order', component: PurchaseOrderDetail },
       { path: 'sales-order', component: SalesOrderDetail },
       { path: 'inventory', component: InventoryDetail },
     ],
