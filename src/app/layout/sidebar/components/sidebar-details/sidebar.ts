@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { IconComponent } from '../../../../shared/icons/components/icon.component';
 import { IconField, IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -10,15 +10,10 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
-import { ApiService } from '../../../../core/services/api.services';
 import { SidebarService } from '../../services/sidebar.services';
 import { NotificationService } from '../../../../core/services/notification.services';
-
-interface NavItem {
-  icon: string;
-  label: string;
-  route: string;
-}
+import { AuthStore } from '../../../../core/store/auth-store';
+import { ApiService } from '../../../../core/services/api.services';
 
 @Component({
   selector: 'app-sidebar',
@@ -44,17 +39,35 @@ interface NavItem {
 })
 export class Sidebar {
   private sidebarService = inject(SidebarService);
+  private authStore = inject(AuthStore);
   private notificationService = inject(NotificationService);
   private router = inject(Router);
   @Input() sidebarOpen = false;
   @Output() closeSidebarEvent = new EventEmitter<void>();
+  apiService = inject(ApiService);
 
+  userDetails = signal<any>(null);
+
+  userDetailItems: any = '';
+  roleName = this.authStore.userRole;
+  userName = this.authStore.username;
   sidebarMenuItems: any[] = [];
 
   private loadUserMenuItems() {
     this.sidebarService.getAllUserMenuItems().subscribe({
       next: (res) => {
         this.sidebarMenuItems = res.result;
+      },
+      error: () => {
+        this.notificationService.error('Error!!', 'Failed to Load User Menu Items');
+      },
+    });
+  }
+  private loadUserProfile() {
+    this.sidebarService.getAllUserDetails().subscribe({
+      next: (res) => {
+        this.userDetailItems = res.result;
+        console.log(this.userDetailItems, 'dataaaaa');
       },
       error: () => {
         this.notificationService.error('Error!!', 'Failed to Load User Menu Items');
@@ -69,6 +82,7 @@ export class Sidebar {
   }
   ngOnInit(): void {
     this.loadUserMenuItems();
+    this.loadUserProfile();
   }
 
   logout() {

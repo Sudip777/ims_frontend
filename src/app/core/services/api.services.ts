@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthStore } from '../store/auth-store';
@@ -9,7 +9,8 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class ApiService {
-  constructor(private http: HttpClient, private authStore: AuthStore) {}
+  private readonly http = inject(HttpClient);
+  private readonly authStore = inject(AuthStore);
 
   private getHeaders(): HttpHeaders {
     const token = this.authStore.token();

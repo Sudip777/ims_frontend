@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-// Add to your auth.service.ts or auth-store.ts
 
 export interface LoginResult {
   access_token: string;
