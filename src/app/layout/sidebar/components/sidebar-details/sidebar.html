@@ -11,7 +11,7 @@
 
     <div class="flex flex-col gap-2 mt-4">
       <div
-        *ngFor="let item of navItems"
+        *ngFor="let item of sidebarMenuItems"
         [routerLink]="[item.route]"
         (click)="onNavigate()"
         routerLinkActive="bg-ims-primary-hover-light text-ims-primary"
