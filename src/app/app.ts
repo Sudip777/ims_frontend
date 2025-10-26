@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Toast } from "primeng/toast";
+import { Toast } from 'primeng/toast';
+import { AuthService } from './core/services/auth.services';
 
 @Component({
   selector: 'app-root',
@@ -10,4 +11,7 @@ import { Toast } from "primeng/toast";
 })
 export class App {
   protected readonly title = signal('inventory-management-system');
+  authService = inject(AuthService);
+
+  userDetails: any[] = [];
 }

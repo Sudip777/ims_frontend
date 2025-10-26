@@ -34,9 +34,14 @@
         shape="circle"
       />
 
-      <div>
-        <h3 class="text-sm font-medium font-heading text-ims-text-general">Olivia Rhye</h3>
-        <p class="text-sm font-medium font-heading text-ims-text-primary">Admin</p>
+      <div class="flex-col gap-2">
+        <p class="text-md font-medium font-heading text-ims-text-general">
+          <!-- {{ userDetailItems.fullName }} -->
+          {{ userName() }}
+        </p>
+        <p class="text-sm font-medium font-heading text-ims-text-primary">
+          {{ roleName() }}
+        </p>
       </div>
     </div>
     <div

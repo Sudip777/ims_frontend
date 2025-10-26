@@ -8,23 +8,13 @@ import { MessageService } from 'primeng/api';
 import { jwtDecode } from 'jwt-decode';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthPayload, AuthService } from '../services/auth.services';
-
-export interface TokenDecoded {
-  sub: string; // "JwtSubject"
-  jti: string; // Token ID
-  UserId: string; // "13"
-  Username: string; // "yy"
-  role: string; // "ADMIN"
-  exp: number; // Expiration timestamp
-  iss: string; // "JwtIssuer"
-  aud: string;
-}
+import { TokenDecoded } from '../models/token.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthStore {
-  private auth = inject(AuthService);
+  private authService = inject(AuthService);
   private messageService = inject(MessageService);
   private router = inject(Router);
 
@@ -67,7 +57,7 @@ export class AuthStore {
   login = createEffect<AuthPayload>(
     pipe(
       concatMap((payload) =>
-        this.auth.login(payload).pipe(
+        this.authService.login(payload).pipe(
           map((response) => {
             const token = response.result.access_token;
             this.token.set(token);
@@ -118,18 +108,27 @@ export class AuthStore {
     this.router.navigateByUrl('/login');
   }
 
+  private roleMap: Record<string, string> = {
+    '8': 'Super_Admin',
+    '7': 'Support ',
+    '6': 'Warehouse',
+    '5': 'Sales',
+    '4': 'Manager',
+    '1': 'Admin',
+  };
   userId = computed(() => {
     const decoded = this.tokenDecoded();
     return decoded?.UserId || null;
   });
-
   username = computed(() => {
     const decoded = this.tokenDecoded();
-    return decoded?.Username || null;
+    const username = decoded?.Username || null;
+    if (!username) return null;
+    return username.charAt(0).toUpperCase() + username.slice(1);
   });
 
   userRole = computed(() => {
     const decoded = this.tokenDecoded();
-    return decoded?.role || null;
+    return this.roleMap[decoded?.RoleId ?? ''] ?? 'UNKNOWN';
   });
 }

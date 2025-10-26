@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -9,6 +9,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { ButtonModule } from 'primeng/button';
+import { AuthStore } from '../../../../core/store/auth-store';
 
 @Component({
   selector: 'app-dashboard-overview',
@@ -28,12 +29,14 @@ import { ButtonModule } from 'primeng/button';
   styleUrls: ['./dashboard-overview.scss'],
 })
 export class DashboardOverview implements OnInit {
+  private authStore = inject(AuthStore);
   timePeriods = ['1d', '7d', '1m', '3m', '6m', '1y'];
   selectedPeriod = '1m';
   date: Date | null = null;
   sidebarOpen = false;
   @Output() sidebarToggle = new EventEmitter<boolean>();
 
+  userName = this.authStore.username();
   openSidebar() {
     console.log('Opening sidebar...'); // Debug log
 
@@ -54,9 +57,6 @@ export class DashboardOverview implements OnInit {
   normalBarOptions: any;
 
   ngOnInit() {
-    /* ============================
-       📦 1️⃣ INVENTORY STOCK LEVELS (Stacked Bar)
-       ============================ */
     this.stackedBarData = {
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
       datasets: [
@@ -110,9 +110,6 @@ export class DashboardOverview implements OnInit {
       },
     };
 
-    /* ============================
-       🧁 2️⃣ CATEGORY DISTRIBUTION (Doughnut)
-       ============================ */
     this.doughnutData = {
       labels: ['Electronics', 'Clothing', 'Furniture', 'Groceries', 'Toys'],
       datasets: [
@@ -151,9 +148,6 @@ export class DashboardOverview implements OnInit {
       },
     };
 
-    /* ============================
-       🥧 3️⃣ SUPPLIER CONTRIBUTION (Pie)
-       ============================ */
     this.pieData = {
       labels: ['Supplier A', 'Supplier B', 'Supplier C', 'Supplier D'],
       datasets: [
@@ -189,9 +183,6 @@ export class DashboardOverview implements OnInit {
       },
     };
 
-    /* ============================
-       📊 4️⃣ MONTHLY SALES TREND (Normal Bar)
-       ============================ */
     this.normalBarData = {
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
       datasets: [

@@ -6,7 +6,7 @@ export function authGuard(role: string | null = null): CanActivateFn {
   return () => {
     const authState = inject(AuthStore);
     const router = inject(Router);
-    if (!authState.isAuthenticated() || (role && authState.tokenDecoded()?.role !== role)) {
+    if (!authState.isAuthenticated() || (role && authState.tokenDecoded()?.RoleId !== role)) {
       router.navigateByUrl('/login');
       return false;
     }
