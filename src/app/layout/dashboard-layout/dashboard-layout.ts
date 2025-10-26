@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
-import { Sidebar } from '../sidebar/sidebar';
+import { Sidebar } from '../sidebar/components/sidebar-details/sidebar';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '../../shared/icons/components/icon.component';
 import { DrawerModule } from 'primeng/drawer';

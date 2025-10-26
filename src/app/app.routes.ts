@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './layout/main-layout/main-layout';
 import { DashboardLayout } from './layout/dashboard-layout/dashboard-layout';
+import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   { path: '', component: MainLayout },
@@ -18,6 +19,7 @@ export const routes: Routes = [
 
   {
     path: 'dashboard',
+    canActivateChild: [authGuard()],
     title: 'Dashboard Management',
     component: DashboardLayout,
     children: [
@@ -47,7 +49,7 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'category',
+        path: 'categories',
         title: 'Category Management',
         loadComponent: () =>
           import('./features/category/components/category-detail/category-detail').then(
@@ -63,7 +65,7 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'customer',
+        path: 'customers',
         title: 'Customer Management',
         loadComponent: () =>
           import('./features/customer/components/customer-detail/customer-detail').then(
