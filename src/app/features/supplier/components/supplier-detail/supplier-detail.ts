@@ -63,7 +63,6 @@ interface Supplier {
   ],
   standalone: true,
   templateUrl: './supplier-detail.html',
-  styleUrl: './supplier-detail.scss',
 })
 export class SupplierDetail {
   //DI
@@ -191,6 +190,10 @@ export class SupplierDetail {
       message: `Are you sure you want to delete "${supplier.name}"?`,
       header: 'Confirm Deletion',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Confirm',
+      rejectLabel: 'Cancel',
+      rejectButtonStyleClass: 'p-button-secondary',
+      acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.supplierService.deleteSupplier(supplier.supplierId).subscribe({
           next: () => {

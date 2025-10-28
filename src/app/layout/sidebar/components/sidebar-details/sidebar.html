@@ -10,8 +10,8 @@
     </p-iconfield>
 
     <div class="flex flex-col gap-2 mt-4">
+      @for(item of sidebarMenuItems; track item.route){
       <div
-        *ngFor="let item of sidebarMenuItems"
         [routerLink]="[item.route]"
         (click)="onNavigate()"
         routerLinkActive="bg-ims-primary-hover-light text-ims-primary"
@@ -21,12 +21,15 @@
         <app-icon [name]="item.icon"></app-icon>
         <span class="text-sm font-medium font-heading">{{ item.label }}</span>
       </div>
+      } @empty {
+      <p class="text-sm text-red-600">There are no items.</p>
+      }
     </div>
   </div>
 
   <hr class="bg-gray-200 w-full shadow-md" />
   <div class="flex items-center justify-between border-t border-gray-200 pt-4 cursor-pointer">
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-4">
       <p-avatar
         image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
         class="mr-2"
@@ -34,12 +37,12 @@
         shape="circle"
       />
 
-      <div class="flex-col gap-2">
-        <p class="text-md font-medium font-heading text-ims-text-general">
-          <!-- {{ userDetailItems.fullName }} -->
+      <div>
+        <p class="font-medium font-heading text-ims-text-general">
+          <!-- TODO {{ userDetailItems.fullName }} -->
           {{ userName() }}
         </p>
-        <p class="text-sm font-medium font-heading text-ims-text-primary">
+        <p class="text-sm font-semibold font-sans text-ims-text-secondary">
           {{ roleName() }}
         </p>
       </div>

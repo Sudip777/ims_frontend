@@ -1,114 +1,246 @@
-<main class="flex flex-col md:flex-row min-h-screen bg-ims-primary">
+<main class="flex flex-col md:flex-row min-h-screen">
+  <!-- Left Panel - Enhanced with Better Visual Hierarchy -->
   <section
-    class="lg:flex lg:w-1/2 bg-colors-ims-primary p-12 flex-col justify-between text-white overflow-hidden"
+    class="lg:flex lg:w-2/5 bg-gradient-to-br from-ims-primary via-ims-primary to-ims-secondary p-8 lg:p-16 flex-col justify-between text-white overflow-hidden relative"
   >
-    <div class="flex flex-col gap-20 justify-center items-center md:items-start">
-      <app-icon name="app-icon-white"></app-icon>
-      <div class="max-w-lg">
-        <h2 class="font-heading text-4xl md:text-5xl font-semibold leading-tight mb-6">
+    <!-- Subtle background pattern -->
+    <div class="absolute inset-0 opacity-5">
+      <div
+        class="absolute inset-0"
+        style="
+          background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0);
+          background-size: 40px 40px;
+        "
+      ></div>
+    </div>
+
+    <div class="flex flex-col gap-16 justify-center items-start relative z-10">
+      <!-- Logo with better spacing -->
+      <div class="animate-fade-in">
+        <app-icon name="app-icon-white"></app-icon>
+      </div>
+
+      <!-- Content with improved typography -->
+      <div class="max-w-lg space-y-6">
+        <div class="inline-block">
+          <span
+            class="text-xs font-bold tracking-widest uppercase bg-white/20 px-3.5 py-1.5 rounded-full backdrop-blur-sm"
+          >
+            Step 1 of 1
+          </span>
+        </div>
+
+        <h2 class="font-heading text-4xl lg:text-5xl font-bold leading-tight tracking-tight">
           Engineered to handle all your inventory needs
         </h2>
-        <p class="text-sm leading-relaxed font-sans">
+
+        <p class="text-base lg:text-lg leading-relaxed text-white/90 font-sans">
           Your complete inventory management software to track inventory, streamline sales, fulfill
           orders, and oversee warehouses from a single window.
         </p>
+
+        <!-- Trust indicators -->
+        <div class="flex items-center gap-6 pt-4 text-sm text-white/80">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span>Free 30-day trial</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span>No credit card</span>
+          </div>
+        </div>
       </div>
     </div>
-    <p class="hidden md:block mt-52 text-purple-200 text-sm">© TheUnityWare 2024</p>
+
+    <!-- Footer -->
+    <p class="hidden lg:block mt-auto text-white/60 text-sm font-medium relative z-10">
+      © TheUnityWare 2024
+    </p>
   </section>
 
-  <section class="w-full lg:w-1/2 p-8 lg:p-16 flex flex-col justify-between bg-white">
-    <div class="w-full max-w-xl mx-auto">
-      <div class="mb-8">
-        <h3 class="text-xl text-colors-ims-text-secondary mb-2 font-sans">
-          Tell us a little about your business
+  <!-- Right Panel - Form Section with Enhanced Spacing -->
+  <section class="w-full lg:w-3/5 p-6 lg:p-12 flex flex-col justify-between bg-gray-50">
+    <div class="w-full max-w-2xl mx-auto">
+      <!-- Header with better spacing -->
+      <div class="mb-10">
+        <h3 class="text-2xl lg:text-3xl font-heading font-bold text-ims-text-primary mb-3">
+          Tell us about your business
         </h3>
+        <p class="text-base text-ims-text-secondary font-sans">
+          Help us customize your experience with a few quick details
+        </p>
       </div>
 
-      <form [formGroup]="onboardingForm" (ngSubmit)="onSubmit()" class="space-y-6">
-        <app-text-field
-          label="BUSINESS NAME"
-          placeholder="Brew & Bliss"
-          formControlName="businessName"
-          type="text"
-          [required]="true"
-          [error]="isFieldInvalid('businessName')"
-        >
-        </app-text-field>
+      <!-- Form with improved spacing and grouping -->
+      <form [formGroup]="onboardingForm" (ngSubmit)="onSubmit()" class="space-y-8">
+        <!-- Basic Information Group -->
+        <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100 space-y-5">
+          <h4 class="text-xs font-bold text-ims-text-primary uppercase tracking-widest mb-4">
+            Basic Information
+          </h4>
 
-        <app-text-field
-          label="INDUSTRY"
-          placeholder="FMCG"
-          formControlName="industry"
-          type="text"
-          [required]="true"
-          [error]="isFieldInvalid('industry')"
-        >
-        </app-text-field>
+          <p-floatlabel class="w-full">
+            <input
+              pInputText
+              id="businessName"
+              formControlName="businessName"
+              autocomplete="off"
+              class="w-full h-12 text-base"
+            />
+            <label for="businessName" class="text-base">Business Name</label>
+          </p-floatlabel>
 
-        <app-text-field
-          label="DOMAIN"
-          placeholder="Coffee"
-          formControlName="domain"
-          type="text"
-          [required]="true"
-          [error]="isFieldInvalid('domain')"
-        >
-        </app-text-field>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <p-floatlabel class="w-full">
+              <input
+                pInputText
+                id="industry"
+                formControlName="industry"
+                autocomplete="off"
+                class="w-full h-12 text-base"
+              />
+              <label for="industry" class="text-base">Industry</label>
+            </p-floatlabel>
 
-        <app-text-field
-          label="PRODUCT/SERVICES OFFERED"
-          placeholder="PREMIUM"
-          formControlName="productService"
-          type="text"
-          [required]="true"
-          [error]="isFieldInvalid('productService')"
-        >
-        </app-text-field>
+            <p-floatlabel class="w-full">
+              <input
+                pInputText
+                id="domain"
+                formControlName="domain"
+                autocomplete="off"
+                class="w-full h-12 text-base"
+              />
+              <label for="domain" class="text-base">Domain</label>
+            </p-floatlabel>
+          </div>
 
-        <div>
+          <p-floatlabel class="w-full">
+            <input
+              pInputText
+              id="productService"
+              formControlName="productService"
+              autocomplete="off"
+              class="w-full h-12 text-base"
+            />
+            <label for="productService" class="text-base">Product/Service Type</label>
+          </p-floatlabel>
+        </div>
+
+        <!-- Business Type Selection - FIXED RADIO BUTTONS -->
+        <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
           <label
-            class="block text-[13px] font-semibold text-colors-ims-text-primary mb-3 uppercase tracking-wide"
+            class="block text-xs font-bold text-ims-text-primary mb-5 uppercase tracking-widest"
           >
-            Which of the following best describes you<span class="text-red-600 ml-0.5">*</span>
+            Which best describes you? <span class="text-red-500">*</span>
           </label>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
             @for (type of businessTypes; track type.value) {
-            <label class="flex items-center space-x-2 cursor-pointer group">
+            <label
+              class="relative flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:border-ims-primary hover:shadow-sm group"
+              [class.border-ims-primary]="onboardingForm.get('businessType')?.value === type.value"
+              [class.bg-ims-primary-hover-light]="
+                onboardingForm.get('businessType')?.value === type.value
+              "
+              [class.border-gray-200]="onboardingForm.get('businessType')?.value !== type.value"
+            >
               <input
                 type="radio"
                 [value]="type.value"
                 formControlName="businessType"
-                class="w-4 h-4 border-2 border-gray-300 rounded-full checked:border-colors-ims-primary checked:bg-colors-ims-primary hover:border-colors-ims-primary"
+                class="sr-only"
               />
+              <!-- Custom Radio Circle - SMALLER & CLEANER -->
+              <div class="relative flex-shrink-0">
+                <div
+                  class="w-4 h-4 rounded-full border-2 transition-all duration-200"
+                  [class.border-ims-primary]="
+                    onboardingForm.get('businessType')?.value === type.value
+                  "
+                  [class.border-gray-300]="onboardingForm.get('businessType')?.value !== type.value"
+                  [class.bg-ims-primary]="onboardingForm.get('businessType')?.value === type.value"
+                >
+                  <div
+                    class="absolute inset-0 flex items-center justify-center"
+                    [class.opacity-100]="onboardingForm.get('businessType')?.value === type.value"
+                    [class.opacity-0]="onboardingForm.get('businessType')?.value !== type.value"
+                  >
+                    <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+                  </div>
+                </div>
+              </div>
               <span
-                class="text-sm font-medium text-colors-ims-text-secondary group-hover:text-gray-900 transition-colors"
-                >{{ type.label }}</span
+                class="text-sm font-semibold transition-colors"
+                [class.text-ims-primary]="onboardingForm.get('businessType')?.value === type.value"
+                [class.text-ims-text-secondary]="
+                  onboardingForm.get('businessType')?.value !== type.value
+                "
               >
+                {{ type.label }}
+              </span>
             </label>
             }
           </div>
         </div>
 
-        <div>
+        <!-- SKU Size Selection - FIXED RADIO BUTTONS -->
+        <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
           <label
-            class="block text-[13px] font-semibold text-colors-ims-text-primary mb-3 uppercase tracking-wide"
+            class="block text-xs font-bold text-ims-text-primary mb-5 uppercase tracking-widest"
           >
-            Storage Keeping Unit(SKU) Size<span class="text-red-600 ml-0.5">*</span>
+            Storage Keeping Unit (SKU) Size <span class="text-red-500">*</span>
           </label>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             @for (size of skuSizes; track size.value) {
-            <label class="flex items-center space-x-2 cursor-pointer group">
-              <input
-                type="radio"
-                [value]="size.value"
-                formControlName="skuSize"
-                class="w-4 h-4 border-2 border-gray-300 rounded-full checked:border-colors-ims-primary checked:bg-colors-ims-primary hover:border-colors-ims-primary"
-              />
+            <label
+              class="relative flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:border-ims-primary hover:shadow-sm group"
+              [class.border-ims-primary]="onboardingForm.get('skuSize')?.value === size.value"
+              [class.bg-ims-primary-hover-light]="
+                onboardingForm.get('skuSize')?.value === size.value
+              "
+              [class.border-gray-200]="onboardingForm.get('skuSize')?.value !== size.value"
+            >
+              <input type="radio" [value]="size.value" formControlName="skuSize" class="sr-only" />
+              <!-- Custom Radio Circle - SMALLER & CLEANER -->
+              <div class="relative flex-shrink-0">
+                <div
+                  class="w-4 h-4 rounded-full border-2 transition-all duration-200"
+                  [class.border-ims-primary]="onboardingForm.get('skuSize')?.value === size.value"
+                  [class.border-gray-300]="onboardingForm.get('skuSize')?.value !== size.value"
+                  [class.bg-ims-primary]="onboardingForm.get('skuSize')?.value === size.value"
+                >
+                  <div
+                    class="absolute inset-0 flex items-center justify-center"
+                    [class.opacity-100]="onboardingForm.get('skuSize')?.value === size.value"
+                    [class.opacity-0]="onboardingForm.get('skuSize')?.value !== size.value"
+                  >
+                    <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+                  </div>
+                </div>
+              </div>
               <span
-                class="text-sm font-medium text-colors-ims-text-secondary group-hover:text-gray-900 transition-colors"
-                >{{ size.label }}</span
+                class="text-sm font-semibold transition-colors"
+                [class.text-ims-primary]="onboardingForm.get('skuSize')?.value === size.value"
+                [class.text-ims-text-secondary]="
+                  onboardingForm.get('skuSize')?.value !== size.value
+                "
               >
+                {{ size.label }}
+              </span>
             </label>
             }
           </div>
@@ -116,16 +248,52 @@
       </form>
     </div>
 
-    <div class="flex justify-center mt-10 cursor-pointer">
+    <!-- Action Buttons with Better Hierarchy -->
+    <div
+      class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-10 w-full max-w-2xl mx-auto"
+    >
+      <!-- Skip Button - Less Prominent -->
+      <button
+        (click)="navigateLogin()"
+        type="button"
+        class="text-ims-text-secondary hover:text-ims-text-primary font-semibold text-sm transition-colors flex items-center gap-2 group order-2 sm:order-1"
+      >
+        <span>Skip for now</span>
+        <svg
+          class="w-4 h-4 group-hover:translate-x-1 transition-transform"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 8l4 4m0 0l-4 4m4-4H3"
+          />
+        </svg>
+      </button>
+
+      <!-- Primary CTA - More Prominent -->
       <app-button
-        (buttonClick)="navigateLogin()"
+        (buttonClick)="onSubmit()"
         type="submit"
         color="primary"
         size="md"
-        routerLink="/onboarding"
+        class="w-full sm:w-auto order-1 sm:order-2"
       >
-        <span class="flex justify-center items-center gap-4 font-heading text-md font-semibold"
-          >Sign in <app-icon name="arrow-right"></app-icon>
+        <span
+          class="flex justify-center items-center gap-3 font-heading text-base font-semibold px-6"
+        >
+          Continue to Dashboard
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 8l4 4m0 0l-4 4m4-4H3"
+            />
+          </svg>
         </span>
       </app-button>
     </div>

@@ -2,11 +2,13 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IconComponent } from '../../../../shared/icons/components/icon.component';
-import { TextFieldComponent } from '../../../../shared/components/text-field/text-field';
 import { AuthRoutingModule } from '../../auth-routing-module';
 import { AuthStore } from '../../../../core/store/auth-store';
 import { ToastModule } from 'primeng/toast';
-import { HttpClientModule } from '@angular/common/http';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
+import { FloatLabel } from 'primeng/floatlabel';
+import { Checkbox } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-login',
@@ -14,17 +16,18 @@ import { HttpClientModule } from '@angular/common/http';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    TextFieldComponent,
     IconComponent,
     AuthRoutingModule,
     ToastModule,
-    HttpClientModule,
+    InputTextModule,
+    MessageModule,
+    FloatLabel,
+    Checkbox,
   ],
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
 })
 export class Login {
-  // === State ===
   loginForm: FormGroup;
   isLoading = false;
   errorMessage = '';

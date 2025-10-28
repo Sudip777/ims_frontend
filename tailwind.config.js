@@ -4,36 +4,48 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'ims-primary': '#6941C6', // Purple for primary actions, buttons, links
-        'ims-primary-light': '#E9D5FF', // Light purple for badges and highlights
-        'ims-primary-hover': '#5B21B6', // Darker purple for hover states
-        'ims-primary-hover-light': '#F9F5FF', // Lighter purple for hover states
-        'ims-secondary': '#1D4ED8', // Dark blue for secondary actions
-        'ims-bg-dark': '#1F1F1F', // Dark background (outer shell)
-        'ims-bg-light': '#F9FAFB', // Light gray background
-        'ims-surface': '#FFFFFF', // White surfaces (cards, table)
-        'ims-text-primary': '#111827', // Dark text (headings, primary content)
-        'ims-text-secondary': '#6B7280', // Medium gray text (labels, secondary)
-        'ims-text-tertiary': '#9CA3AF', // Light gray text (placeholders)
-        'ims-success': '#10B981', // Green for success states
-        'ims-error': '#EF4444', // Red for delete/error actions
-        'ims-warning': '#F59E0B', // Orange for warnings
-        'ims-border': '#E5E7EB', // Light borders (table, inputs)
-        'ims-border-dark': '#D1D5DB', // Slightly darker borders
-        'ims-hover': '#F3F4F6', // Hover background for rows
-        'ims-badge': '#F3E8FF', // Light purple badge background
-        'ims-text-primary': '#666666', // greyish
-        'ims-text-secondary': '#222222', //light greyish F9F5FF
-        'ims-text-general': '#344054',
+        //Primary Brand
+        'ims-primary': '#10B981',
+        'ims-primary-light': '#D1FAE5', //background hover highlight
+        'ims-primary-hover': '#059669', //  hover tone
+        'ims-primary-hover-light': '#ECFDF5', // Very light hover background
+        'ims-primary-border': '#6EE7B7', // Border accent for focus rings
+
+        //Secondary & Supporting
+        'ims-secondary': '#14B8A6',
+        'ims-accent': '#22C55E', // Vibrant green accent for icons or states
+
+        //Text & Content
+        'ims-text-primary': '#1F2937', // Main text (headings)
+        'ims-text-secondary': '#4B5563', // Secondary text (labels, metadata)
+        'ims-text-tertiary': '#9CA3AF', // Placeholder / subtle text
+        'ims-text-general': '#334155', // General readable text tone
+
+        //landing page
+        'landing-hero-bg': '#FFFFFF',
+        'landing-section-alt': '#F9FAFB', // Alternate sections
+        'landing-accent-wash': '#F0FDF4', // Use for 1 section max
+        'landing-gradient-start': '#ECFDF5', // For subtle gradients
+        'landing-gradient-end': '#FFFFFF',
       },
+
       fontFamily: {
-        heading: ['Poppins', 'sans-serif'], // H1/H2
-        sans: ['Roboto', 'ui-sans-serif', 'system-ui'], // H3–P, body,p
+        heading: ['Poppins', 'sans-serif'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+      },
+
+      borderRadius: {
+        '2xl': '1rem',
+      },
+
+      boxShadow: {
+        'ims-card': '0 2px 8px rgba(0, 0, 0, 0.05)',
+        'ims-focus': '0 0 0 2px #A7F3D0',
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-primeui')],
   corePlugins: {
-    preflight: false, // This prevents Tailwind from resetting PrimeNG styles
+    preflight: false,
   },
 };

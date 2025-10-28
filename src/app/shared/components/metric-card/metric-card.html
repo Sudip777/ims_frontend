@@ -1,12 +1,6 @@
-<div
-  [ngClass]="isPrimary === true ? 'bg-ims-primary' : 'bg-white'"
-  class="rounded-xl border border-gray-400 p-6 shadow-md"
->
+<div class="rounded-xl border border-gray-400 p-6 shadow-md bg-white">
   <div class="flex items-start justify-between mb-4">
-    <h3
-      [ngClass]="isPrimary === true ? 'text-white' : ''"
-      class="text-sm font-medium text-gray-900 font-heading"
-    >
+    <h3 class="text-sm font-medium text-gray-900 font-heading">
       {{ title }}
     </h3>
 
@@ -38,7 +32,7 @@
   <div class="flex items-end justify-between">
     <div>
       <div
-        [ngClass]="isPrimary === true ? 'text-white' : ''"
+        [ngClass]="isPrimary ? 'text-white' : ''"
         class="text-4xl font-semibold text-gray-900 mb-2 font-heading"
       >
         {{ value }}
@@ -46,7 +40,7 @@
       <div class="flex items-center gap-2">
         <span
           class="flex items-center gap-1 text-sm font-medium"
-          [ngClass]="trend === 'up' ? 'text-green-600' : 'text-red-600'"
+          [ngClass]="trend === 'up' ? 'text-ims-primary' : 'text-red-600'"
         >
           <svg *ngIf="trend === 'up'" width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
@@ -68,6 +62,7 @@
           </svg>
           <span class="text-sm font-sans">{{ percentage }}%</span>
         </span>
+
         <span class="text-sm text-gray-500 font-sans">vs last month</span>
       </div>
     </div>

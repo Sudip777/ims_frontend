@@ -6,7 +6,6 @@ export type ButtonColor =
   | 'secondary'
   | 'destructive'
   | 'lightBlue'
-  | 'blue'
   | 'skyBlue'
   | 'success'
   | 'babyBlue'
@@ -43,16 +42,16 @@ export class ButtonComponent {
   // Color variants
   private readonly colorStyles: Record<ButtonColor, string> = {
     primary:
-      'bg-[#6941C6] text-white shadow-[0_10px_40px_rgba(105,65,198,0.3)] hover:shadow-[0_15px_50px_rgba(105,65,198,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(105,65,198,0.3)]',
+      'bg-[#10B981] text-white shadow-[0_10px_40px_rgba(16,185,129,0.3)] hover:shadow-[0_15px_50px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(16,185,129,0.3)]',
     secondary:
-      'bg-[#1D4ED8] text-white shadow-[0_10px_40px_rgba(29,78,216,0.3)] hover:shadow-[0_15px_50px_rgba(29,78,216,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(29,78,216,0.3)]',
+      'bg-[#14B8A6] text-white shadow-[0_10px_40px_rgba(20,184,166,0.3)] hover:shadow-[0_15px_50px_rgba(20,184,166,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(20,184,166,0.3)]',
     destructive:
       'bg-[#EF4444] text-white shadow-[0_10px_40px_rgba(239,68,68,0.3)] hover:shadow-[0_15px_50px_rgba(239,68,68,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(239,68,68,0.3)]',
     success:
       'bg-[#10B981] text-white shadow-[0_10px_40px_rgba(16,185,129,0.3)] hover:shadow-[0_15px_50px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(16,185,129,0.3)]',
     lightBlue:
       'bg-[#38BDF8] text-white shadow-[0_10px_40px_rgba(56,189,248,0.3)] hover:shadow-[0_15px_50px_rgba(56,189,248,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(56,189,248,0.3)]',
-    blue: 'bg-[#3B82F6] text-white shadow-[0_10px_40px_rgba(59,130,246,0.3)] hover:shadow-[0_15px_50px_rgba(59,130,246,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(59,130,246,0.3)]',
+
     skyBlue:
       'bg-[#0EA5E9] text-white shadow-[0_10px_40px_rgba(14,165,233,0.3)] hover:shadow-[0_15px_50px_rgba(14,165,233,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(14,165,233,0.3)]',
     babyBlue:

@@ -192,6 +192,10 @@ export class CustomerDetail {
       message: `Are you sure you want to delete "${customer.name}"?`,
       header: 'Confirm Deletion',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Confirm',
+      rejectLabel: 'Cancel',
+      rejectButtonStyleClass: 'p-button-secondary',
+      acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.customerService.deleteCustomer(customer.customerId).subscribe({
           next: () => {

@@ -1,89 +1,332 @@
-<body class="bg-white text-gray-900 font-sans">
-  <header class="flex justify-between items-center p-4">
-    <app-icon name="app-logo"> </app-icon>
+<body class="bg-white text-ims-text-primary font-sans antialiased">
+  <!-- Header -->
+  <header
+    class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100"
+  >
+    <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+      <app-icon name="app-logo"></app-icon>
 
-    <app-button type="submit" color="primary" size="md" routerLink="/onboarding">
-      <span class="flex justify-center items-center gap-4 font-heading text-md font-semibold"
-        >Sign in <app-icon name="arrow-right"></app-icon>
-      </span>
-    </app-button>
+      <app-button type="button" color="primary" size="md" routerLink="/login">
+        <span
+          class="flex justify-center items-center gap-2.5 font-heading text-sm font-semibold text-white px-2"
+        >
+          Sign in
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 8l4 4m0 0l-4 4m4-4H3"
+            />
+          </svg>
+        </span>
+      </app-button>
+    </div>
   </header>
 
-  <section class="text-center py-16 relative">
-    <div class="absolute inset-0">
+  <!-- Hero Section -->
+  <section
+    class="relative pt-32 pb-20 px-6 overflow-hidden bg-gradient-to-b from-landing-gradient-start to-white"
+  >
+    <!-- Subtle grid pattern -->
+    <div class="absolute inset-0 opacity-[0.03]">
       <div
-        class="w-full h-full bg-gradient-to-r from-purple-300 via-pink-300 to-blue-300 opacity-20 animate-pulse"
+        class="absolute inset-0"
+        style="
+          background-image: radial-gradient(circle at 2px 2px, #10b981 1px, transparent 0);
+          background-size: 40px 40px;
+        "
       ></div>
     </div>
-    <div class="relative z-10">
-      <h2 class="font-heading text-3xl md:text-4xl font-semibold text-gray-900 mb-4">
-        Technology doesn’t have to feel like a different language
-      </h2>
-      <p class="text-lg md:text-xl text-gray-700">
+
+    <div class="relative z-10 max-w-4xl mx-auto text-center space-y-8">
+      <!-- Badge -->
+      <div
+        class="inline-flex items-center gap-2 bg-ims-primary-hover-light border border-ims-primary-border px-4 py-2 rounded-full"
+      >
+        <span class="w-2 h-2 bg-ims-primary rounded-full animate-pulse"></span>
+        <span class="text-sm font-semibold text-ims-primary"
+          >Trusted by 500+ businesses worldwide</span
+        >
+      </div>
+
+      <!-- Main Headline -->
+      <h1
+        class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-ims-text-primary leading-tight tracking-tight"
+      >
+        Technology doesn't have to feel like a
+        <span class="relative inline-block">
+          <span class="relative z-10">different language</span>
+          <span class="absolute bottom-2 left-0 w-full h-3 bg-ims-primary/20 -rotate-1"></span>
+        </span>
+      </h1>
+
+      <!-- Subheadline -->
+      <p class="text-lg md:text-xl text-ims-text-secondary max-w-2xl mx-auto leading-relaxed">
         Simplified inventory management to drive business growth and strategically scale operations
       </p>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+        <app-button type="button" color="primary" size="lg" routerLink="/onboarding">
+          <span class="flex items-center gap-3 font-heading text-base font-semibold px-6">
+            Start Free Trial
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 7l5 5m0 0l-5 5m5-5H6"
+              />
+            </svg>
+          </span>
+        </app-button>
+
+        <!-- <button
+          class="flex items-center gap-2.5 px-6 py-3 font-semibold text-ims-text-primary hover:text-ims-primary transition-colors group"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span>Watch Demo</span>
+        </button> -->
+        <app-button size="md" type="submit" color="secondary">
+          Watch Demo
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </app-button>
+      </div>
+
+      <div
+        class="flex flex-wrap items-center justify-center gap-6 pt-8 text-sm text-ims-text-tertiary"
+      >
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-ims-primary" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span>Free 30-day trial</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-ims-primary" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span>No credit card required</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-ims-primary" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span>Cancel anytime</span>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="max-auto w-full grid grid-cols-1 md:grid-cols-2 gap-4 px-6 py-6">
-    <div class="grid grid-cols-1 lg:grid-cols-2">
-      <div class="flex gap-6">
-        <div class="text-purple-600">
-          <app-icon name="order"></app-icon>
-        </div>
-        <div>
-          <h3 class="text-xl font-semibold text-purple-600 mb-2">Order Management</h3>
-          <p>
-            Efficiently manage all your sales and purchasing activities with our platform. Handle
-            invoices and bills seamlessly while tracking payments with ease.
-          </p>
-        </div>
+  <!-- Features Section -->
+  <section class="py-24 px-6 bg-white">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16 space-y-4">
+        <span class="inline-block text-sm font-bold text-ims-primary uppercase tracking-widest">
+          Powerful Features
+        </span>
+        <h2 class="font-heading text-3xl md:text-4xl font-bold text-ims-text-primary">
+          Everything you need to manage inventory
+        </h2>
+        <p class="text-lg text-ims-text-secondary max-w-2xl mx-auto">
+          Built for businesses of all sizes, from startups to enterprise
+        </p>
       </div>
 
-      <div class="flex gap-6">
-        <div class="text-purple-600">
-          <app-icon name="warehouse"></app-icon>
+      <!-- Features Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          <div class="group">
+            <div
+              class="w-12 h-12 bg-ims-primary-hover-light rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200"
+            >
+              <app-icon name="order" class="text-ims-primary"></app-icon>
+            </div>
+            <h3 class="text-lg font-bold text-ims-text-primary mb-2">Order Management</h3>
+            <p class="text-sm text-ims-text-secondary leading-relaxed">
+              Efficiently manage all your sales and purchasing activities with our platform. Handle
+              invoices and bills seamlessly.
+            </p>
+          </div>
+
+          <div class="group">
+            <div
+              class="w-12 h-12 bg-ims-primary-hover-light rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200"
+            >
+              <app-icon name="warehouse" class="text-ims-primary"></app-icon>
+            </div>
+            <h3 class="text-lg font-bold text-ims-text-primary mb-2">Warehouse Management</h3>
+            <p class="text-sm text-ims-text-secondary leading-relaxed">
+              Centrally manage your stock across multiple warehouses and generate detailed reports
+              specific to each location.
+            </p>
+          </div>
+
+          <div class="group">
+            <div
+              class="w-12 h-12 bg-ims-primary-hover-light rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200"
+            >
+              <app-icon name="inventory" class="text-ims-primary"></app-icon>
+            </div>
+            <h3 class="text-lg font-bold text-ims-text-primary mb-2">Inventory Tracking</h3>
+            <p class="text-sm text-ims-text-secondary leading-relaxed">
+              Meticulously monitor inventory items and effortlessly track movements, transfer
+              products between locations.
+            </p>
+          </div>
+
+          <div class="group">
+            <div
+              class="w-12 h-12 bg-ims-primary-hover-light rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200"
+            >
+              <app-icon name="report-analytics" class="text-ims-primary"></app-icon>
+            </div>
+            <h3 class="text-lg font-bold text-ims-text-primary mb-2">Reports & Analytics</h3>
+            <p class="text-sm text-ims-text-secondary leading-relaxed">
+              Access a variety of reports and gain insights into inventory aging, vendor payments,
+              and sales details.
+            </p>
+          </div>
         </div>
-        <div>
-          <h3 class="text-xl font-semibold text-purple-600 mb-2">Warehouse Management</h3>
-          <p>
-            Centrally manage your stock across multiple warehouses and generate detailed reports
-            specific to each warehouse.
-          </p>
+
+        <!-- Product Screenshot -->
+        <div class="relative">
+          <div
+            class="absolute -top-8 -right-8 w-64 h-64 bg-ims-primary-hover-light rounded-full blur-3xl opacity-30"
+          ></div>
+          <div
+            class="absolute -bottom-8 -left-8 w-64 h-64 bg-ims-secondary/20 rounded-full blur-3xl opacity-30"
+          ></div>
+
+          <!-- Screenshot Card -->
+          <div
+            class="relative bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden hover:shadow-3xl transition-shadow duration-300"
+          >
+            <img
+              src="/assets/landing-page.png"
+              alt="Dashboard Preview"
+              class="w-full h-auto object-cover"
+            />
+          </div>
         </div>
       </div>
-
-      <div class="flex gap-6">
-        <div class="text-purple-600">
-          <app-icon name="inventory"></app-icon>
-        </div>
-        <div>
-          <h3 class="text-xl font-semibold text-purple-600 mb-2">Inventory Tracking</h3>
-          <p>
-            Meticulously monitor a wide range of inventory items and effortlessly track item
-            movements, transfer products between locations.
-          </p>
-        </div>
-      </div>
-
-      <div class="flex gap-6">
-        <div class="text-purple-600">
-          <app-icon name="report-analytics"></app-icon>
-        </div>
-        <div>
-          <h3 class="text-xl font-semibold text-purple-600 mb-2">Reports & Analytics</h3>
-          <p>
-            Access a variety of reports and gain insights into inventory aging, vendor payments,
-            sales details.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="border rounded-lg overflow-hidden shadow-lg">
-      <app-icon name="dashboard-preview"></app-icon>
     </div>
   </section>
 
-  <footer class="text-center text-gray-500 py-6">© TheUnityWare 2025</footer>
+  <!-- Stats Section -->
+  <section
+    class="py-20 px-6 bg-gradient-to-br from-ims-primary to-ims-secondary relative overflow-hidden"
+  >
+    <div class="absolute inset-0 opacity-10">
+      <div
+        class="absolute inset-0"
+        style="
+          background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0);
+          background-size: 30px 30px;
+        "
+      ></div>
+    </div>
+    <!-- Stat -->
+
+    <div class="relative z-10 max-w-6xl mx-auto">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+        <div class="text-center space-y-2">
+          <div class="text-4xl md:text-5xl font-bold text-white font-heading">500+</div>
+          <div class="text-sm md:text-base text-white/90 font-medium">Active Businesses</div>
+        </div>
+
+        <div class="text-center space-y-2">
+          <div class="text-4xl md:text-5xl font-bold text-white font-heading">50M+</div>
+          <div class="text-sm md:text-base text-white/90 font-medium">Products Tracked</div>
+        </div>
+
+        <div class="text-center space-y-2">
+          <div class="text-4xl md:text-5xl font-bold text-white font-heading">99.9%</div>
+          <div class="text-sm md:text-base text-white/90 font-medium">Uptime SLA</div>
+        </div>
+
+        <div class="text-center space-y-2">
+          <div class="text-4xl md:text-5xl font-bold text-white font-heading">24/7</div>
+          <div class="text-sm md:text-base text-white/90 font-medium">Customer Support</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-24 px-6 bg-landing-section-alt">
+    <div class="max-w-4xl mx-auto text-center space-y-8">
+      <h2 class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-ims-text-primary">
+        Ready to transform your inventory management?
+      </h2>
+      <p class="text-lg md:text-xl text-ims-text-secondary">
+        Join hundreds of businesses already using TheUnityWare
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
+        <app-button type="button" color="primary" size="lg" routerLink="/onboarding">
+          <span class="flex items-center gap-3 font-heading text-base font-semibold px-8">
+            Get Started Free
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 7l5 5m0 0l-5 5m5-5H6"
+              />
+            </svg>
+          </span>
+        </app-button>
+
+        <button
+          class="flex items-center gap-2.5 px-6 py-3 font-semibold text-ims-text-primary hover:text-ims-primary transition-colors"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            />
+          </svg>
+          <span>Talk to Sales</span>
+        </button>
+      </div>
+
+      <!-- Mini trust badges -->
+      <div class="flex items-center justify-center gap-8 pt-8 text-sm text-ims-text-tertiary">
+        <span>✓ No credit card</span>
+        <span>✓ 30-day free trial</span>
+        <span>✓ Cancel anytime</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-white border-t border-gray-100 py-8 px-6 flex justify-center items-center">
+    <p class="text-sm text-ims-text-tertiary">© TheUnityWare 2025. All rights reserved.</p>
+  </footer>
 </body>

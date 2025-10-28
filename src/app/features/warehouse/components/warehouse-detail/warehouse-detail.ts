@@ -163,7 +163,11 @@ export class WarehouseDetail {
   //   this.confirmationService.confirm({
   //     message: `Are you sure you want to delete "${warehouse.name}"?`,
   //     header: 'Confirm Deletion',
-  //     icon: 'pi pi-exclamation-triangle',
+  // icon: 'pi pi-exclamation-triangle',
+  // acceptLabel: 'Confirm',
+  // rejectLabel: 'Cancel',
+  // rejectButtonStyleClass: 'p-button-secondary',
+  // acceptButtonStyleClass: 'p-button-danger',
   //     accept: () => {
   //       this.warehouseService.deleteWarehouse(warehouse.warehouseId).subscribe({
   //         next: () => {
