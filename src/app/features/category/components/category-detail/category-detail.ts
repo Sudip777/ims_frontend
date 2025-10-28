@@ -190,6 +190,11 @@ export class CategoryDetail {
       message: `Are you sure you want to delete "${category.categoryName}"?`,
       header: 'Confirm Deletion',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Confirm',
+      rejectLabel: 'Cancel',
+      rejectButtonStyleClass: 'p-button-secondary',
+      acceptButtonStyleClass: 'p-button-danger',
+
       accept: () => {
         this.categories = this.categories.filter((p) => p.categoryId !== category.categoryId);
         this.messageService.add({

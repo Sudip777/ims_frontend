@@ -385,6 +385,10 @@ export class SalesOrderDetail {
       message: `Are you sure you want to delete Order #${order.orderId}?`,
       header: 'Confirm Deletion',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Confirm',
+      rejectLabel: 'Cancel',
+      rejectButtonStyleClass: 'p-button-secondary',
+      acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.orders = this.orders.filter((o) => o.orderId !== order.orderId);
         this.messageService.add({

@@ -380,6 +380,10 @@ export class PurchaseOrderDetail {
       message: `Are you sure you want to delete Purchase Order #${po.purchaseOrderId}?`,
       header: 'Confirm Deletion',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Confirm',
+      rejectLabel: 'Cancel',
+      rejectButtonStyleClass: 'p-button-secondary',
+      acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.purchaseOrders = this.purchaseOrders.filter(
           (p) => p.purchaseOrderId !== po.purchaseOrderId

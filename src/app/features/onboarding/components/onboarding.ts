@@ -1,15 +1,23 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { TextFieldComponent } from '../../../shared/components/text-field/text-field';
 import { IconComponent } from '../../../shared/icons/components/icon.component';
 import { ButtonComponent } from '../../../shared/components/button/button';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router } from '@angular/router';
+import { InputTextModule } from 'primeng/inputtext';
+import { FloatLabel } from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-onboarding',
   standalone: true,
-  imports: [CommonModule, TextFieldComponent, ReactiveFormsModule, IconComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    IconComponent,
+    ButtonComponent,
+    InputTextModule,
+    FloatLabel,
+  ],
   templateUrl: './onboarding.html',
 })
 export class OnboardingComponent {

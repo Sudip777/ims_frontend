@@ -49,7 +49,7 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'categories',
+        path: 'category',
         title: 'Category Management',
         loadComponent: () =>
           import('./features/category/components/category-detail/category-detail').then(
@@ -65,7 +65,7 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'customers',
+        path: 'customer',
         title: 'Customer Management',
         loadComponent: () =>
           import('./features/customer/components/customer-detail/customer-detail').then(

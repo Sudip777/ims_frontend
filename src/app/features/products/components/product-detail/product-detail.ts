@@ -37,7 +37,6 @@ interface AutoCompleteCompleteEvent {
   selector: 'app-product-detail',
   standalone: true,
   templateUrl: './product-detail.html',
-  styleUrls: ['./product-detail.scss'],
   imports: [
     CommonModule,
     FormsModule,
@@ -216,6 +215,10 @@ export class ProductDetail {
       message: `Are you sure you want to delete "${product.name}"?`,
       header: 'Confirm Deletion',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Confirm',
+      rejectLabel: 'Cancel',
+      rejectButtonStyleClass: 'p-button-secondary',
+      acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.productsService.deleteProduct(product.productId).subscribe({
           next: () => {
