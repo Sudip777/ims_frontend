@@ -14,4 +14,11 @@ export class MetricCardComponent {
   @Input() trend: 'up' | 'down' = 'up';
   @Input() chartPath: string = 'M 0 32 Q 32 48 64 32 T 128 16';
   @Input() isPrimary: boolean = false;
+
+  // Unique
+  @Input() gradientId: string = Math.random().toString(36).substr(2, 9);
+  // safe gradient URL
+  getGradientUrl(): string {
+    return `url(#gradient-${this.gradientId})`;
+  }
 }

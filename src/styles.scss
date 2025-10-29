@@ -3,59 +3,6 @@
 @tailwind utilities;
 
 @import 'primeicons/primeicons.css';
-
-// Override Aura Theme for Better Integration
-
-// Table Styles
-.p-datatable {
-  .p-datatable-thead > tr > th {
-    background: #f9fafb !important;
-    border-bottom: 1px solid #e5e7eb !important;
-    padding: 1rem 1.5rem !important;
-    font-weight: 700 !important;
-    font-size: 0.75rem !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
-    color: #1f2937 !important;
-  }
-
-  .p-datatable-tbody > tr {
-    border-bottom: 1px solid #f3f4f6 !important;
-    transition: all 0.2s ease !important;
-
-    &:hover {
-      background: #f9fafb !important;
-    }
-  }
-
-  .p-datatable-tbody > tr > td {
-    padding: 1rem 1.5rem !important;
-    border: none !important;
-  }
-}
-
-// Paginator
-.p-paginator {
-  border: none !important;
-  padding: 0 !important;
-
-  .p-paginator-page {
-    border-radius: 0.5rem !important;
-    margin: 0 0.25rem !important;
-
-    &.p-highlight {
-      background: #10b981 !important;
-      border-color: #10b981 !important;
-      color: white !important;
-    }
-  }
-
-  .p-paginator-prev,
-  .p-paginator-next {
-    border-radius: 0.5rem !important;
-  }
-}
-
 // Input Search
 .p-inputtext {
   border-radius: 0.5rem !important;
@@ -71,4 +18,34 @@ html,
 body {
   height: 100%;
   overflow: hidden;
+}
+
+/* Override PrimeNG's striped row colors */
+.p-datatable.p-datatable-striped .p-datatable-tbody > tr.p-row-odd {
+  background-color: #f9fafb !important;
+}
+
+.p-datatable-tbody > tr:hover {
+  background-color: #ecfdf5 !important;
+}
+
+/* PrimeNG 20 - Force alternating rows */
+.p-datatable-table tbody tr:nth-child(even) {
+  background-color: #f9fafb !important;
+}
+
+.p-datatable-table tbody tr:nth-child(odd) {
+  background-color: #ffffff !important;
+}
+
+.p-datatable-table tbody tr:not(.p-highlight):hover {
+  background-color: #ecfdf5 !important;
+}
+
+.p-datatable-table tbody tr.p-highlight {
+  background-color: #d1fae5 !important;
+}
+
+.p-datatable-table tbody tr.p-highlight:hover {
+  background-color: #a7f3d0 !important;
 }

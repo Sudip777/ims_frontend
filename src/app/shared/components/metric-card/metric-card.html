@@ -1,27 +1,43 @@
-<div class="rounded-xl border border-gray-400 p-6 shadow-md bg-white">
-  <div class="flex items-start justify-between mb-4">
-    <h3 class="text-sm font-medium text-gray-900 font-heading">
-      {{ title }}
-    </h3>
+<div
+  class="group relative bg-white rounded-2xl border border-gray-500 p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-2 cursor-pointer"
+  [attr.data-trend]="trend"
+>
+  <!-- dynmic  Glow on Hoverr -->
+  <div
+    class="absolute inset-0 rounded-2xl bg-gradient-to-br transition-all duration-300 pointer-events-none"
+    [ngClass]="
+      trend === 'up'
+        ? 'from-green-500/0 to-emerald-500/0 group-hover:from-green-500/5 group-hover:to-emerald-500/5'
+        : 'from-red-500/0 to-rose-500/0 group-hover:from-red-500/5 group-hover:to-rose-500/5'
+    "
+  ></div>
 
-    <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Header -->
+  <div class="flex items-start justify-between mb-4">
+    <div class="flex-1">
+      <p class="text-xs font-extrabold text-ims-text-primary uppercase tracking-wider mb-1">
+        {{ title }}
+      </p>
+    </div>
+
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="text-gray-400">
       <path
-        d="M10.3333 10.833C10.7936 10.833 11.1667 10.4599 11.1667 9.99967C11.1667 9.53944 10.7936 9.16634 10.3333 9.16634C9.8731 9.16634 9.5 9.53944 9.5 9.99967C9.5 10.4599 9.8731 10.833 10.3333 10.833Z"
-        stroke="#98A2B3"
+        d="M10 10.833C10.4602 10.833 10.8333 10.4599 10.8333 9.99967C10.8333 9.53944 10.4602 9.16634 10 9.16634C9.53976 9.16634 9.16667 9.53944 9.16667 9.99967C9.16667 10.4599 9.53976 10.833 10 10.833Z"
+        stroke="currentColor"
         stroke-width="1.66667"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
-        d="M10.3333 4.99967C10.7936 4.99967 11.1667 4.62658 11.1667 4.16634C11.1667 3.7061 10.7936 3.33301 10.3333 3.33301C9.8731 3.33301 9.5 3.7061 9.5 4.16634C9.5 4.62658 9.8731 4.99967 10.3333 4.99967Z"
-        stroke="#98A2B3"
+        d="M10 4.99967C10.4602 4.99967 10.8333 4.62658 10.8333 4.16634C10.8333 3.7061 10.4602 3.33301 10 3.33301C9.53976 3.33301 9.16667 3.7061 9.16667 4.16634C9.16667 4.62658 9.53976 4.99967 10 4.99967Z"
+        stroke="currentColor"
         stroke-width="1.66667"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
-        d="M10.3333 16.6663C10.7936 16.6663 11.1667 16.2932 11.1667 15.833C11.1667 15.3728 10.7936 14.9997 10.3333 14.9997C9.8731 14.9997 9.5 15.3728 9.5 15.833C9.5 16.2932 9.8731 16.6663 10.3333 16.6663Z"
-        stroke="#98A2B3"
+        d="M10 16.6663C10.4602 16.6663 10.8333 16.2932 10.8333 15.833C10.8333 15.3728 10.4602 14.9997 10 14.9997C9.53976 14.9997 9.16667 15.3728 9.16667 15.833C9.16667 16.2932 9.53976 16.6663 10 16.6663Z"
+        stroke="currentColor"
         stroke-width="1.66667"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -29,53 +45,78 @@
     </svg>
   </div>
 
-  <div class="flex items-end justify-between">
-    <div>
-      <div
-        [ngClass]="isPrimary ? 'text-white' : ''"
-        class="text-4xl font-semibold text-gray-900 mb-2 font-heading"
-      >
-        {{ value }}
-      </div>
-      <div class="flex items-center gap-2">
-        <span
-          class="flex items-center gap-1 text-sm font-medium"
-          [ngClass]="trend === 'up' ? 'text-ims-primary' : 'text-red-600'"
-        >
-          <svg *ngIf="trend === 'up'" width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M8 12V4M8 4L4 8M8 4L12 8"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <svg *ngIf="trend === 'down'" width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M8 4V12M8 12L12 8M8 12L4 8"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <span class="text-sm font-sans">{{ percentage }}%</span>
-        </span>
+  <!--  Chart -->
+  <div class="flex items-end justify-between gap-4">
+    <div class="flex-1 min-w-0">
+      <div class="flex items-baseline gap-3 mb-3">
+        <h2 class="text-6xl font-black text-gray-900 font-heading tracking-tight">
+          {{ value }}
+        </h2>
 
-        <span class="text-sm text-gray-500 font-sans">vs last month</span>
+        <!-- Trend Badge -->
+        <span
+          class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-sm font-semibold"
+          [ngClass]="trend === 'up' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'"
+        >
+          @if(trend==='up'){
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path
+              d="M7 10.5V3.5M7 3.5L3.5 7M7 3.5L10.5 7"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          } @if(trend === 'down'){
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path
+              d="M7 3.5V10.5M7 10.5L10.5 7M7 10.5L3.5 7"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+
+          }
+          <span>{{ percentage }}%</span>
+        </span>
       </div>
+
+      <p class="text-xs text-gray-500 font-medium">vs last month</p>
     </div>
 
-    <div class="w-32 h-16">
-      <svg viewBox="0 0 128 64" preserveAspectRatio="none" class="w-full h-full">
+    <!-- Right -->
+    <div class="flex-shrink-0 w-36 h-20">
+      <svg viewBox="0 0 144 80" preserveAspectRatio="none" class="w-full h-full">
+        <defs>
+          <linearGradient [attr.id]="'gradient-' + gradientId" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop
+              offset="0%"
+              [attr.style]="
+                'stop-color:' + (trend === 'up' ? '#10B981' : '#EF4444') + ';stop-opacity:0.2'
+              "
+            />
+            <stop
+              offset="100%"
+              [attr.style]="
+                'stop-color:' + (trend === 'up' ? '#10B981' : '#EF4444') + ';stop-opacity:0'
+              "
+            />
+          </linearGradient>
+        </defs>
+
         <path
           [attr.d]="chartPath"
           fill="none"
-          [attr.stroke]="trend === 'up' ? '#10b981' : '#ef4444'"
-          stroke-width="3"
+          [attr.stroke]="trend === 'up' ? '#10B981' : '#EF4444'"
+          stroke-width="2.5"
           stroke-linecap="round"
+          stroke-linejoin="round"
         />
+
+        <path [attr.d]="chartPath + ' L144,80 L0,80 Z'" [style.fill]="getGradientUrl()" />
       </svg>
     </div>
   </div>
