@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
+import { IconComponent } from '../../shared/icons/components/icon.component';
 
 @Component({
   selector: 'app-footer',
-  imports: [],
+  imports: [IconComponent],
   templateUrl: './footer.html',
-  styleUrl: './footer.scss'
+  styleUrl: './footer.scss',
 })
-export class Footer {
-
-}
+export class Footer {}

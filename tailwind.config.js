@@ -23,10 +23,12 @@ module.exports = {
 
         //landing page
         'landing-hero-bg': '#FFFFFF',
-        'landing-section-alt': '#F9FAFB', // Alternate sections
-        'landing-accent-wash': '#F0FDF4', // Use for 1 section max
-        'landing-gradient-start': '#ECFDF5', // For subtle gradients
+        'landing-section-alt': '#F9FAFB',
+        'landing-accent-wash': '#F0FDF4',
+        'landing-gradient-start': '#ECFDF5',
         'landing-gradient-end': '#FFFFFF',
+        'landing-footer-bg': '#D1FAE5', // Soft mint
+        'landing-footer-text': '#047857', // Dark green text
       },
 
       fontFamily: {

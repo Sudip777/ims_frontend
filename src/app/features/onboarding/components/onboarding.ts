@@ -6,6 +6,8 @@ import { ButtonComponent } from '../../../shared/components/button/button';
 import { Router } from '@angular/router';
 import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabel } from 'primeng/floatlabel';
+import { Footer } from '../../../layout/footer/footer';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @Component({
   selector: 'app-onboarding',
@@ -17,6 +19,7 @@ import { FloatLabel } from 'primeng/floatlabel';
     ButtonComponent,
     InputTextModule,
     FloatLabel,
+    RadioButtonModule,
   ],
   templateUrl: './onboarding.html',
 })
@@ -39,6 +42,7 @@ export class OnboardingComponent {
     { value: '10001-25000', label: '10001-25000 units' },
     { value: '>25000', label: '>25000 units' },
   ];
+  size: any;
 
   constructor(private fb: FormBuilder) {
     this.onboardingForm = this.fb.group({
