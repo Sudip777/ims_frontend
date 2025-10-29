@@ -1,4 +1,4 @@
-<main class="space-y-6 max-h-[600px]">
+<main class="space-y-6 p-6">
   <div class="max-w-6xl mx-auto space-y-6">
     <div>
       <h1 class="font-heading font-medium p-2 text-2xl">Purchase Order Overview</h1>
@@ -25,11 +25,10 @@
       </div>
     </div>
 
-    <div class="overflow-x-auto bg-white rounded-2xl shadw-md">
-      <h2 class="font-heading font-medium p-2 text-2xl">Purchase Order Details</h2>
+    <div class="bg-white rounded-2xl">
+      <h2 class="font-heading font-medium text-2xl">Purchase Order Details</h2>
     </div>
-
-    <div class="overflow-x-auto rounded-2xl shadow-md max-h-[600px]">
+    <div class="overflow-x-auto rounded-2xl shadow-lg border border-surface-200">
       <p-table
         #dt
         [value]="purchaseOrders"
@@ -46,9 +45,10 @@
         [expandedRowKeys]="expandedRows"
         (onRowExpand)="onRowExpand($event.data)"
         (onRowCollapse)="onRowCollapse($event.data)"
+        (onLazyLoad)="onLazyLoad($event)"
       >
         <ng-template pTemplate="caption">
-          <div class="flex gap-2 md:justify-between">
+          <div class="flex justify-between items-center">
             <p-iconfield>
               <p-inputicon class="pi pi-search" />
               <input
@@ -56,21 +56,39 @@
                 type="text"
                 (input)="dt.filterGlobal($any($event.target).value, 'contains')"
                 placeholder="Search..."
+                class="w-full md:w-auto"
               />
             </p-iconfield>
             <div class="flex gap-2">
               <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
-              <p-button icon="pi pi-upload" label="Export" (onClick)="exportCSV()" />
+              <p-button
+                icon="pi pi-upload"
+                label="Export"
+                (onClick)="exportCSV()"
+                severity="secondary"
+                [outlined]="true"
+              />
             </div>
           </div>
         </ng-template>
 
         <ng-template pTemplate="header">
           <tr>
-            <th style="width: 3rem"></th>
+            <th style="width: 3rem" class="text-center"></th>
             <th>PO ID</th>
-            <th>Supplier</th>
-            <th>Date</th>
+            <th pSortableColumn="supplierName">
+              <div class="flex items-center gap-2">
+                Supplier
+                <p-sortIcon field="supplierName"></p-sortIcon>
+              </div>
+            </th>
+
+            <th pSortableColumn="orderDate">
+              <div class="flex items-center gap-2">
+                Date
+                <p-sortIcon field="orderDate"></p-sortIcon>
+              </div>
+            </th>
             <th>Status</th>
             <th>Total Amount</th>
             <th>Created By</th>
@@ -79,71 +97,174 @@
         </ng-template>
 
         <ng-template pTemplate="body" let-po let-expanded="expanded">
-          <tr>
-            <td>
+          <tr class="transition-all">
+            <td class="text-center">
               <p-button
                 type="button"
                 pRipple
                 [pRowToggler]="po"
                 [text]="true"
                 [rounded]="true"
+                [plain]="true"
+                size="small"
                 [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
               ></p-button>
             </td>
-            <td>{{ po.purchaseOrderId }}</td>
-            <td>{{ po.supplierName }}</td>
-            <td>{{ po.orderDate | date : 'mediumDate' }}</td>
-            <td><p-tag [value]="po.statusName"></p-tag></td>
-            <td>{{ po.totalAmount | currency }}</td>
-            <td>{{ po.createdByUserId }}</td>
-            <td class="flex gap-2">
+            <td>
+              <span class="font-semibold">{{ po.purchaseOrderId }}</span>
+            </td>
+            <td>
+              <div>
+                <span class="font-medium">{{ po.supplierName }}</span>
+              </div>
+            </td>
+
+            <td>
+              <div class="flex items-center gap-2">
+                <i class="pi pi-calendar text-surface-500"></i>
+                <span>{{ po.orderDate | date : 'mediumDate' }}</span>
+              </div>
+            </td>
+            <td>
+              <p-tag
+                [value]="po.statusName"
+                [severity]="getStatusSeverity(po.statusName)"
+                [icon]="getStatusIcon(po.statusName)"
+              ></p-tag>
+            </td>
+            <td class="text-right">
+              <span class="font-bold text-lg">{{ po.totalAmount | currency }}</span>
+            </td>
+            <td>
+              <div class="flex items-center gap-2">
+                <p-avatar
+                  [label]="po.createdByUserId.toString()"
+                  shape="circle"
+                  size="normal"
+                  class="bg-primary-100 text-primary-700"
+                ></p-avatar>
+                <!-- <span>User {{ po.createdByUserId }}</span> -->
+              </div>
+            </td>
+            <td class="flex gap-3">
               <p-button
                 icon="pi pi-pencil"
                 [rounded]="true"
+                [text]="true"
+                pTooltip="Edit"
+                tooltipPosition="top"
                 [outlined]="true"
                 (onClick)="editPurchaseOrder(po)"
               ></p-button>
               <!--
               <p-button
-                icon="pi pi-trash"
-                severity="danger"
-                [rounded]="true"
-                [outlined]="true"
-                (onClick)="deletePurchaseOrder(po)"
+              icon="pi pi-trash"
+              severity="danger"
+              [rounded]="true"
+              [text]="true"
+              pTooltip="Delete"
+              tooltipPosition="top"
+              (onClick)="deletePurchaseOrder(po)"
               ></p-button> -->
             </td>
           </tr>
         </ng-template>
 
-        <ng-template #expandedrow pTemplate="rowexpansion" let-po>
+        <ng-template pTemplate="rowexpansion" #expandedrow let-po>
           <tr>
-            <td colspan="8">
-              <div class="p-4 bg-gray-50 rounded-lg">
-                <h5 class="font-semibold mb-3">Purchase Order Details for {{ po.supplierName }}</h5>
-                <p-table [value]="po.purchaseOrderDetails" dataKey="purchaseOrderDetailId">
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th>Product Id</th>
-                      <th>Quantity</th>
-                      <th>Unit Price</th>
-                      <th>Total</th>
-                    </tr>
-                  </ng-template>
-                  <ng-template pTemplate="body" let-detail>
-                    <tr>
-                      <td>{{ detail.productId }}</td>
-                      <td>{{ detail.quantity }}</td>
-                      <td>{{ detail.unitPrice | currency }}</td>
-                      <td>{{ detail.quantity * detail.unitPrice | currency }}</td>
-                    </tr>
-                  </ng-template>
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td colspan="4">No purchase order details available.</td>
-                    </tr>
-                  </ng-template>
-                </p-table>
+            <td colspan="8" class="p-0">
+              <div class="p-5 bg-primary-50 border-t-2 border-primary-200">
+                <div class="flex items-center justify-between mb-4">
+                  <h5 class="text-lg font-semibold text-surface-900 m-0 flex items-center gap-2">
+                    <i class="pi pi-info-circle text-primary"></i>
+                    Order Details - {{ po.supplierName }}
+                  </h5>
+                  <p-badge
+                    [value]="
+                      po.purchaseOrderDetails?.length === 1
+                        ? '1 item'
+                        : po.purchaseOrderDetails?.length + ' items'
+                    "
+                  ></p-badge>
+                </div>
+
+                <div
+                  class="bg-surface-0 rounded-lg shadow-sm border border-surface-200 overflow-hidden"
+                >
+                  <p-table
+                    [value]="po.purchaseOrderDetails"
+                    dataKey="purchaseOrderDetailId"
+                    class="p-datatable-sm"
+                  >
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th>
+                          <div class="flex items-center gap-2">
+                            <i class="pi pi-box text-surface-500"></i>
+                            Product ID
+                          </div>
+                        </th>
+                        <th class="text-center">Quantity</th>
+                        <th class="text-right">Unit Price</th>
+                        <th class="text-right">
+                          <span class="font-semibold">Total</span>
+                        </th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-detail>
+                      <tr>
+                        <td>
+                          <span class="font-medium">{{ detail.productId }}</span>
+                        </td>
+                        <td class="text-center">
+                          <p-badge [value]="detail.quantity" severity="secondary"></p-badge>
+                        </td>
+                        <td class="text-right">
+                          <span class="text-surface-700">{{ detail.unitPrice | currency }}</span>
+                        </td>
+                        <td class="text-right">
+                          <span class="font-semibold">
+                            {{ detail.quantity * detail.unitPrice | currency }}
+                          </span>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="footer">
+                      <tr class="bg-surface-50">
+                        <td colspan="3" class="text-right font-semibold">Grand Total:</td>
+                        <td class="text-right">
+                          <span class="text-xl font-semibold">
+                            {{ po.totalAmount | currency }}
+                          </span>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="4" class="text-center py-8">
+                          <i class="pi pi-inbox text-4xl text-surface-400 mb-3"></i>
+                          <p class="text-surface-600 m-0">No purchase order details available.</p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
               </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="8" class="text-center py-12">
+              <i class="pi pi-shopping-cart text-6xl text-surface-400 mb-4"></i>
+              <p class="text-xl font-semibold text-surface-700 mb-2">No purchase orders found</p>
+              <p class="text-surface-500 mb-4">Get started by creating your first purchase order</p>
+              <p-button
+                label="Create Purchase Order"
+                icon="pi pi-plus"
+                (onClick)="openNew()"
+              ></p-button>
             </td>
           </tr>
         </ng-template>

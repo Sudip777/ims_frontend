@@ -9,7 +9,7 @@ import { PaginatedApiResponse, Meta } from '../../../core/models/api-response.mo
 export class SalesOrderService {
   private apiService = inject(ApiService);
 
-  getAllSalesOrder(page = 1, pageSize = 100) {
+  getAllSalesOrder(page: number, pageSize: number) {
     return this.apiService.get<PaginatedApiResponse<OrderResponse[], Meta>>(
       `/orders?page=${page}&pageSize=${pageSize}`
     );

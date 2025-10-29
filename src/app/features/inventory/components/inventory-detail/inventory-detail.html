@@ -29,11 +29,11 @@
       <h2 class="font-heading font-medium p-2 text-2xl">Inventory Detail</h2>
     </div>
 
-    <div class="overflow-y-auto max-h-[500px]">
+    <div>
       <p-table
         #dt
         [value]="inventories"
-        [rows]="10"
+        [rows]="5"
         [paginator]="true"
         [rowsPerPageOptions]="[5, 10, 20]"
         [globalFilterFields]="['productName', 'warehouseName', 'quantity', 'reorderLevel']"
@@ -63,6 +63,8 @@
                 icon="pi pi-upload"
                 label="Export"
                 (onClick)="exportExcel()"
+                severity="secondary"
+                [outlined]="true"
               />
             </div>
           </div>
@@ -95,11 +97,22 @@
               'hover:bg-gray-50': !inventory.isDisabled
             }"
           >
-            <td>{{ inventory.inventoryId }}</td>
-            <td>{{ inventory.productId }}</td>
+            <td>
+              <span class="font-semibold">{{ inventory.inventoryId }}</span>
+            </td>
+            <td>
+              <span class="font-semibold">{{ inventory.productId }}</span>
+            </td>
             <td>{{ inventory.productName }}</td>
-            <td>{{ inventory.warehouseId }}</td>
-            <td>{{ inventory.warehouseName }}</td>
+            <td>
+              <span class="font-semibold">{{ inventory.warehouseId }}</span>
+            </td>
+            <td>
+              <div class="flex flex-start gap-2">
+                <i class="pi pi-warehouse text-surface-500"></i>
+                <span> {{ inventory.warehouseName }}</span>
+              </div>
+            </td>
             <td>{{ inventory.quantity }}</td>
             <td>{{ inventory.reorderLevel }}</td>
             <td class="flex justify-center items-center">

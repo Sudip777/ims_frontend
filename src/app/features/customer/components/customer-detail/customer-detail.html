@@ -24,92 +24,108 @@
         ></app-metric-card>
       </div>
     </div>
-    <div class="overflow-x-auto bg-white rounded-2xl shadow-md">
+
+    <div class="bg-white rounded-2xl">
       <h2 class="font-heading font-medium p-2 text-2xl">Customer Detail</h2>
-      <div class="overflow-x-auto rounded-2xl shadow-md">
-        <p-table
-          #dt
-          [value]="items"
-          [rows]="10"
-          [paginator]="true"
-          [rowsPerPageOptions]="[5, 10, 20]"
-          [globalFilterFields]="['name', 'customerId', 'isActive']"
-          [(selection)]="customers"
-          dataKey="customerId"
-          [rowHover]="true"
-          [tableStyle]="{ 'min-width': '40rem' }"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} customers"
-          [showCurrentPageReport]="true"
-        >
-          <ng-template pTemplate="caption">
-            <div class="flex gap-2 md:justify-between">
-              <p-iconfield>
-                <p-inputicon class="pi pi-search" />
-                <input
-                  pInputText
-                  type="text"
-                  (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-                  placeholder="Search..."
-                />
-              </p-iconfield>
-              <div class="flex gap-2">
-                <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
-                <p-button icon="pi pi-upload" label="Export" (onClick)="exportExcel()" />
-              </div>
+    </div>
+    <div class="overflow-x-auto bg-white rounded-2xl shadow-lg border-surface-200">
+      <p-table
+        #dt
+        [value]="items"
+        [rows]="5"
+        [paginator]="true"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        [globalFilterFields]="['name', 'customerId', 'isActive']"
+        [(selection)]="customers"
+        dataKey="customerId"
+        [rowHover]="true"
+        [tableStyle]="{ 'min-width': '40rem' }"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} customers"
+        [showCurrentPageReport]="true"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex justify-between items-center">
+            <p-iconfield>
+              <p-inputicon class="pi pi-search" />
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Search..."
+                class="w-full md:w-auto"
+              />
+            </p-iconfield>
+            <div class="flex gap-2">
+              <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+              <p-button
+                icon="pi pi-upload"
+                label="Export"
+                (onClick)="exportExcel()"
+                severity="secondary"
+                [outlined]="true"
+              />
             </div>
-          </ng-template>
+          </div>
+        </ng-template>
 
-          <ng-template pTemplate="header">
-            <tr>
-              <th class="w-2">ID</th>
-              <th pSortableColumn="Name" class="w-2">
-                Name <p-sortIcon field="name"></p-sortIcon>
-              </th>
-              <th pSortableColumn="Email" class="w-2">
-                Email <p-sortIcon field="Email"></p-sortIcon>
-              </th>
-              <th class="w-2">Phone</th>
-              <th class="w-2">Address</th>
-              <th pSortableColumn="isActive" class="w-2">
-                Status <p-sortIcon field="isActive"></p-sortIcon>
-              </th>
-              <th style="min-width: 8rem" class="w-2">Actions</th>
-            </tr>
-          </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="w-2">ID</th>
+            <th pSortableColumn="name" class="w-2">Name <p-sortIcon field="name"></p-sortIcon></th>
+            <th class="w-2">Email</th>
+            <th class="w-2">Phone</th>
+            <th class="w-2">Address</th>
+            <th class="w-2">Status</th>
+            <th style="min-width: 8rem" class="w-2">Actions</th>
+          </tr>
+        </ng-template>
 
-          <ng-template pTemplate="body" let-customer>
-            <tr>
-              <td>{{ customer.customerId }}</td>
-              <td>{{ customer.name }}</td>
-              <td>{{ customer.email }}</td>
-              <td>{{ customer.phone }}</td>
-              <td>{{ customer.address }}</td>
-              <td>
-                <p-tag
-                  [value]="getStatusLabel(customer.isActive)"
-                  [severity]="getSeverity(customer.isActive)"
-                ></p-tag>
-              </td>
-              <td>
-                <p-button
-                  icon="pi pi-pencil"
-                  class="mr-2"
-                  [rounded]="true"
-                  [outlined]="true"
-                  (onClick)="editCustomer(customer)"
-                ></p-button>
-                <p-button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  [rounded]="true"
-                  [outlined]="true"
-                  (onClick)="deleteCustomer(customer)"
-                ></p-button>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </div>
+        <ng-template pTemplate="body" let-customer>
+          <tr class="transition-all">
+            <td>
+              <span class="font-semibold">{{ customer.customerId }}</span>
+            </td>
+            <td>
+              <span>{{ customer.name }}</span>
+            </td>
+            <td>
+              <div class="flex items-center gap-2">
+                <i class="pi pi-envelope text-surface-500"></i>
+                <span>{{ customer.email }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="flex items-center gap-2">
+                <i class="pi pi-phone text-surface-500"></i>
+                <span>{{ customer.phone }}</span>
+              </div>
+            </td>
+            <td>{{ customer.address }}</td>
+            <td>
+              <p-tag
+                [value]="getStatusLabel(customer.isActive)"
+                [severity]="getSeverity(customer.isActive)"
+              ></p-tag>
+            </td>
+            <td>
+              <p-button
+                icon="pi pi-pencil"
+                class="mr-2"
+                [rounded]="true"
+                [outlined]="true"
+                (onClick)="editCustomer(customer)"
+              ></p-button>
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                [rounded]="true"
+                [outlined]="true"
+                (onClick)="deleteCustomer(customer)"
+              ></p-button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
   </div>
 
