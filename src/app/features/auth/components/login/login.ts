@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { FloatLabel } from 'primeng/floatlabel';
 import { Checkbox } from 'primeng/checkbox';
+import { Footer } from '../../../../layout/footer/footer';
 
 @Component({
   selector: 'app-login',

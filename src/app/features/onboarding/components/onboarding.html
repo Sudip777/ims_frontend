@@ -139,7 +139,7 @@
           </p-floatlabel>
         </div>
 
-        <!-- Business Type Selection - FIXED RADIO BUTTONS -->
+        <!-- Business Type Selection - PrimeNG + Angular 17 Syntax -->
         <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
           <label
             class="block text-xs font-bold text-ims-text-primary mb-5 uppercase tracking-widest"
@@ -149,54 +149,39 @@
 
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
             @for (type of businessTypes; track type.value) {
-            <label
-              class="relative flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:border-ims-primary hover:shadow-sm group"
-              [class.border-ims-primary]="onboardingForm.get('businessType')?.value === type.value"
-              [class.bg-ims-primary-hover-light]="
-                onboardingForm.get('businessType')?.value === type.value
-              "
-              [class.border-gray-200]="onboardingForm.get('businessType')?.value !== type.value"
+            <div
+              class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:border-ims-primary hover:shadow-sm"
+              [ngClass]="{
+                'border-ims-primary bg-ims-primary-hover-light':
+                  onboardingForm.get('businessType')?.value === type.value,
+                'border-gray-200': onboardingForm.get('businessType')?.value !== type.value
+              }"
+              (click)="onboardingForm.get('businessType')?.setValue(type.value)"
             >
-              <input
-                type="radio"
+              <p-radioButton
+                name="businessType"
                 [value]="type.value"
                 formControlName="businessType"
-                class="sr-only"
-              />
-              <!-- Custom Radio Circle - SMALLER & CLEANER -->
-              <div class="relative flex-shrink-0">
-                <div
-                  class="w-4 h-4 rounded-full border-2 transition-all duration-200"
-                  [class.border-ims-primary]="
-                    onboardingForm.get('businessType')?.value === type.value
-                  "
-                  [class.border-gray-300]="onboardingForm.get('businessType')?.value !== type.value"
-                  [class.bg-ims-primary]="onboardingForm.get('businessType')?.value === type.value"
-                >
-                  <div
-                    class="absolute inset-0 flex items-center justify-center"
-                    [class.opacity-100]="onboardingForm.get('businessType')?.value === type.value"
-                    [class.opacity-0]="onboardingForm.get('businessType')?.value !== type.value"
-                  >
-                    <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
-                  </div>
-                </div>
-              </div>
-              <span
-                class="text-sm font-semibold transition-colors"
-                [class.text-ims-primary]="onboardingForm.get('businessType')?.value === type.value"
-                [class.text-ims-text-secondary]="
-                  onboardingForm.get('businessType')?.value !== type.value
-                "
+                [inputId]="type.value"
+                class="flex-shrink-0"
+              ></p-radioButton>
+
+              <label
+                [for]="type.value"
+                class="ml-3 text-sm font-semibold cursor-pointer"
+                [ngClass]="{
+                  'text-ims-primary': onboardingForm.get('businessType')?.value === type.value,
+                  'text-ims-text-secondary':
+                    onboardingForm.get('businessType')?.value !== type.value
+                }"
               >
                 {{ type.label }}
-              </span>
-            </label>
+              </label>
+            </div>
             }
           </div>
         </div>
 
-        <!-- SKU Size Selection - FIXED RADIO BUTTONS -->
         <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
           <label
             class="block text-xs font-bold text-ims-text-primary mb-5 uppercase tracking-widest"
@@ -204,77 +189,51 @@
             Storage Keeping Unit (SKU) Size <span class="text-red-500">*</span>
           </label>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            @for (size of skuSizes; track size.value) {
-            <label
-              class="relative flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:border-ims-primary hover:shadow-sm group"
-              [class.border-ims-primary]="onboardingForm.get('skuSize')?.value === size.value"
-              [class.bg-ims-primary-hover-light]="
-                onboardingForm.get('skuSize')?.value === size.value
-              "
-              [class.border-gray-200]="onboardingForm.get('skuSize')?.value !== size.value"
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div
+              *ngFor="let size of skuSizes"
+              class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:border-ims-primary hover:shadow-sm"
+              [ngClass]="{
+                'border-ims-primary bg-ims-primary-hover-light':
+                  onboardingForm.get('skuSize')?.value === size.value,
+                'border-gray-200': onboardingForm.get('skuSize')?.value !== size.value
+              }"
+              (click)="onboardingForm.get('skuSize')?.setValue(size.value)"
             >
-              <input type="radio" [value]="size.value" formControlName="skuSize" class="sr-only" />
-              <!-- Custom Radio Circle - SMALLER & CLEANER -->
-              <div class="relative flex-shrink-0">
-                <div
-                  class="w-4 h-4 rounded-full border-2 transition-all duration-200"
-                  [class.border-ims-primary]="onboardingForm.get('skuSize')?.value === size.value"
-                  [class.border-gray-300]="onboardingForm.get('skuSize')?.value !== size.value"
-                  [class.bg-ims-primary]="onboardingForm.get('skuSize')?.value === size.value"
-                >
-                  <div
-                    class="absolute inset-0 flex items-center justify-center"
-                    [class.opacity-100]="onboardingForm.get('skuSize')?.value === size.value"
-                    [class.opacity-0]="onboardingForm.get('skuSize')?.value !== size.value"
-                  >
-                    <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
-                  </div>
-                </div>
-              </div>
-              <span
-                class="text-sm font-semibold transition-colors"
-                [class.text-ims-primary]="onboardingForm.get('skuSize')?.value === size.value"
-                [class.text-ims-text-secondary]="
-                  onboardingForm.get('skuSize')?.value !== size.value
-                "
+              <p-radioButton
+                name="skuSize"
+                [value]="size.value"
+                formControlName="skuSize"
+                [inputId]="size.value"
+                class="flex-shrink-0"
+              ></p-radioButton>
+
+              <label
+                [for]="size.value"
+                class="ml-3 text-sm font-semibold cursor-pointer"
+                [ngClass]="{
+                  'text-ims-primary': onboardingForm.get('skuSize')?.value === size.value,
+                  'text-ims-text-secondary': onboardingForm.get('skuSize')?.value !== size.value
+                }"
               >
                 {{ size.label }}
-              </span>
-            </label>
-            }
+              </label>
+            </div>
           </div>
         </div>
       </form>
     </div>
 
-    <!-- Action Buttons with Better Hierarchy -->
     <div
       class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-10 w-full max-w-2xl mx-auto"
     >
-      <!-- Skip Button - Less Prominent -->
-      <button
+      <a
         (click)="navigateLogin()"
-        type="button"
-        class="text-ims-text-secondary hover:text-ims-text-primary font-semibold text-sm transition-colors flex items-center gap-2 group order-2 sm:order-1"
+        class="text-sm text-ims-primary hover:text-ims-primary-dark transition-colors duration-150 underline-offset-2 hover:underline cursor-pointer underline"
       >
-        <span>Skip for now</span>
-        <svg
-          class="w-4 h-4 group-hover:translate-x-1 transition-transform"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M17 8l4 4m0 0l-4 4m4-4H3"
-          />
-        </svg>
-      </button>
+        Skip for now
+      </a>
 
-      <!-- Primary CTA - More Prominent -->
       <app-button
         (buttonClick)="onSubmit()"
         type="submit"
@@ -285,15 +244,9 @@
         <span
           class="flex justify-center items-center gap-3 font-heading text-base font-semibold px-6"
         >
-          Continue to Dashboard
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 8l4 4m0 0l-4 4m4-4H3"
-            />
-          </svg>
+          Continue
+
+          <app-icon name="arrow-right"></app-icon>
         </span>
       </app-button>
     </div>

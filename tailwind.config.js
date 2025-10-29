@@ -27,6 +27,9 @@ module.exports = {
         'landing-accent-wash': '#F0FDF4', // Use for 1 section max
         'landing-gradient-start': '#ECFDF5', // For subtle gradients
         'landing-gradient-end': '#FFFFFF',
+        'landing-footer-bg': '#D1FAE5', // Soft mint background
+        'landing-footer-text': '#047857', // Dark green text
+        'ims-primary-border': '#6EE7B7', // Border color
       },
 
       fontFamily: {
