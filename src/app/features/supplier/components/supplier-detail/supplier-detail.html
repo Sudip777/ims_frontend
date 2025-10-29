@@ -70,7 +70,6 @@
               <th>Email</th>
               <th pSortableColumn="phone">Phone <p-sortIcon field="phone"></p-sortIcon></th>
               <th pSortableColumn="address">Addres<p-sortIcon field="address"></p-sortIcon></th>
-              <!-- <th>Created By</th> -->
               <th pSortableColumn="isActive">Status <p-sortIcon field="isActive"></p-sortIcon></th>
               <th pSortableColumn="createdAt">
                 Created At <p-sortIcon field="createdAt"></p-sortIcon>
@@ -89,7 +88,6 @@
               <td>{{ supplier.email }}</td>
               <td>{{ supplier.phone }}</td>
               <td>{{ supplier.address }}</td>
-              <!-- <td>{{ supplier.createdByUserId }}</td> -->
               <td>
                 <p-tag
                   [value]="getStatusLabel(supplier.isActive)"

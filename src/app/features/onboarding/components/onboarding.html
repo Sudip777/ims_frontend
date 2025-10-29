@@ -1,9 +1,7 @@
 <main class="flex flex-col md:flex-row min-h-screen">
-  <!-- Left Panel - Enhanced with Better Visual Hierarchy -->
   <section
     class="lg:flex lg:w-2/5 bg-gradient-to-br from-ims-primary via-ims-primary to-ims-secondary p-8 lg:p-16 flex-col justify-between text-white overflow-hidden relative"
   >
-    <!-- Subtle background pattern -->
     <div class="absolute inset-0 opacity-5">
       <div
         class="absolute inset-0"
@@ -15,12 +13,10 @@
     </div>
 
     <div class="flex flex-col gap-16 justify-center items-start relative z-10">
-      <!-- Logo with better spacing -->
       <div class="animate-fade-in">
         <app-icon name="app-icon-white"></app-icon>
       </div>
 
-      <!-- Content with improved typography -->
       <div class="max-w-lg space-y-6">
         <div class="inline-block">
           <span
@@ -39,7 +35,6 @@
           orders, and oversee warehouses from a single window.
         </p>
 
-        <!-- Trust indicators -->
         <div class="flex items-center gap-6 pt-4 text-sm text-white/80">
           <div class="flex items-center gap-2">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -65,16 +60,13 @@
       </div>
     </div>
 
-    <!-- Footer -->
     <p class="hidden lg:block mt-auto text-white/60 text-sm font-medium relative z-10">
       © TheUnityWare 2024
     </p>
   </section>
 
-  <!-- Right Panel - Form Section with Enhanced Spacing -->
   <section class="w-full lg:w-3/5 p-6 lg:p-12 flex flex-col justify-between bg-gray-50">
     <div class="w-full max-w-2xl mx-auto">
-      <!-- Header with better spacing -->
       <div class="mb-10">
         <h3 class="text-2xl lg:text-3xl font-heading font-bold text-ims-text-primary mb-3">
           Tell us about your business
@@ -84,9 +76,7 @@
         </p>
       </div>
 
-      <!-- Form with improved spacing and grouping -->
       <form [formGroup]="onboardingForm" (ngSubmit)="onSubmit()" class="space-y-8">
-        <!-- Basic Information Group -->
         <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100 space-y-5">
           <h4 class="text-xs font-bold text-ims-text-primary uppercase tracking-widest mb-4">
             Basic Information
@@ -139,7 +129,6 @@
           </p-floatlabel>
         </div>
 
-        <!-- Business Type Selection - PrimeNG + Angular 17 Syntax -->
         <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
           <label
             class="block text-xs font-bold text-ims-text-primary mb-5 uppercase tracking-widest"
