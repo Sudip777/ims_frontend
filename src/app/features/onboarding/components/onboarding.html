@@ -1,6 +1,6 @@
-<main class="flex flex-col md:flex-row min-h-screen">
+<main class="flex flex-col md:flex-row min-h-screen h-screen overflow-hidden">
   <section
-    class="lg:flex lg:w-2/5 bg-gradient-to-br from-ims-primary via-ims-primary to-ims-secondary p-8 lg:p-16 flex-col justify-between text-white overflow-hidden relative"
+    class="lg:flex lg:w-2/5 flex-shrink-0 bg-gradient-to-br from-ims-primary via-ims-primary to-ims-secondary p-8 lg:p-16 flex-col justify-between text-white relative overflow-y-auto h-full"
   >
     <div class="absolute inset-0 opacity-5">
       <div
@@ -65,7 +65,9 @@
     </p>
   </section>
 
-  <section class="w-full lg:w-3/5 p-6 lg:p-12 flex flex-col justify-between bg-gray-50">
+  <section
+    class="w-full lg:w-3/5 p-6 lg:p-12 flex flex-col justify-between bg-gray-50 overflow-y-auto h-full"
+  >
     <div class="w-full max-w-2xl mx-auto">
       <div class="mb-10">
         <h3 class="text-2xl lg:text-3xl font-heading font-bold text-ims-text-primary mb-3">

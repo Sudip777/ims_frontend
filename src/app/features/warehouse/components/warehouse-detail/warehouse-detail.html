@@ -31,7 +31,7 @@
         <p-table
           #dt
           [value]="warehouses"
-          [rows]="10"
+          [rows]="5"
           [paginator]="true"
           [rowsPerPageOptions]="[5, 10, 20]"
           [globalFilterFields]="['name']"
@@ -57,7 +57,13 @@
               </p-iconfield>
               <div class="flex gap-2">
                 <p-button label="Add" icon="pi pi-plus" (onClick)="openNew()" />
-                <p-button icon="pi pi-upload" label="Export" (onClick)="exportExcel()" />
+                <p-button
+                  icon="pi pi-upload"
+                  label="Export"
+                  (onClick)="exportExcel()"
+                  severity="secondary"
+                  [outlined]="true"
+                />
               </div>
             </div>
           </ng-template>
@@ -70,8 +76,15 @@
           </ng-template>
           <ng-template pTemplate="body" let-warehouse>
             <tr>
-              <td>{{ warehouse.warehouseId }}</td>
-              <td>{{ warehouse.name }}</td>
+              <td>
+                <span class="font-semibold">{{ warehouse.warehouseId }}</span>
+              </td>
+              <td>
+                <div class="flex flex-start gap-2">
+                  <i class="pi pi-warehouse text-surface-500"></i>
+                  <span>{{ warehouse.name }}</span>
+                </div>
+              </td>
               <td class="text-center">
                 <p-button
                   icon="pi pi-pencil"

@@ -32,6 +32,8 @@ import { WarehouseService } from '../../../warehouse/services/warehouse.services
 import { OrderRequest } from '../../models/sales-order.model';
 import { SalesOrderService } from '../../services/sales-order.services';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
+import { Avatar } from 'primeng/avatar';
+import { Badge } from 'primeng/badge';
 
 interface OrderDetail {
   orderDetailId: number;
@@ -76,6 +78,8 @@ interface Order {
     TagModule,
     ToastModule,
     MetricCardComponent,
+    Avatar,
+    Badge,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './sales-order-detail.html',
@@ -115,6 +119,8 @@ export class SalesOrderDetail {
   totalCount = 0;
   pageSize = 5;
   page = 1;
+  severity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined =
+    null;
 
   statusOptions = [
     { label: 'Pending', value: 1 },
@@ -127,12 +133,16 @@ export class SalesOrderDetail {
   }
 
   ngOnInit() {
-    this.loadOrderDetails();
     this.loadCustomers();
     this.loadWarehouses();
     this.loadProducts();
   }
+  onLazyLoad(event: any) {
+    const page = event.first / event.rows + 1; // 1 based indexx
+    const pageSize = event.rows;
 
+    this.loadOrderDetails(page, pageSize);
+  }
   get orderDetails(): FormArray {
     return this.salesOrderForm.get('orderDetails') as FormArray;
   }
@@ -170,7 +180,7 @@ export class SalesOrderDetail {
     };
   }
 
-  private loadOrderDetails(page = 1, pageSize = 5) {
+  private loadOrderDetails(page: number, pageSize: number) {
     this.orderService.getAllSalesOrder(page, pageSize).subscribe({
       next: (res) => {
         this.items = res.result.data;
@@ -238,7 +248,7 @@ export class SalesOrderDetail {
       next: () => {
         this.notification.success('Success', 'Order Created Successfully');
         this.hideDialog();
-        this.loadOrderDetails();
+        this.loadOrderDetails(this.page, this.pageSize);
       },
       error: (err) => {
         this.notification.error('Error', `${err.error.message}` || 'Failed to Create Order');
@@ -251,7 +261,7 @@ export class SalesOrderDetail {
       next: () => {
         this.notification.success('Success', 'Order Updated Successfully');
         this.hideDialog();
-        this.loadOrderDetails();
+        this.loadOrderDetails(this.page, this.pageSize);
         this.isEditMode = false;
       },
       error: (err) => {
@@ -434,5 +444,30 @@ export class SalesOrderDetail {
     } catch (e) {
       this.notification.error('Export', 'Excel Export Failed');
     }
+  }
+  getStatusSeverity(
+    status: string
+  ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
+    const severityMap: {
+      [key: string]: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast';
+    } = {
+      Pending: 'warn',
+      Approved: 'success',
+      Rejected: 'danger',
+      Completed: 'info',
+      Cancelled: 'secondary',
+    };
+    return severityMap[status] || 'info';
+  }
+
+  getStatusIcon(status: string): string {
+    const iconMap: { [key: string]: string } = {
+      Pending: 'pi pi-clock',
+      Approved: 'pi pi-check-circle',
+      Rejected: 'pi pi-times-circle',
+      Completed: 'pi pi-check',
+      Cancelled: 'pi pi-ban',
+    };
+    return iconMap[status] || 'pi pi-info-circle';
   }
 }

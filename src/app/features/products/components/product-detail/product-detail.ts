@@ -89,12 +89,17 @@ export class ProductDetail {
   date: Date | null = null;
 
   ngOnInit() {
-    this.loadProducts();
+    // this.loadProducts();
     this.loadCategories();
     this.loadSuppliers();
   }
 
-  private loadProducts(page = 1, pageSize = 5): void {
+  onLazyLoad(event: any) {
+    const page = event.first / event.rows + 1;
+    const pageSize = event.rows;
+    this.loadProducts(page, pageSize);
+  }
+  private loadProducts(page: number, pageSize: number): void {
     this.productsService.getAllProducts(page, pageSize).subscribe({
       next: (res) => {
         this.products = res.result.data;
@@ -189,7 +194,7 @@ export class ProductDetail {
       next: () => {
         this.notificationService.success('Success', 'Product created successfully');
         this.hideDialog();
-        this.loadProducts();
+        this.loadProducts(this.page, this.pageSize);
       },
       error: (err) => {
         this.notificationService.error('Error', err.error?.message || 'Failed to create product');
@@ -202,7 +207,7 @@ export class ProductDetail {
       next: () => {
         this.notificationService.success('Success', 'Product updated successfully');
         this.hideDialog();
-        this.loadProducts();
+        this.loadProducts(this.page, this.pageSize);
       },
       error: (err) => {
         this.notificationService.error('Error', err.error?.message || 'Failed to update product');
@@ -223,7 +228,7 @@ export class ProductDetail {
         this.productsService.deleteProduct(product.productId).subscribe({
           next: () => {
             this.notificationService.success('Success', 'Product deleted successfully');
-            this.loadProducts();
+            this.loadProducts(this.page, this.pageSize);
           },
           error: () => {
             this.notificationService.error('Error', 'Failed to delete product');

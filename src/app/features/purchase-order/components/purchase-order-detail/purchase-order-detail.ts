@@ -34,6 +34,9 @@ import {
   PurchaseOrderRequest,
 } from '../../models/purchase-order.model';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
+import { Avatar } from 'primeng/avatar';
+import { Badge } from 'primeng/badge';
+import { AuthRoutingModule } from '../../../auth/auth-routing-module';
 
 export interface PurchaseOrderDetail {
   purchaseOrderDetailId: number;
@@ -77,6 +80,9 @@ interface PurchaseOrder {
     TagModule,
     ToastModule,
     MetricCardComponent,
+    Avatar,
+    Badge,
+    AuthRoutingModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './purchase-order-detail.html',
@@ -111,6 +117,8 @@ export class PurchaseOrderDetail {
   totalCount = 0;
   pageSize = 5;
   page = 1;
+  severity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined =
+    null;
 
   statusOptions = [
     { label: 'Pending', value: 1 },
@@ -123,11 +131,17 @@ export class PurchaseOrderDetail {
   }
 
   ngOnInit() {
-    this.loadPurchaseOrders();
+    // this.loadPurchaseOrders();
     this.loadSuppliers();
     this.loadProducts();
   }
 
+  onLazyLoad(event: any) {
+    const page = event.first / event.rows + 1; // 1 based indexx
+    const pageSize = event.rows;
+
+    this.loadPurchaseOrders(page, pageSize);
+  }
   get purchaseOrderDetails(): FormArray {
     return this.purchaseOrderForm.get('purchaseOrderDetails') as FormArray;
   }
@@ -157,15 +171,15 @@ export class PurchaseOrderDetail {
       supplierId: null,
       supplierName: '',
       purchaseOrderDate: '',
-      statusId: 1,
-      statusName: 'Pending',
+      statusId: 0,
+      statusName: '',
       totalAmount: 0,
       createdByUserId: 0,
       purchaseOrderDetails: [],
     };
   }
 
-  private loadPurchaseOrders(page = 1, pageSize = 5) {
+  private loadPurchaseOrders(page: number, pageSize: number) {
     this.purchaseOrderService.getAllPurchaseOrders(page, pageSize).subscribe({
       next: (res) => {
         this.purchaseOrders = res.result.data;
@@ -257,7 +271,7 @@ export class PurchaseOrderDetail {
       next: () => {
         this.notification.success('Success', 'Purchase Order Created Successfully');
         this.hideDialog();
-        this.loadPurchaseOrders();
+        this.loadPurchaseOrders(this.page, this.pageSize);
       },
       error: (err) => {
         this.notification.error('Error', `${err.error.message}` || 'Failed to Create Order');
@@ -272,7 +286,7 @@ export class PurchaseOrderDetail {
         next: () => {
           this.notification.success('Success', 'Purchase Order Updated Successfully');
           this.hideDialog();
-          this.loadPurchaseOrders();
+          this.loadPurchaseOrders(this.page, this.pageSize);
           this.isEditMode = false;
         },
         error: (err) => {
@@ -431,5 +445,30 @@ export class PurchaseOrderDetail {
     } catch (e) {
       this.notification.error('Export', 'Excel Export Failed');
     }
+  }
+  getStatusSeverity(
+    status: string
+  ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
+    const severityMap: {
+      [key: string]: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast';
+    } = {
+      Pending: 'warn',
+      Approved: 'success',
+      Rejected: 'danger',
+      Completed: 'info',
+      Cancelled: 'secondary',
+    };
+    return severityMap[status] || 'info';
+  }
+
+  getStatusIcon(status: string): string {
+    const iconMap: { [key: string]: string } = {
+      Pending: 'pi pi-clock',
+      Approved: 'pi pi-check-circle',
+      Rejected: 'pi pi-times-circle',
+      Completed: 'pi pi-check',
+      Cancelled: 'pi pi-ban',
+    };
+    return iconMap[status] || 'pi pi-info-circle';
   }
 }

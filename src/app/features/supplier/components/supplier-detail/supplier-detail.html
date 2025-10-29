@@ -31,7 +31,7 @@
         <p-table
           #dt
           [value]="items"
-          [rows]="10"
+          [rows]="5"
           [paginator]="true"
           [rowsPerPageOptions]="[5, 10, 20]"
           [globalFilterFields]="['name', 'email', 'phone', 'address']"
@@ -55,7 +55,13 @@
               </p-iconfield>
               <div class="flex gap-2">
                 <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
-                <p-button icon="pi pi-upload" label="Export" (onClick)="exportExcel()" />
+                <p-button
+                  icon="pi pi-upload"
+                  label="Export"
+                  (onClick)="exportExcel()"
+                  severity="secondary"
+                  [outlined]="true"
+                />
               </div>
             </div>
           </ng-template>
@@ -70,7 +76,7 @@
               <th>Email</th>
               <th pSortableColumn="phone">Phone <p-sortIcon field="phone"></p-sortIcon></th>
               <th pSortableColumn="address">Addres<p-sortIcon field="address"></p-sortIcon></th>
-              <th pSortableColumn="isActive">Status <p-sortIcon field="isActive"></p-sortIcon></th>
+              <th>Status</th>
               <th pSortableColumn="createdAt">
                 Created At <p-sortIcon field="createdAt"></p-sortIcon>
               </th>
@@ -83,10 +89,22 @@
               <!-- <td style="width: 3rem">
           <p-tableCheckbox [value]="supplier"></p-tableCheckbox>
         </td> -->
-              <td>{{ supplier.supplierId }}</td>
+              <td>
+                <span class="font-semibold">{{ supplier.supplierId }}</span>
+              </td>
               <td>{{ supplier.name }}</td>
-              <td>{{ supplier.email }}</td>
-              <td>{{ supplier.phone }}</td>
+              <td>
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-envelope text-surface-500"></i>
+                  <span>{{ supplier.email }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-phone text-surface-500"></i>
+                  <span>{{ supplier.phone }}</span>
+                </div>
+              </td>
               <td>{{ supplier.address }}</td>
               <td>
                 <p-tag
@@ -94,8 +112,10 @@
                   [severity]="getSeverity(supplier.isActive)"
                 ></p-tag>
               </td>
-              <td>{{ supplier.createdAt | date : 'mediumDate' }}</td>
               <td>
+                <span> {{ supplier.createdAt | date : 'mediumDate' }}</span>
+              </td>
+              <td class="flex gap-3">
                 <p-button
                   icon="pi pi-pencil"
                   class="mr-2"
