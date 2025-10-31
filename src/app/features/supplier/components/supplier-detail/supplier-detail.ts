@@ -21,7 +21,6 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { SupplierService } from '../../services/supplier.services';
 import { NotificationService } from '../../../../core/services/notification.services';
-import { saveAs } from 'file-saver';
 import { ExportService } from '../../../../core/services/export.services';
 
 interface Supplier {

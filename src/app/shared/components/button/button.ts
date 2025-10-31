@@ -1,16 +1,7 @@
 import { Component, Input, Output, EventEmitter, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-export type ButtonColor =
-  | 'primary'
-  | 'secondary'
-  | 'destructive'
-  | 'lightBlue'
-  | 'skyBlue'
-  | 'success'
-  | 'babyBlue'
-  | 'lightRed'
-  | 'neutral';
+export type ButtonColor = 'primary' | 'secondary' | 'destructive' | 'neutral';
 
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
@@ -30,8 +21,8 @@ export class ButtonComponent {
   @Input() className = '';
   @Input() prefix?: string;
   @Input() postfix?: string;
-  @Input() rounded = true; // ✅ new
-  @Input() ariaLabel?: string; // ✅ accessibility
+  @Input() rounded = true;
+  @Input() ariaLabel?: string;
 
   @Output() buttonClick = new EventEmitter<Event>();
 
@@ -47,17 +38,6 @@ export class ButtonComponent {
       'bg-[#14B8A6] text-white shadow-[0_10px_40px_rgba(20,184,166,0.3)] hover:shadow-[0_15px_50px_rgba(20,184,166,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(20,184,166,0.3)]',
     destructive:
       'bg-[#EF4444] text-white shadow-[0_10px_40px_rgba(239,68,68,0.3)] hover:shadow-[0_15px_50px_rgba(239,68,68,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(239,68,68,0.3)]',
-    success:
-      'bg-[#10B981] text-white shadow-[0_10px_40px_rgba(16,185,129,0.3)] hover:shadow-[0_15px_50px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(16,185,129,0.3)]',
-    lightBlue:
-      'bg-[#38BDF8] text-white shadow-[0_10px_40px_rgba(56,189,248,0.3)] hover:shadow-[0_15px_50px_rgba(56,189,248,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(56,189,248,0.3)]',
-
-    skyBlue:
-      'bg-[#0EA5E9] text-white shadow-[0_10px_40px_rgba(14,165,233,0.3)] hover:shadow-[0_15px_50px_rgba(14,165,233,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(14,165,233,0.3)]',
-    babyBlue:
-      'bg-[#7DD3FC] text-gray-900 shadow-[0_10px_40px_rgba(125,211,252,0.3)] hover:shadow-[0_15px_50px_rgba(125,211,252,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(125,211,252,0.3)]',
-    lightRed:
-      'bg-[#FCA5A5] text-gray-900 shadow-[0_10px_40px_rgba(252,165,165,0.3)] hover:shadow-[0_15px_50px_rgba(252,165,165,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(252,165,165,0.3)]',
     neutral:
       'bg-[#6B7280] text-white shadow-[0_10px_40px_rgba(107,114,128,0.3)] hover:shadow-[0_15px_50px_rgba(107,114,128,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_30px_rgba(107,114,128,0.3)]',
   };
