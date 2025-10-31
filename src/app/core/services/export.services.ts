@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 
 export interface ExportOptions {
   fileName?: string;

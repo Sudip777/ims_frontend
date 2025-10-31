@@ -1,6 +1,7 @@
-<main class="flex flex-col md:flex-row min-h-screen h-screen overflow-hidden">
+<main class="flex flex-col lg:flex-row h-screen">
+  <!-- LEFT SECTION -->
   <section
-    class="lg:flex lg:w-2/5 flex-shrink-0 bg-gradient-to-br from-ims-primary via-ims-primary to-ims-secondary p-8 lg:p-16 flex-col justify-between text-white relative overflow-y-auto h-full"
+    class="hidden overflow-y-auto lg:w-2/5 flex-shrink-0 bg-gradient-to-br from-ims-primary via-ims-primary to-ims-secondary p-8 lg:p-16 lg:flex flex-col justify-between text-white relative lg:overflow-hidden"
   >
     <div class="absolute inset-0 opacity-5">
       <div
@@ -35,7 +36,7 @@
           orders, and oversee warehouses from a single window.
         </p>
 
-        <div class="flex items-center gap-6 pt-4 text-sm text-white/80">
+        <div class="flex items-center gap-6 pt-4 text-sm text-white/80 flex-wrap">
           <div class="flex items-center gap-2">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -65,8 +66,9 @@
     </p>
   </section>
 
+  <!-- RIGHT SECTION -->
   <section
-    class="w-full lg:w-3/5 p-6 lg:p-12 flex flex-col justify-between bg-gray-50 overflow-y-auto h-full"
+    class="flex-1 w-full bg-gray-50 p-6 lg:p-12 flex flex-col justify-between overflow-y-auto lg:overflow-y-auto lg:h-screen"
   >
     <div class="w-full max-w-2xl mx-auto">
       <div class="mb-10">
@@ -79,6 +81,7 @@
       </div>
 
       <form [formGroup]="onboardingForm" (ngSubmit)="onSubmit()" class="space-y-8">
+        <!-- BASIC INFORMATION -->
         <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100 space-y-5">
           <h4 class="text-xs font-bold text-ims-text-primary uppercase tracking-widest mb-4">
             Basic Information
@@ -131,6 +134,7 @@
           </p-floatlabel>
         </div>
 
+        <!-- BUSINESS TYPE -->
         <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
           <label
             class="block text-xs font-bold text-ims-text-primary mb-5 uppercase tracking-widest"
@@ -173,6 +177,7 @@
           </div>
         </div>
 
+        <!-- SKU SIZE -->
         <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
           <label
             class="block text-xs font-bold text-ims-text-primary mb-5 uppercase tracking-widest"
@@ -215,9 +220,7 @@
       </form>
     </div>
 
-    <div
-      class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-10 w-full max-w-2xl mx-auto"
-    >
+    <div class="flex justify-between mt-10 w-full">
       <a
         (click)="navigateLogin()"
         class="text-sm text-ims-primary hover:text-ims-primary-dark transition-colors duration-150 underline-offset-2 hover:underline cursor-pointer underline"
@@ -225,18 +228,11 @@
         Skip for now
       </a>
 
-      <app-button
-        (buttonClick)="onSubmit()"
-        type="submit"
-        color="primary"
-        size="md"
-        class="w-full sm:w-auto order-1 sm:order-2"
-      >
+      <app-button (buttonClick)="onSubmit()" type="submit" color="primary" size="md">
         <span
           class="flex justify-center items-center gap-3 font-heading text-base font-semibold px-6"
         >
           Continue
-
           <app-icon name="arrow-right"></app-icon>
         </span>
       </app-button>
