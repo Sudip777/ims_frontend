@@ -4,8 +4,8 @@ module.exports = {
     'type-case': [2, 'always', 'lower-case'],
     'type-empty': [2, 'never'],
     'scope-case': [2, 'always', 'lower-case'],
-    'scope-empty': [0, 'always'], // 0 = optional
-    'subject-case': [2, 'always', 'sentence-case'],
+    'scope-empty': [0, 'always'],
+    'subject-case': [0, 'never'], // allow any case
     'subject-empty': [2, 'never'],
   },
 };

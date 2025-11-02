@@ -73,7 +73,7 @@
               <input
                 pInputText
                 type="text"
-                (input)="dt.filterGlobal($event.target.value, 'contains')"
+                (input)="onSearchInput($event.target.value)"
                 placeholder="Search..."
                 class="w-full md:w-auto"
               />
@@ -170,8 +170,6 @@
       </p-table>
     </div>
   </div>
-
-  <p-toast position="bottom-right"></p-toast>
 
   <p-dialog
     [(visible)]="productDialog"

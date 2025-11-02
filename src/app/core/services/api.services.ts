@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -28,12 +28,11 @@ export class ApiService {
     return headers;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  get<T>(url: string, params?: any): Observable<T> {
+  get<T>(url: string, options?: { params?: HttpParams }): Observable<T> {
     return this.http
       .get<T>(`${environment.apiUrl}${url}`, {
         headers: this.getHeaders(),
-        params,
+        params: options?.params,
         withCredentials: true,
       })
       .pipe(
