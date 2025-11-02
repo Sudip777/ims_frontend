@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -20,8 +20,10 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+import { Subscription } from 'rxjs';
 import { ExportService } from '../../../../core/services/export.services';
 import { NotificationService } from '../../../../core/services/notification.services';
+import { SearchService } from '../../../../core/services/search.services';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { CategoryService } from '../../../category/services/category.services';
 import { SupplierService } from '../../../supplier/services/supplier.services';
@@ -61,13 +63,15 @@ interface AutoCompleteCompleteEvent {
   ],
   providers: [ConfirmationService, MessageService],
 })
-export class ProductDetail implements OnInit {
+export class ProductDetail implements OnInit, OnDestroy {
   private readonly categoryService = inject(CategoryService);
   private readonly supplierService = inject(SupplierService);
   private readonly productsService = inject(ProductsService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly notificationService = inject(NotificationService);
   private readonly exportService = inject(ExportService);
+  private readonly searchService = inject(SearchService);
+  private searchSubscription: Subscription | undefined;
 
   products: Product[] = [];
   selectedProducts: Product[] = [];
@@ -87,30 +91,42 @@ export class ProductDetail implements OnInit {
   pageSize = 5;
   page = 1;
   date: Date | null = null;
+  globalFilterFields: unknown;
+  globalSearchText = '';
 
   ngOnInit() {
-    // this.loadProducts();
+    // debouncing searchh
+    this.searchSubscription = this.searchService.getSearchTerm(300).subscribe((term) => {
+      this.globalSearchText = term;
+      this.loadProducts(1, this.pageSize, this.globalSearchText, 'productId', 'asc');
+    });
     this.loadCategories();
     this.loadSuppliers();
   }
-
-  onLazyLoad(event: { first: number; rows: number }) {
-    const page = event.first / event.rows + 1;
-    const pageSize = event.rows;
-    this.loadProducts(page, pageSize);
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
   }
-  private loadProducts(page: number, pageSize: number): void {
-    this.productsService.getAllProducts(page, pageSize).subscribe({
-      next: (res) => {
-        this.products = res.result.data;
-        this.totalCount = res.result.meta.totalCount;
-        this.page = res.result.meta.page;
-        this.pageSize = res.result.meta.pageSize;
-      },
-      error: () => {
-        this.notificationService.error('Error!!', 'Failed to Load Products');
-      },
-    });
+
+  private loadProducts(
+    page: number,
+    pageSize: number,
+    search?: string,
+    sortColumn?: string | string[] | null | undefined,
+    sortDirection?: string,
+  ): void {
+    this.productsService
+      .getAllProducts(page, pageSize, search, sortColumn, sortDirection)
+      .subscribe({
+        next: (res) => {
+          this.products = res.result.data;
+          this.totalCount = res.result.meta.totalCount;
+          this.page = res.result.meta.page;
+          this.pageSize = res.result.meta.pageSize;
+        },
+        error: () => {
+          this.notificationService.error('Error!!', 'Failed to Load Products');
+        },
+      });
   }
 
   private loadCategories(): void {
@@ -146,7 +162,15 @@ export class ProductDetail implements OnInit {
     const rows = event.rows ?? 10;
     const page = first / rows + 1;
     const pageSize = rows;
-    this.loadProducts(page, pageSize);
+
+    const sortColumn: string | string[] | null | undefined = event.sortField ?? 'productId';
+    const sortDirection = event.sortOrder === 1 ? 'asc' : 'desc';
+    const search = this.globalSearchText ?? '';
+
+    this.loadProducts(page, pageSize, search, sortColumn, sortDirection);
+  }
+  onSearchInput(value: string) {
+    this.searchService.setSearchTerm(value);
   }
 
   openNew(): void {

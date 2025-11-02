@@ -1,5 +1,6 @@
 <!-- eslint-disable @angular-eslint/template/interactive-supports-focus -->
 <!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
+
 <div class="flex h-screen overflow-hidden">
   @if (sidebarOpen) {
     <div (click)="closeSidebar()" class="fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
@@ -13,34 +14,35 @@
   ></app-sidebar>
 
   <div class="flex-1 flex flex-col h-screen">
-    <div
-      class="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm"
-    >
-      <button
+    <div class="lg:hidden flex justify-between px-2">
+      <div
+        class="px-4 py-6 hover:bg-ims-primary-hover-light rounded-lg transition-all duration-200 active:scale-95 items-center"
         (click)="toggleSidebar(true)"
-        class="p-2 hover:bg-purple-50 rounded-lg transition-all duration-200 active:scale-95"
         aria-label="Open menu"
+        (keydown)="toggleSidebar(false)"
+        (keyup)="toggleSidebar(true)"
+        (keypress)="toggleSidebar(true)"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
+          width="32"
+          height="32"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class=""
+          class="lucide lucide-menu-icon lucide-menu"
         >
           <path d="M4 5h16" />
           <path d="M4 12h16" />
           <path d="M4 19h16" />
         </svg>
-      </button>
+      </div>
 
-      <div class="flex-1 flex justify-center">
-        <app-icon name="app-logo"></app-icon>
+      <div class="flex justify-center items-center lg:hidden">
+        <app-icon name="app-logo" routerLink="/"></app-icon>
       </div>
     </div>
 
