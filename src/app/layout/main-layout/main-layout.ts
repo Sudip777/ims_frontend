@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
-import { IconComponent } from '../../shared/icons/components/icon.component';
-import { ButtonComponent } from '../../shared/components/button/button';
-import { PrimeNG } from 'primeng/config';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { PrimeNG } from 'primeng/config';
+import { ButtonComponent } from '../../shared/components/button/button';
+import { IconComponent } from '../../shared/icons/components/icon.component';
 import { Footer } from '../footer/footer';
 
 @Component({
@@ -14,7 +14,7 @@ import { Footer } from '../footer/footer';
   styleUrls: ['./main-layout.scss'],
 })
 export class MainLayout implements OnInit {
-  constructor(private primeng: PrimeNG) {}
+  private primeng = inject(PrimeNG);
 
   ngOnInit() {
     this.primeng.ripple.set(true);

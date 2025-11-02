@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextFieldComponent } from '../../../../shared/components/text-field/text-field';
 import { IconComponent } from '../../../../shared/icons/components/icon.component';
@@ -12,8 +12,9 @@ import { IconComponent } from '../../../../shared/icons/components/icon.componen
 })
 export class Register {
   loginForm: FormGroup;
+  private fb = inject(FormBuilder);
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],

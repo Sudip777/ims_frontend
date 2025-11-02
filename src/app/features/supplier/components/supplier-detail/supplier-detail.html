@@ -113,7 +113,7 @@
                 ></p-tag>
               </td>
               <td>
-                <span> {{ supplier.createdAt | date : 'mediumDate' }}</span>
+                <span> {{ supplier.createdAt | date: 'mediumDate' }}</span>
               </td>
               <td class="flex gap-3">
                 <p-button
@@ -149,15 +149,7 @@
       <div class="flex flex-col gap-6">
         <div>
           <label for="name" class="block font-bold mb-3">Supplier Name</label>
-          <input
-            type="text"
-            pInputText
-            id="name"
-            [(ngModel)]="supplier.name"
-            required
-            autofocus
-            fluid
-          />
+          <input type="text" pInputText id="name" [(ngModel)]="supplier.name" required fluid />
           <small class="text-red-500" *ngIf="submitted && !supplier.name">Name is required.</small>
         </div>
 
@@ -177,12 +169,12 @@
         </div>
 
         <div>
-          <label class="block font-bold mb-3">Active Status</label>
+          <label for="isActive" class="block font-bold mb-3">Active Status</label>
           <p-select
             [(ngModel)]="supplier.isActive"
             [options]="[
               { label: 'Active', value: true },
-              { label: 'Inactive', value: false }
+              { label: 'Inactive', value: false },
             ]"
             optionLabel="label"
             optionValue="value"

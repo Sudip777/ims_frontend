@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
+import { Meta, PaginatedApiResponse } from '../../../core/models/api-response.model';
 import { ApiService } from '../../../core/services/api.services';
-import { ApiResponse, Meta, PaginatedApiResponse } from '../../../core/models/api-response.model';
+import { InventoryRequest, InventoryResponse } from '../models/inventory.model';
 
 @Injectable({
   providedIn: 'root',

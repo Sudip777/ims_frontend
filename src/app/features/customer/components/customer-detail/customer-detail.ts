@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -18,9 +18,9 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { NotificationService } from '../../../../core/services/notification.services';
 import { ExportService } from '../../../../core/services/export.services';
+import { NotificationService } from '../../../../core/services/notification.services';
+import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { CustomerService } from '../../services/customer.services';
 
 interface CustomerResponse {
@@ -63,7 +63,7 @@ type CustomerRequest = Omit<CustomerResponse, 'customerId' | 'createdAt' | 'crea
     MetricCardComponent,
   ],
 })
-export class CustomerDetail {
+export class CustomerDetail implements OnInit {
   // DI
   private readonly customerService = inject(CustomerService);
   private readonly notificationService = inject(NotificationService);
@@ -91,7 +91,7 @@ export class CustomerDetail {
     createdAt: new Date(),
     createdByUserId: 0,
   };
-  items: any[] = [];
+  items: unknown[] = [];
 
   ngOnInit(): void {
     this.loadCustomers();
@@ -168,7 +168,7 @@ export class CustomerDetail {
       error: (err) => {
         this.notificationService.error(
           'Error!!',
-          err.error?.message || 'Failed to Create Customer'
+          err.error?.message || 'Failed to Create Customer',
         );
       },
     });
@@ -225,7 +225,7 @@ export class CustomerDetail {
 
   exportExcel(): void {
     try {
-      this.exportService.exportToExcel(this.items, {
+      this.exportService.exportToExcel(this.items as never, {
         fileName: 'Customers_Excel_Report',
         sheetName: 'Customer Data',
         title: 'The Unity Ware Excel Report',

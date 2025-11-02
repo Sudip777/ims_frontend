@@ -9,5 +9,5 @@ interface SupplierResponse {
   createdByUserId: number;
 }
 
-interface SupplierRequest
-  extends Omit<SupplierResponse, 'supplierId' | 'createdAt' | 'createdByUserId'> {}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type SupplierRequest = Omit<SupplierResponse, 'supplierId' | 'createdAt' | 'createdByUserId'>;

@@ -1,12 +1,10 @@
-import { Pipe, PipeTransform } from '@angular/core';
+// import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({
-  name: 'safeHtml'
-})
-export class SafeHtmlPipe implements PipeTransform {
-
-  transform(value: unknown, ...args: unknown[]): unknown {
-    return null;
-  }
-
-}
+// @Pipe({
+//   name: 'safeHtml',
+// })
+// export class SafeHtmlPipe implements PipeTransform {
+//   transform(value: unknown, ...args: unknown[]): unknown {
+//     return null;
+//   }
+// }

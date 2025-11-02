@@ -1,4 +1,4 @@
-interface InventoryResponse {
+export interface InventoryResponse {
   inventoryId: number;
   productId: number;
   productName?: string | null;
@@ -9,4 +9,4 @@ interface InventoryResponse {
   createdbyUserId: number;
 }
 
-type InventoryRequest = Pick<InventoryResponse, 'productId' | 'warehouseId' | 'quantity'>;
+export type InventoryRequest = Pick<InventoryResponse, 'productId' | 'warehouseId' | 'quantity'>;

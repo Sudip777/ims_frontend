@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-user-management',
   imports: [],
   templateUrl: './user-management.html',
-  styleUrl: './user-management.scss'
+  styleUrl: './user-management.scss',
 })
-export class UserManagement {
-
-}
+export class UserManagement {}

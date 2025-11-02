@@ -41,7 +41,7 @@
         [globalFilterFields]="['supplierName', 'statusName']"
         [tableStyle]="{ 'min-width': '40rem' }"
         [expandedRowKeys]="expandedRows"
-        (onRowExpand)="onRowExpand($event.data)"
+        (onRowExpand)="onRowExpand($event)"
         (onRowCollapse)="onRowCollapse($event.data)"
         (onLazyLoad)="onLazyLoad($event)"
       >
@@ -120,7 +120,7 @@
             <td>
               <div class="flex items-center gap-2">
                 <i class="pi pi-calendar text-surface-500"></i>
-                <span>{{ po.orderDate | date : 'mediumDate' }}</span>
+                <span>{{ po.orderDate | date: 'mediumDate' }}</span>
               </div>
             </td>
             <td>
@@ -283,7 +283,7 @@
         <div class="flex flex-col gap-6">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label class="block font-bold mb-3">Supplier Name</label>
+              <label for="supplierId" class="block font-bold mb-3">Supplier Name</label>
               <p-autocomplete
                 formControlName="supplierId"
                 [suggestions]="filteredSupplierItems"
@@ -294,7 +294,7 @@
             </div>
 
             <div>
-              <label class="block font-bold mb-3">Order Date</label>
+              <label for="purchaseOrderDate" class="block font-bold mb-3">Order Date</label>
               <p-datepicker
                 formControlName="purchaseOrderDate"
                 dateFormat="yy-mm-dd"
@@ -305,7 +305,7 @@
             </div>
 
             <div>
-              <label class="block font-bold mb-3">Status</label>
+              <label for="statusId" class="block font-bold mb-3">Status</label>
               <p-select
                 formControlName="statusId"
                 [options]="statusOptions"

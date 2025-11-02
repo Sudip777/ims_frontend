@@ -29,7 +29,7 @@ export const routes: Routes = [
         title: 'Dashboard Overview Management',
         loadComponent: () =>
           import('./features/dashboard/components/dashboard-overview/dashboard-overview').then(
-            (m) => m.DashboardOverview
+            (m) => m.DashboardOverview,
           ),
       },
       {
@@ -37,7 +37,7 @@ export const routes: Routes = [
         title: 'Product Management',
         loadComponent: () =>
           import('./features/products/components/product-detail/product-detail').then(
-            (m) => m.ProductDetail
+            (m) => m.ProductDetail,
           ),
       },
       {
@@ -45,7 +45,7 @@ export const routes: Routes = [
         title: 'Supplier Management',
         loadComponent: () =>
           import('./features/supplier/components/supplier-detail/supplier-detail').then(
-            (m) => m.SupplierDetail
+            (m) => m.SupplierDetail,
           ),
       },
       {
@@ -53,7 +53,7 @@ export const routes: Routes = [
         title: 'Category Management',
         loadComponent: () =>
           import('./features/category/components/category-detail/category-detail').then(
-            (m) => m.CategoryDetail
+            (m) => m.CategoryDetail,
           ),
       },
       {
@@ -61,7 +61,7 @@ export const routes: Routes = [
         title: 'Warehouse Management',
         loadComponent: () =>
           import('./features/warehouse/components/warehouse-detail/warehouse-detail').then(
-            (m) => m.WarehouseDetail
+            (m) => m.WarehouseDetail,
           ),
       },
       {
@@ -69,7 +69,7 @@ export const routes: Routes = [
         title: 'Customer Management',
         loadComponent: () =>
           import('./features/customer/components/customer-detail/customer-detail').then(
-            (m) => m.CustomerDetail
+            (m) => m.CustomerDetail,
           ),
       },
       {
@@ -85,7 +85,7 @@ export const routes: Routes = [
         title: 'Sales Order Management',
         loadComponent: () =>
           import('./features/sales-order/components/sales-order-detail/sales-order-detail').then(
-            (m) => m.SalesOrderDetail
+            (m) => m.SalesOrderDetail,
           ),
       },
       {
@@ -93,7 +93,7 @@ export const routes: Routes = [
         title: 'Inventory Management',
         loadComponent: () =>
           import('./features/inventory/components/inventory-detail/inventory-detail').then(
-            (m) => m.InventoryDetail
+            (m) => m.InventoryDetail,
           ),
       },
     ],

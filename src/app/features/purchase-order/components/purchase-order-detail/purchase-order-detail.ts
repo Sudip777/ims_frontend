@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -8,8 +8,8 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -20,24 +20,26 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule } from 'primeng/paginator';
 import { SelectModule } from 'primeng/select';
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule, TableRowExpandEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 
+import { Avatar } from 'primeng/avatar';
+import { Badge } from 'primeng/badge';
+import { DropdownItem } from '../../../../core/models/drop-down.model';
 import { ExportService } from '../../../../core/services/export.services';
 import { NotificationService } from '../../../../core/services/notification.services';
-import { SupplierService } from '../../../supplier/services/supplier.services';
+import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
+import { AuthRoutingModule } from '../../../auth/auth-routing-module';
 import { ProductsService } from '../../../products/services/products.services';
-import { PurchaseOrderService } from '../../services/purchase-order.services';
+import { SupplierService } from '../../../supplier/services/supplier.services';
 import {
   PurchaseOrderDetailRequest,
   PurchaseOrderRequest,
 } from '../../models/purchase-order.model';
-import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { Avatar } from 'primeng/avatar';
-import { Badge } from 'primeng/badge';
-import { AuthRoutingModule } from '../../../auth/auth-routing-module';
+import { PurchaseOrderService } from '../../services/purchase-order.services';
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface PurchaseOrderDetail {
   purchaseOrderDetailId: number;
   productId: number;
@@ -88,7 +90,8 @@ interface PurchaseOrder {
   templateUrl: './purchase-order-detail.html',
   styleUrls: ['./purchase-order-detail.scss'],
 })
-export class PurchaseOrderDetail {
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export class PurchaseOrderDetail implements OnInit {
   private readonly purchaseOrderService = inject(PurchaseOrderService);
   private readonly notification = inject(NotificationService);
   private readonly fb = inject(FormBuilder);
@@ -99,21 +102,21 @@ export class PurchaseOrderDetail {
   private readonly messageService = inject(MessageService);
 
   purchaseOrderForm: FormGroup;
-  purchaseOrders: any[] = [];
-  supplierItems: any[] = [];
-  productItems: any[] = [];
-  filteredSupplierItems: any[] = [];
-  filteredProductItems: any[] = [];
+  purchaseOrders: unknown[] = [];
+  supplierItems: DropdownItem[] = [];
+  productItems: DropdownItem[] = [];
+  filteredSupplierItems: unknown[] = [];
+  filteredProductItems: unknown[] = [];
 
   purchaseOrder: PurchaseOrder = this.createEmptyPurchaseOrder();
-  selectedSupplier: any = null;
-  selectedProduct: any = null;
+  selectedSupplier: unknown = null;
+  selectedProduct: unknown = null;
 
   purchaseOrderDialog = false;
   submitted = false;
   isEditMode = false;
 
-  expandedRows: { [key: number]: boolean } = {};
+  expandedRows: Record<number, boolean> = {};
   totalCount = 0;
   pageSize = 5;
   page = 1;
@@ -131,14 +134,15 @@ export class PurchaseOrderDetail {
   }
 
   ngOnInit() {
-    // this.loadPurchaseOrders();
     this.loadSuppliers();
     this.loadProducts();
   }
 
-  onLazyLoad(event: any) {
-    const page = event.first / event.rows + 1; // 1 based indexx
-    const pageSize = event.rows;
+  onLazyLoad(event: TableLazyLoadEvent) {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? 10;
+    const page = first / rows + 1;
+    const pageSize = rows;
 
     this.loadPurchaseOrders(page, pageSize);
   }
@@ -191,7 +195,7 @@ export class PurchaseOrderDetail {
       error: (err) => {
         this.notification.error(
           'Error!!',
-          `${err.error.message}` || 'Failed to Load Purchase Orders'
+          `${err.error.message}` || 'Failed to Load Purchase Orders',
         );
       },
     });
@@ -200,7 +204,7 @@ export class PurchaseOrderDetail {
   private loadSuppliers(): void {
     this.supplierService.getAllSuppliers().subscribe({
       next: (res) => {
-        this.supplierItems = res.result.map((val: any) => ({
+        this.supplierItems = res.result.map((val) => ({
           label: val.name,
           value: val.supplierId,
         }));
@@ -214,7 +218,7 @@ export class PurchaseOrderDetail {
   private loadProducts(): void {
     this.productService.getAllProducts().subscribe({
       next: (res) => {
-        this.productItems = res.result.data.map((val: any) => ({
+        this.productItems = res.result.data.map((val) => ({
           label: val.name,
           value: val.productId,
         }));
@@ -227,27 +231,24 @@ export class PurchaseOrderDetail {
 
   private createPurchaseOrderRequest(): PurchaseOrderRequest {
     const formValue = this.purchaseOrderForm.value as {
-      supplierId: number | { value: number } | null;
+      supplierId: number | DropdownItem | null;
       statusId: number | string;
-      purchaseOrderDetails: Array<{
-        productId: number | { value: number };
+      purchaseOrderDetails: {
+        productId: number | DropdownItem;
         quantity: number;
         unitPrice: number;
-      }>;
+      }[];
     };
 
     const normalizedSupplierId =
       typeof formValue.supplierId === 'object' && formValue.supplierId !== null
-        ? Number(formValue.supplierId.value)
+        ? formValue.supplierId.value
         : Number(formValue.supplierId ?? 0);
 
     const normalizedDetails = formValue.purchaseOrderDetails.map((detail) => {
       const productId =
-        typeof detail.productId === 'object'
-          ? Number(detail.productId.value)
-          : Number(detail.productId);
+        typeof detail.productId === 'object' ? detail.productId.value : Number(detail.productId);
 
-      // Derive productName from a known selected option list if available
       const productOption = this.productItems.find((p) => p.value === productId);
       const productName = productOption?.label ?? '';
 
@@ -263,7 +264,7 @@ export class PurchaseOrderDetail {
       supplierId: normalizedSupplierId,
       statusId: Number(formValue.statusId),
       purchaseOrderDetails: normalizedDetails,
-    } as PurchaseOrderRequest;
+    };
   }
 
   private createPurchaseOrder(request: PurchaseOrderRequest): void {
@@ -292,7 +293,7 @@ export class PurchaseOrderDetail {
         error: (err) => {
           this.notification.error(
             'Error!',
-            err.error?.message || 'Failed to Update Purchase Order'
+            err.error?.message || 'Failed to Update Purchase Order',
           );
         },
       });
@@ -399,9 +400,10 @@ export class PurchaseOrderDetail {
       rejectButtonStyleClass: 'p-button-secondary',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.purchaseOrders = this.purchaseOrders.filter(
-          (p) => p.purchaseOrderId !== po.purchaseOrderId
+        this.purchaseOrders = (this.purchaseOrders as PurchaseOrder[]).filter(
+          (p) => p.purchaseOrderId !== po.purchaseOrderId,
         );
+
         this.messageService.add({
           severity: 'success',
           summary: 'Deleted',
@@ -412,7 +414,7 @@ export class PurchaseOrderDetail {
     });
   }
 
-  onRowExpand(event: { data: PurchaseOrder }) {
+  onRowExpand(event: TableRowExpandEvent) {
     if (event.data) {
       this.expandedRows[event.data.purchaseOrderId] = true;
       this.expandedRows = { ...this.expandedRows };
@@ -422,13 +424,14 @@ export class PurchaseOrderDetail {
 
   onRowCollapse(event: { data: PurchaseOrder }) {
     if (event.data) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [event.data.purchaseOrderId]: _, ...rest } = this.expandedRows;
       this.expandedRows = rest;
       this.purchaseOrders = [...this.purchaseOrders];
     }
   }
 
-  onPageChange(event: any): void {
+  onPageChange(event: { first: number; rows: number }): void {
     const page = event.first / event.rows + 1;
     const pageSize = event.rows;
     this.loadPurchaseOrders(page, pageSize);
@@ -436,22 +439,24 @@ export class PurchaseOrderDetail {
 
   exportCSV() {
     try {
-      this.exportService.exportToExcel(this.purchaseOrders),
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      (this.exportService.exportToExcel(this.purchaseOrders as never),
         {
           fileName: 'Purchase_Order_Excel_Export',
           sheetName: 'Purchase Order Data',
-        };
+        });
       this.notification.success('Export', 'Excel Export Completed');
     } catch (e) {
-      this.notification.error('Export', 'Excel Export Failed');
+      this.notification.error('Export', `Excel Export Failed | ${e}`);
     }
   }
   getStatusSeverity(
-    status: string
+    status: string,
   ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
-    const severityMap: {
-      [key: string]: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast';
-    } = {
+    const severityMap: Record<
+      string,
+      'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast'
+    > = {
       Pending: 'warn',
       Approved: 'success',
       Rejected: 'danger',
@@ -462,7 +467,7 @@ export class PurchaseOrderDetail {
   }
 
   getStatusIcon(status: string): string {
-    const iconMap: { [key: string]: string } = {
+    const iconMap: Record<string, string> = {
       Pending: 'pi pi-clock',
       Approved: 'pi pi-check-circle',
       Rejected: 'pi pi-times-circle',

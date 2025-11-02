@@ -129,8 +129,8 @@
             </td>
             <td>{{ product.sku }}</td>
             <td>{{ product.name }}</td>
-            <td>{{ product.unitPrice | currency : 'NPR ' : 'symbol' : '1.2-2' }}</td>
-            <td>{{ product.costPrice | currency : 'NPR ' : 'symbol' : '1.2-2' }}</td>
+            <td>{{ product.unitPrice | currency: 'NPR ' : 'symbol' : '1.2-2' }}</td>
+            <td>{{ product.costPrice | currency: 'NPR ' : 'symbol' : '1.2-2' }}</td>
             <td>{{ product.categoryName || 'N/A' }}</td>
             <td>{{ product.supplierName || 'N/A' }}</td>
             <td class="text-center">{{ product.minStock }} - {{ product.maxStock }}</td>
@@ -143,8 +143,8 @@
             </td>
             <td>
               <div class="flex flex-col gap-1">
-                <span class="text-sm">{{ product.createdAt | date : 'MMM dd,' }}</span>
-                <span class="text-sm">{{ product.createdAt | date : 'yyyy' }}</span>
+                <span class="text-sm">{{ product.createdAt | date: 'MMM dd,' }}</span>
+                <span class="text-sm">{{ product.createdAt | date: 'yyyy' }}</span>
               </div>
             </td>
             <td>
@@ -185,15 +185,7 @@
     <ng-template pTemplate="content">
       <div>
         <label for="Name" class="block font-bold mb-3">Product Name</label>
-        <input
-          type="text"
-          pInputText
-          id="Name"
-          [(ngModel)]="product.name"
-          required
-          autofocus
-          fluid
-        />
+        <input type="text" pInputText id="Name" [(ngModel)]="product.name" required fluid />
 
         <small class="text-red-500" *ngIf="submitted && !product.name as showError">
           Name is required.
@@ -276,12 +268,12 @@
       </div>
 
       <div>
-        <label class="block font-bold mb-3">Active Status</label>
+        <label for="isActive" class="block font-bold mb-3">Active Status</label>
         <p-select
           [(ngModel)]="product.isActive"
           [options]="[
             { label: 'Active', value: true },
-            { label: 'Inactive', value: false }
+            { label: 'Inactive', value: false },
           ]"
           optionLabel="label"
           optionValue="value"

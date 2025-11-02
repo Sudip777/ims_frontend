@@ -1,20 +1,24 @@
-import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
-import { IconComponent } from '../../../../shared/icons/components/icon.component';
-import { IconField, IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
 import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, inject, Input, OnInit, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { ChartModule } from 'primeng/chart';
 import { DatePickerModule } from 'primeng/datepicker';
+import { IconField, IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { AvatarModule } from 'primeng/avatar';
-import { SidebarService } from '../../services/sidebar.services';
+import { ApiService } from '../../../../core/services/api.services';
 import { NotificationService } from '../../../../core/services/notification.services';
 import { AuthStore } from '../../../../core/store/auth-store';
-import { ApiService } from '../../../../core/services/api.services';
-
+import { IconComponent } from '../../../../shared/icons/components/icon.component';
+import { SidebarService } from '../../services/sidebar.services';
+interface SidebarMenuItem {
+  route: string;
+  icon: string;
+  label: string;
+}
 @Component({
   selector: 'app-sidebar',
   imports: [
@@ -37,7 +41,7 @@ import { ApiService } from '../../../../core/services/api.services';
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
 })
-export class Sidebar {
+export class Sidebar implements OnInit {
   private sidebarService = inject(SidebarService);
   private authStore = inject(AuthStore);
   private notificationService = inject(NotificationService);
@@ -46,12 +50,12 @@ export class Sidebar {
   @Output() closeSidebarEvent = new EventEmitter<void>();
   apiService = inject(ApiService);
 
-  userDetails = signal<any>(null);
+  userDetails = signal<unknown>(null);
 
-  userDetailItems: any = '';
+  userDetailItems: unknown = '';
   roleName = this.authStore.userRole;
   userName = this.authStore.username;
-  sidebarMenuItems: any[] = [];
+  sidebarMenuItems: SidebarMenuItem[] = [];
 
   private loadUserMenuItems() {
     this.sidebarService.getAllUserMenuItems().subscribe({

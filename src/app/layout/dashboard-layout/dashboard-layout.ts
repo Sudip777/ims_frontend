@@ -1,12 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
-import { Sidebar } from '../sidebar/components/sidebar-details/sidebar';
-import { CommonModule } from '@angular/common';
-import { IconComponent } from '../../shared/icons/components/icon.component';
-import { DrawerModule } from 'primeng/drawer';
-import { ButtonModule } from 'primeng/button';
 import { BadgeModule } from 'primeng/badge';
+import { ButtonModule } from 'primeng/button';
+import { DrawerModule } from 'primeng/drawer';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
+import { IconComponent } from '../../shared/icons/components/icon.component';
+import { Sidebar } from '../sidebar/components/sidebar-details/sidebar';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -36,7 +36,9 @@ export class DashboardLayout {
     this.sidebarOpen = false;
   }
 
-  onChildActivate(component: any) {
+  onChildActivate(component: {
+    sidebarToggle: { subscribe: (arg0: (open: boolean) => void) => void };
+  }) {
     // Subscribe to child component's sidebar toggle events
     if (component.sidebarToggle) {
       component.sidebarToggle.subscribe((open: boolean) => {

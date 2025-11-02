@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -8,8 +8,8 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -20,20 +20,20 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule } from 'primeng/paginator';
 import { SelectModule } from 'primeng/select';
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule, TableRowExpandEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 
+import { Avatar } from 'primeng/avatar';
+import { Badge } from 'primeng/badge';
 import { ExportService } from '../../../../core/services/export.services';
 import { NotificationService } from '../../../../core/services/notification.services';
+import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { CustomerService } from '../../../customer/services/customer.services';
 import { ProductsService } from '../../../products/services/products.services';
 import { WarehouseService } from '../../../warehouse/services/warehouse.services';
 import { OrderRequest } from '../../models/sales-order.model';
 import { SalesOrderService } from '../../services/sales-order.services';
-import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { Avatar } from 'primeng/avatar';
-import { Badge } from 'primeng/badge';
 
 interface OrderDetail {
   orderDetailId: number;
@@ -85,7 +85,7 @@ interface Order {
   templateUrl: './sales-order-detail.html',
   styleUrls: ['./sales-order-detail.scss'],
 })
-export class SalesOrderDetail {
+export class SalesOrderDetail implements OnInit {
   private readonly orderService = inject(SalesOrderService);
   private readonly notification = inject(NotificationService);
   private readonly fb = inject(FormBuilder);
@@ -98,27 +98,28 @@ export class SalesOrderDetail {
 
   salesOrderForm: FormGroup;
   orders: Order[] = [];
-  items: any[] = [];
-  customerItems: any[] = [];
-  warehouseItems: any[] = [];
-  productItems: any[] = [];
-  filteredItems: any[] = [];
-  filteredWarehouseItems: any[] = [];
-  filteredProductItems: any[] = [];
+  items: unknown[] = [];
+  customerItems: { label: string; value: number }[] = [];
+  warehouseItems: { label: string; value: number }[] = [];
+  productItems: { label: string; value: number }[] = [];
+  filteredItems: unknown[] = [];
+  filteredWarehouseItems: unknown[] = [];
+  filteredProductItems: unknown[] = [];
 
   order: Order = this.createEmptyOrder();
-  selectedCustomer: any = null;
-  selectedWarehouse: any = null;
-  selectedProduct: any = null;
+  selectedCustomer: unknown = null;
+  selectedWarehouse: unknown = null;
+  selectedProduct: unknown = null;
 
   orderDialog = false;
   submitted = false;
   isEditMode = false;
 
-  expandedRows: { [key: number]: boolean } = {};
+  expandedRows: Record<number, boolean> = {};
   totalCount = 0;
   pageSize = 5;
   page = 1;
+
   severity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined =
     null;
 
@@ -137,10 +138,11 @@ export class SalesOrderDetail {
     this.loadWarehouses();
     this.loadProducts();
   }
-  onLazyLoad(event: any) {
-    const page = event.first / event.rows + 1; // 1 based indexx
-    const pageSize = event.rows;
-
+  onLazyLoad(event: TableLazyLoadEvent) {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? 10;
+    const page = first / rows + 1;
+    const pageSize = rows;
     this.loadOrderDetails(page, pageSize);
   }
   get orderDetails(): FormArray {
@@ -192,7 +194,7 @@ export class SalesOrderDetail {
       error: (err) => {
         this.notification.error(
           'Error!!',
-          `${err.error.message}` || 'Failed to Load Order Details'
+          `${err.error.message}` || 'Failed to Load Order Details',
         );
       },
     });
@@ -201,7 +203,7 @@ export class SalesOrderDetail {
   private loadCustomers(): void {
     this.customerService.getAllCustomers().subscribe({
       next: (res) => {
-        this.customerItems = res.result.map((val: any) => ({
+        this.customerItems = res.result.map((val) => ({
           label: val.name,
           value: val.customerId,
         }));
@@ -216,7 +218,7 @@ export class SalesOrderDetail {
   private loadWarehouses(): void {
     this.warehouseService.getAllWarehouses().subscribe({
       next: (res) => {
-        this.warehouseItems = res.result.map((val: any) => ({
+        this.warehouseItems = res.result.map((val) => ({
           label: val.name,
           value: val.warehouseId,
         }));
@@ -231,7 +233,7 @@ export class SalesOrderDetail {
   private loadProducts(): void {
     this.productService.getAllProducts().subscribe({
       next: (res) => {
-        this.productItems = res.result.data.map((val: any) => ({
+        this.productItems = res.result.data.map((val) => ({
           label: val.name,
           value: val.productId,
         }));
@@ -277,12 +279,19 @@ export class SalesOrderDetail {
       orderId: this.order?.orderId ?? undefined,
       customerId: formValue.customerId?.value ?? formValue.customerId,
       statusId: formValue.statusId,
-      orderDetails: formValue.orderDetails.map((detail: any) => ({
-        productId: detail.productId?.value ?? detail.productId,
-        warehouseId: detail.warehouseId?.value ?? detail.warehouseId,
-        quantity: detail.quantity,
-        unitPrice: detail.unitPrice,
-      })),
+      orderDetails: formValue.orderDetails.map(
+        (detail: {
+          productId: { value: number };
+          warehouseId: { value: number };
+          quantity: number;
+          unitPrice: number;
+        }) => ({
+          productId: detail.productId?.value ?? detail.productId,
+          warehouseId: detail.warehouseId?.value ?? detail.warehouseId,
+          quantity: detail.quantity,
+          unitPrice: detail.unitPrice,
+        }),
+      ),
     };
   }
 
@@ -411,9 +420,10 @@ export class SalesOrderDetail {
     });
   }
 
-  onRowExpand(event: { data: Order }) {
-    if (event.data) {
-      this.expandedRows[event.data.orderId] = true;
+  onRowExpand(event: TableRowExpandEvent): void {
+    if (event?.data) {
+      const orderId = event.data.orderId;
+      this.expandedRows[orderId] = true;
       this.expandedRows = { ...this.expandedRows };
       this.orders = [...this.orders];
     }
@@ -421,13 +431,14 @@ export class SalesOrderDetail {
 
   onRowCollapse(event: { data: Order }) {
     if (event.data) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [event.data.orderId]: _, ...rest } = this.expandedRows;
       this.expandedRows = rest;
       this.orders = [...this.orders];
     }
   }
 
-  onPageChange(event: any): void {
+  onPageChange(event: { first: number; rows: number }): void {
     const page = event.first / event.rows + 1;
     const pageSize = event.rows;
     this.loadOrderDetails(page, pageSize);
@@ -435,22 +446,24 @@ export class SalesOrderDetail {
 
   exportCSV() {
     try {
-      this.exportService.exportToExcel(this.orders),
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      (this.exportService.exportToExcel(this.orders as never),
         {
           fileName: 'Sales_Order_Excel_Export',
           sheetName: 'Sales Order Data',
-        };
+        });
       this.notification.success('Export', 'Excel Export Completed');
     } catch (e) {
-      this.notification.error('Export', 'Excel Export Failed');
+      this.notification.error('Export', `Excel Export Failed | ${e}`);
     }
   }
   getStatusSeverity(
-    status: string
+    status: string,
   ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
-    const severityMap: {
-      [key: string]: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast';
-    } = {
+    const severityMap: Record<
+      string,
+      'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast'
+    > = {
       Pending: 'warn',
       Approved: 'success',
       Rejected: 'danger',
@@ -461,7 +474,7 @@ export class SalesOrderDetail {
   }
 
   getStatusIcon(status: string): string {
-    const iconMap: { [key: string]: string } = {
+    const iconMap: Record<string, string> = {
       Pending: 'pi pi-clock',
       Approved: 'pi pi-check-circle',
       Rejected: 'pi pi-times-circle',

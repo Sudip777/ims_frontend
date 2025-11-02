@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -18,7 +19,6 @@ import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { ConfirmationService, MessageService } from 'primeng/api';
 interface Category {
   categoryId: number;
   categoryName: string;
@@ -53,7 +53,10 @@ interface Category {
   templateUrl: './category-detail.html',
   styleUrl: './category-detail.scss',
 })
-export class CategoryDetail {
+export class CategoryDetail implements OnInit {
+  private confirmationService = inject(ConfirmationService);
+  private messageService = inject(MessageService);
+
   timePeriods = ['1d', '7d', '1m', '3m', '6m', '1y'];
   selectedPeriod = '1m';
   date: Date | null = null;
@@ -67,11 +70,6 @@ export class CategoryDetail {
   };
   categoryDialog = false;
   submitted = false;
-
-  constructor(
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService
-  ) {}
 
   ngOnInit() {
     this.categories = [

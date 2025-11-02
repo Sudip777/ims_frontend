@@ -1,15 +1,14 @@
-import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IconComponent } from '../../../../shared/icons/components/icon.component';
-import { AuthRoutingModule } from '../../auth-routing-module';
-import { AuthStore } from '../../../../core/store/auth-store';
-import { ToastModule } from 'primeng/toast';
+import { Checkbox } from 'primeng/checkbox';
+import { FloatLabel } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
-import { FloatLabel } from 'primeng/floatlabel';
-import { Checkbox } from 'primeng/checkbox';
-import { Footer } from '../../../../layout/footer/footer';
+import { ToastModule } from 'primeng/toast';
+import { AuthStore } from '../../../../core/store/auth-store';
+import { IconComponent } from '../../../../shared/icons/components/icon.component';
+import { AuthRoutingModule } from '../../auth-routing-module';
 
 @Component({
   selector: 'app-login',

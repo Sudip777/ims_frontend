@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { ApiService } from '../../../core/services/api.services';
 import { ApiResponse } from '../../../core/models/api-response.model';
+import { ApiService } from '../../../core/services/api.services';
+import { CustomerRequest, CustomerResponse } from '../models/customer.model';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,7 @@ export class CustomerService {
   }
 
   getCustomerById(id: number) {
-    return this.api.get<ApiResponse<CustomerResponse[]>>('/customers/${id}');
+    return this.api.get<ApiResponse<CustomerResponse[]>>(`/customers/${id}`);
   }
 
   createCustomer(customer: CustomerRequest) {

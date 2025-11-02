@@ -39,7 +39,7 @@ export class AuthStore {
           this.router.navigateByUrl('/login');
         }
       },
-      { defer: true }
+      { defer: true },
     );
   }
 
@@ -96,10 +96,10 @@ export class AuthStore {
             }
 
             return throwError(() => err);
-          })
-        )
-      )
-    )
+          }),
+        ),
+      ),
+    ),
   );
 
   /** Log out and clear token */

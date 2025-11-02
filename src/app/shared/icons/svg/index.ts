@@ -903,7 +903,7 @@ export const LOGOUT = `<svg
            class="group-hover:stroke-ims-primary transition-colors"
         />
       </svg>`;
-export const ICONS_MAP: { [key: string]: string } = {
+export const ICONS_MAP: Record<string, string> = {
   'app-logo': APP_LOGO,
   'arrow-right': ARROW_RIGHT,
   order: ORDER_ICON,

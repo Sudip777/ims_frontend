@@ -42,7 +42,7 @@
         [tableStyle]="{ 'min-width': '40rem' }"
         [expandedRowKeys]="expandedRows"
         (onLazyLoad)="onLazyLoad($event)"
-        (onRowExpand)="onRowExpand($event.data)"
+        (onRowExpand)="onRowExpand($event)"
         (onRowCollapse)="onRowCollapse($event.data)"
       >
         <ng-template pTemplate="caption">
@@ -120,7 +120,7 @@
             <td>
               <div class="flex items-center gap-2">
                 <i class="pi pi-calendar text-surface-500"></i>
-                <span>{{ items.orderDate | date : 'mediumDate' }}</span>
+                <span>{{ items.orderDate | date: 'mediumDate' }}</span>
               </div>
             </td>
             <td>
@@ -287,7 +287,7 @@
         <div class="flex flex-col gap-6">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label class="block font-bold mb-3">Customer Name</label>
+              <label for="customerId" class="block font-bold mb-3">Customer Name</label>
               <div>
                 <p-autocomplete
                   formControlName="customerId"
@@ -306,7 +306,7 @@
               </small>
             </div>
             <div>
-              <label class="block font-bold mb-3">Order Date</label>
+              <label for="orderDate" class="block font-bold mb-3">Order Date</label>
               <p-datepicker
                 formControlName="orderDate"
                 dateFormat="yy-mm-dd"
@@ -316,7 +316,7 @@
               ></p-datepicker>
             </div>
             <div>
-              <label class="block font-bold mb-3">Status</label>
+              <label for="statusId" class="block font-bold mb-3">Status</label>
               <p-select
                 formControlName="statusId"
                 [options]="statusOptions"

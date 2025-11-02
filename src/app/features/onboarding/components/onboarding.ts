@@ -1,13 +1,12 @@
-import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IconComponent } from '../../../shared/icons/components/icon.component';
-import { ButtonComponent } from '../../../shared/components/button/button';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabel } from 'primeng/floatlabel';
-import { Footer } from '../../../layout/footer/footer';
+import { InputTextModule } from 'primeng/inputtext';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { ButtonComponent } from '../../../shared/components/button/button';
+import { IconComponent } from '../../../shared/icons/components/icon.component';
 
 @Component({
   selector: 'app-onboarding',
@@ -26,6 +25,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 export class OnboardingComponent {
   onboardingForm: FormGroup;
   private router = inject(Router);
+  private fb = inject(FormBuilder);
 
   businessTypes = [
     { value: 'super-stockiest', label: 'Super-stockiest' },
@@ -42,9 +42,9 @@ export class OnboardingComponent {
     { value: '10001-25000', label: '10001-25000 units' },
     { value: '>25000', label: '>25000 units' },
   ];
-  size: any;
+  size: unknown;
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
     this.onboardingForm = this.fb.group({
       businessName: ['', Validators.required],
       industry: ['', Validators.required],

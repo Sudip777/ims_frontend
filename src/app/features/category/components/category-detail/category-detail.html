@@ -128,7 +128,6 @@
             id="name"
             [(ngModel)]="category.categoryName"
             required
-            autofocus
             fluid
           />
           <small class="text-red-500" *ngIf="submitted && !category.categoryName"
@@ -144,7 +143,6 @@
             id="name"
             [(ngModel)]="category.parentCategoryName"
             required
-            autofocus
             fluid
           />
           <small class="text-red-500" *ngIf="submitted && !category.parentCategoryName"

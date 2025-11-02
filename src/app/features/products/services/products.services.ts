@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
-import { Product, ProductRequest, ProductUpdate } from '../models/product.model';
-import { ApiService } from '../../../core/services/api.services';
+import { inject, Injectable } from '@angular/core';
 import { Meta, PaginatedApiResponse } from '../../../core/models/api-response.model';
+import { ApiService } from '../../../core/services/api.services';
+import { Product, ProductRequest, ProductUpdate } from '../models/product.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductsService {
-  constructor(private api: ApiService) {}
+  private api = inject(ApiService);
 
   getAllProducts(page?: number, pageSize?: number) {
     const endpoint = page && pageSize ? `/products?page=${page}&pageSize=${pageSize}` : '/products';

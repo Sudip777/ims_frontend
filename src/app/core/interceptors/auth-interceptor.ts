@@ -11,7 +11,7 @@ import { AuthStore } from '../store/auth-store';
 
 export const authInterceptor: HttpInterceptorFn = (
   request: HttpRequest<unknown>,
-  next: HttpHandlerFn
+  next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> => {
   const authStore = inject(AuthStore);
   const token = authStore.token();

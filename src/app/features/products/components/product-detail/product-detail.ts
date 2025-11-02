@@ -1,13 +1,8 @@
-import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { Product, ProductRequest, ProductUpdate } from '../../models/product.model';
-import { ProductsService } from '../../services/products.services';
-import { CategoryService } from '../../../category/services/category.services';
-import { SupplierService } from '../../../supplier/services/supplier.services';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -20,13 +15,18 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { SelectModule } from 'primeng/select';
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { NotificationService } from '../../../../core/services/notification.services';
 import { ExportService } from '../../../../core/services/export.services';
+import { NotificationService } from '../../../../core/services/notification.services';
+import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
+import { CategoryService } from '../../../category/services/category.services';
+import { SupplierService } from '../../../supplier/services/supplier.services';
+import { Product, ProductRequest, ProductUpdate } from '../../models/product.model';
+import { ProductsService } from '../../services/products.services';
 
 interface AutoCompleteCompleteEvent {
   originalEvent: Event;
@@ -61,7 +61,7 @@ interface AutoCompleteCompleteEvent {
   ],
   providers: [ConfirmationService, MessageService],
 })
-export class ProductDetail {
+export class ProductDetail implements OnInit {
   private readonly categoryService = inject(CategoryService);
   private readonly supplierService = inject(SupplierService);
   private readonly productsService = inject(ProductsService);
@@ -71,10 +71,10 @@ export class ProductDetail {
 
   products: Product[] = [];
   selectedProducts: Product[] = [];
-  items: any[] = [];
-  supplierItems: any[] = [];
-  filteredItems: any[] = [];
-  filteredSupplierItems: any[] = [];
+  items: { label: string; value: number }[] = [];
+  supplierItems: { label: string; value: number }[] = [];
+  filteredItems: unknown[] = [];
+  filteredSupplierItems: unknown[] = [];
   productDialog = false;
   submitted = false;
   isEditMode = false;
@@ -94,7 +94,7 @@ export class ProductDetail {
     this.loadSuppliers();
   }
 
-  onLazyLoad(event: any) {
+  onLazyLoad(event: { first: number; rows: number }) {
     const page = event.first / event.rows + 1;
     const pageSize = event.rows;
     this.loadProducts(page, pageSize);
@@ -116,7 +116,7 @@ export class ProductDetail {
   private loadCategories(): void {
     this.categoryService.getAllCategories().subscribe({
       next: (res) => {
-        this.items = res.result.map((val: any) => ({
+        this.items = res.result.map((val) => ({
           label: val.categoryName,
           value: val.categoryId,
         }));
@@ -130,7 +130,7 @@ export class ProductDetail {
   private loadSuppliers(): void {
     this.supplierService.getAllSuppliers().subscribe({
       next: (res) => {
-        this.supplierItems = res.result.map((val: any) => ({
+        this.supplierItems = res.result.map((val) => ({
           label: val.name,
           value: val.supplierId,
         }));
@@ -141,9 +141,11 @@ export class ProductDetail {
     });
   }
 
-  onPageChange(event: any): void {
-    const page = event.first / event.rows + 1;
-    const pageSize = event.rows;
+  onPageChange(event: TableLazyLoadEvent): void {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? 10;
+    const page = first / rows + 1;
+    const pageSize = rows;
     this.loadProducts(page, pageSize);
   }
 
@@ -254,15 +256,15 @@ export class ProductDetail {
 
   exportExcel() {
     try {
-      this.exportService.exportToExcel(this.products, {
+      this.exportService.exportToExcel(this.products as never, {
         fileName: 'Products_Excel_Report',
         sheetName: 'Product Data',
         title: 'The Unity Ware Excel Report',
       });
 
       this.notificationService.success('Export', 'Excel Export Completed');
-    } catch (error) {
-      this.notificationService.error('Export', 'Excel Export Failed');
+    } catch (err) {
+      this.notificationService.error('Export', `Excel Export Failed || ${err}`);
     }
   }
 

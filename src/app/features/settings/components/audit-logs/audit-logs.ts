@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-audit-logs',
   imports: [],
   templateUrl: './audit-logs.html',
-  styleUrl: './audit-logs.scss'
+  styleUrl: './audit-logs.scss',
 })
-export class AuditLogs {
-
-}
+export class AuditLogs {}

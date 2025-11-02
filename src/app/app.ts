@@ -13,5 +13,5 @@ export class App {
   protected readonly title = signal('inventory-management-system');
   authService = inject(AuthService);
 
-  userDetails: any[] = [];
+  userDetails: unknown[] = [];
 }

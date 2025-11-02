@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-transaction-history',
   imports: [],
   templateUrl: './transaction-history.html',
-  styleUrl: './transaction-history.scss'
+  styleUrl: './transaction-history.scss',
 })
-export class TransactionHistory {
-
-}
+export class TransactionHistory {}

@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
-import { ApiService } from '../../../core/services/api.services';
+import { inject, Injectable } from '@angular/core';
 import { ApiResponse } from '../../../core/models/api-response.model';
+import { ApiService } from '../../../core/services/api.services';
 import { CategoryResponse } from '../models/category.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CategoryService {
-  constructor(private api: ApiService) {}
+  private api = inject(ApiService);
 
   getAllCategories() {
     return this.api.get<ApiResponse<CategoryResponse[]>>('/categories');

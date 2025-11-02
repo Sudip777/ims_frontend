@@ -1,4 +1,4 @@
-interface CustomerResponse {
+export interface CustomerResponse {
   customerId: number;
   name: string;
   phone: number;
@@ -8,4 +8,7 @@ interface CustomerResponse {
   createdByUserId: number;
 }
 
-type CustomerRequest = Omit<CustomerResponse, 'createdAt' | 'customerId' | 'createdByUserId'>;
+export type CustomerRequest = Omit<
+  CustomerResponse,
+  'createdAt' | 'customerId' | 'createdByUserId'
+>;

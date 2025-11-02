@@ -11,7 +11,7 @@ export class SalesOrderService {
 
   getAllSalesOrder(page: number, pageSize: number) {
     return this.apiService.get<PaginatedApiResponse<OrderResponse[], Meta>>(
-      `/orders?page=${page}&pageSize=${pageSize}`
+      `/orders?page=${page}&pageSize=${pageSize}`,
     );
   }
   createSalesOrder(salesOrder: OrderRequest) {
