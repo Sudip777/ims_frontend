@@ -92,7 +92,7 @@
           <tr
             [ngClass]="{
               'opacity-50 pointer-events-none bg-gray-100': inventory.isDisabled,
-              'hover:bg-gray-50': !inventory.isDisabled
+              'hover:bg-gray-50': !inventory.isDisabled,
             }"
           >
             <td>
@@ -186,7 +186,6 @@
             id="Quantity"
             [(ngModel)]="inventory.quantity"
             required
-            autofocus
             fluid
             class="w-6"
           />

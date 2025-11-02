@@ -22,5 +22,11 @@ export type PurchaseOrderDetailRequest = Omit<PurchaseOrderDetail, 'purchaseOrde
 
 export type PurchaseOrderRequest = Omit<
   PurchaseOrder,
-  'purchaseOrderId' | 'supplierName' | 'statusName' | 'totalAmount' | 'purchaseOrderDetails'
+  | 'purchaseOrderId'
+  | 'supplierName'
+  | 'statusName'
+  | 'totalAmount'
+  | 'purchaseOrderDetails'
+  | 'orderDate'
+  | 'createdByUserId'
 > & { purchaseOrderDetails: PurchaseOrderDetailRequest[] };

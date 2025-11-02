@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-backup-restore',
   imports: [],
   templateUrl: './backup-restore.html',
-  styleUrl: './backup-restore.scss'
+  styleUrl: './backup-restore.scss',
 })
-export class BackupRestore {
-
-}
+export class BackupRestore {}

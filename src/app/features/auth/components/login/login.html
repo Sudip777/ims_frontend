@@ -87,21 +87,21 @@
               <label for="username" class="text-base">Username</label>
             </p-floatlabel>
 
-            @if(isFieldInvalid('username')){
-            <div class="flex items-start gap-2 mt-2">
-              <svg
-                class="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              <p class="text-sm text-red-600">Username is required</p>
-            </div>
+            @if (isFieldInvalid('username')) {
+              <div class="flex items-start gap-2 mt-2">
+                <svg
+                  class="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <p class="text-sm text-red-600">Username is required</p>
+              </div>
             }
           </div>
 
@@ -119,26 +119,26 @@
               <label for="password" class="text-base">Password</label>
             </p-floatlabel>
 
-            @if(isFieldInvalid('password')){
-            <div class="flex items-start gap-2 mt-2">
-              <svg
-                class="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              <p class="text-sm text-red-600">Password is required</p>
-            </div>
+            @if (isFieldInvalid('password')) {
+              <div class="flex items-start gap-2 mt-2">
+                <svg
+                  class="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <p class="text-sm text-red-600">Password is required</p>
+              </div>
             }
           </div>
 
           <div class="flex items-center justify-between pt-2">
-            <label class="flex items-center gap-2.5 cursor-pointer group">
+            <label for="remember" class="flex items-center gap-2.5 cursor-pointer group">
               <p-checkbox [binary]="true" inputId="remember" class="cursor-pointer" />
               <span
                 class="text-sm font-medium text-ims-text-secondary group-hover:text-ims-text-primary transition-colors select-none"

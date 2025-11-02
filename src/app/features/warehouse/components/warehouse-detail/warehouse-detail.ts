@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -17,10 +16,10 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+import { ExportService } from '../../../../core/services/export.services';
+import { NotificationService } from '../../../../core/services/notification.services';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { WarehouseService } from '../../services/warehouse.services';
-import { NotificationService } from '../../../../core/services/notification.services';
-import { ExportService } from '../../../../core/services/export.services';
 
 interface Warehouse {
   warehouseId: number;
@@ -56,10 +55,9 @@ type WarehouseRequest = Omit<Warehouse, 'warehouseId' | 'createdByUserId'>;
   templateUrl: './warehouse-detail.html',
   // styleUrl: './warehouse-detail.scss',
 })
-export class WarehouseDetail {
+export class WarehouseDetail implements OnInit {
   private readonly warehouseService = inject(WarehouseService);
   private readonly notificationService = inject(NotificationService);
-  private readonly confirmationService = inject(ConfirmationService);
   private readonly exportService = inject(ExportService);
 
   warehouses: Warehouse[] = [];
@@ -197,7 +195,7 @@ export class WarehouseDetail {
 
   exportExcel(): void {
     try {
-      this.exportService.exportToExcel(this.warehouses, {
+      this.exportService.exportToExcel(this.warehouses as never, {
         fileName: 'Warehouses_Excel_Report',
         sheetName: 'Warehouse Data',
         title: 'The Unity Ware Excel Report',

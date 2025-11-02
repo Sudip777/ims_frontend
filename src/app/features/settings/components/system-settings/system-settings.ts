@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-system-settings',
   imports: [],
   templateUrl: './system-settings.html',
-  styleUrl: './system-settings.scss'
+  styleUrl: './system-settings.scss',
 })
-export class SystemSettings {
-
-}
+export class SystemSettings {}

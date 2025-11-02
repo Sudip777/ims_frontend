@@ -2,8 +2,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AuthStore } from '../store/auth-store';
 import { environment } from '../../../environments/environment.prod';
+import { AuthStore } from '../store/auth-store';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +28,7 @@ export class ApiService {
     return headers;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get<T>(url: string, params?: any): Observable<T> {
     return this.http
       .get<T>(`${environment.apiUrl}${url}`, {
@@ -41,18 +42,18 @@ export class ApiService {
             console.error('Unauthorized - Token may be invalid or expired');
           }
           return throwError(() => err);
-        })
+        }),
       );
   }
 
-  post<T>(url: string, body: any): Observable<T> {
+  post<T>(url: string, body: unknown): Observable<T> {
     return this.http.post<T>(`${environment.apiUrl}${url}`, body, {
       headers: this.getHeaders(),
       withCredentials: true,
     });
   }
 
-  put<T>(url: string, body: any): Observable<T> {
+  put<T>(url: string, body: unknown): Observable<T> {
     return this.http.put<T>(`${environment.apiUrl}${url}`, body, {
       headers: this.getHeaders(),
       withCredentials: true,

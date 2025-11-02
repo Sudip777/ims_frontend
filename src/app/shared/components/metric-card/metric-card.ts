@@ -8,12 +8,12 @@ import { CommonModule } from '@angular/common';
   templateUrl: './metric-card.html',
 })
 export class MetricCardComponent {
-  @Input() title: string = '';
-  @Input() value: string = '';
-  @Input() percentage: number = 0;
+  @Input() title = '';
+  @Input() value = '';
+  @Input() percentage = 0;
   @Input() trend: 'up' | 'down' = 'up';
-  @Input() chartPath: string = 'M 0 32 Q 32 48 64 32 T 128 16';
-  @Input() isPrimary: boolean = false;
+  @Input() chartPath = 'M 0 32 Q 32 48 64 32 T 128 16';
+  @Input() isPrimary = false;
 
   // Unique
   @Input() gradientId: string = Math.random().toString(36).substr(2, 9);

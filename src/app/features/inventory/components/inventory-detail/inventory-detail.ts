@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConfirmationService } from 'primeng/api';
+import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -17,16 +17,14 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
-import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { NotificationService } from '../../../../core/services/notification.services';
-import { ExportService } from '../../../../core/services/export.services';
-import { InventoryService } from '../../services/inventory.services';
-import { WarehouseService } from '../../../warehouse/services/warehouse.services';
-import { ProductsService } from '../../../products/services/products.services';
-import { Product } from '../../../products/models/product.model';
-import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { ToolbarModule } from 'primeng/toolbar';
+import { ExportService } from '../../../../core/services/export.services';
+import { NotificationService } from '../../../../core/services/notification.services';
+import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
+import { ProductsService } from '../../../products/services/products.services';
+import { WarehouseService } from '../../../warehouse/services/warehouse.services';
+import { InventoryService } from '../../services/inventory.services';
 
 interface InventoryResponse {
   inventoryId: number;
@@ -70,7 +68,7 @@ type InventoryRequest = Pick<InventoryResponse, 'productId' | 'warehouseId' | 'q
   templateUrl: './inventory-detail.html',
   styleUrl: './inventory-detail.scss',
 })
-export class InventoryDetail {
+export class InventoryDetail implements OnInit {
   //DI
   private readonly inventoryService = inject(InventoryService);
   private readonly notificationService = inject(NotificationService);
@@ -85,13 +83,13 @@ export class InventoryDetail {
   inventoryDialog = false;
   submitted = false;
   isEditMode = false;
-  productItems: any[] = [];
-  warehouseItems: any[] = [];
-  selectedProducts: number | null = null;
-  selectedWarehouse: number | null = null;
-  filteredItems: any[] = [];
-  filteredWarehouseItems: any[] = [];
-  checked: boolean = false;
+  productItems: { label: string; value: number }[] = [];
+  warehouseItems: { label: string; value: number }[] = [];
+  selectedProducts: number | { label: string; value: number } | null = null;
+  selectedWarehouse: number | { label: string; value: number } | null = null;
+  filteredItems: unknown[] = [];
+  filteredWarehouseItems: unknown[] = [];
+  checked = false;
 
   ngOnInit(): void {
     this.loadInventories();
@@ -102,7 +100,7 @@ export class InventoryDetail {
   private loadInventories(): void {
     this.inventoryService.getAllInventories().subscribe({
       next: (res) => {
-        this.inventories = res.result.data.map((item: any) => ({
+        this.inventories = res.result.data.map((item) => ({
           ...item,
           isDisabled: item.quantity <= item.reorderLevel, // auto-disable low-stock items
         }));
@@ -155,7 +153,7 @@ export class InventoryDetail {
       createdbyUserId: 0,
     };
   }
-  onToggleChange(inventory: any) {
+  onToggleChange(inventory: { isDisabled: boolean; inventoryId: number }) {
     if (inventory.isDisabled) {
       console.log(`Inventory ${inventory.inventoryId} is locked (low stock or manually disabled).`);
     } else {
@@ -240,7 +238,7 @@ export class InventoryDetail {
 
   exportExcel(): void {
     try {
-      this.exportService.exportToExcel(this.inventories, {
+      this.exportService.exportToExcel(this.inventories as never, {
         fileName: 'Inventory_Report',
         sheetName: 'Inventory Data',
         title: 'The Unity Ware Inventory Excel Report',
@@ -252,15 +250,7 @@ export class InventoryDetail {
   }
 
   private makeInventoryRequest(): InventoryRequest {
-    return {
-      productId: this.selectedProducts || this.inventory.productId,
-      warehouseId: this.selectedWarehouse || this.inventory.warehouseId,
-      quantity: this.inventory.quantity,
-    };
-  }
-
-  private makeUpdateInventoryRequest(): InventoryRequest {
-    const extractValue = (field: any): number => {
+    const extractValue = (field: number | { label: string; value: number } | null): number => {
       if (field && typeof field === 'object' && 'value' in field) {
         return field.value;
       }
@@ -268,8 +258,23 @@ export class InventoryDetail {
     };
 
     return {
-      productId: extractValue(this.selectedProducts || this.inventory.productId),
-      warehouseId: extractValue(this.selectedWarehouse || this.inventory.warehouseId),
+      productId: extractValue(this.selectedProducts) || this.inventory.productId,
+      warehouseId: extractValue(this.selectedWarehouse) || this.inventory.warehouseId,
+      quantity: Number(this.inventory.quantity) || 0,
+    };
+  }
+
+  private makeUpdateInventoryRequest(): InventoryRequest {
+    const extractValue = (field: number | { value: number } | null): number => {
+      if (field && typeof field === 'object' && 'value' in field) {
+        return field.value;
+      }
+      return Number(field) || 0;
+    };
+
+    return {
+      productId: extractValue(this.selectedProducts),
+      warehouseId: extractValue(this.selectedWarehouse),
       quantity: Number(this.inventory.quantity) || 0,
     };
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver-es';
+import * as XLSX from 'xlsx';
 
 export interface ExportOptions {
   fileName?: string;
@@ -17,7 +17,7 @@ export class ExportService {
    * @param data - Array of objects to export
    * @param options - Export configuration options
    */
-  exportToExcel(data: any[], options: ExportOptions = {}): void {
+  exportToExcel(data: never[], options: ExportOptions = {}): void {
     if (!data || data.length === 0) {
       console.warn('No data to export');
       return;
@@ -125,7 +125,7 @@ export class ExportService {
           ...data.map((row) => {
             const value = row[header];
             return value ? String(value).length : 0;
-          })
+          }),
         );
         return { wch: Math.min(maxLength + 2, 50) };
       });
@@ -144,6 +144,7 @@ export class ExportService {
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, sheetName);
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const excelBuffer: any = XLSX.write(wb, {
         bookType: 'xlsx',
         type: 'array',
@@ -165,7 +166,7 @@ export class ExportService {
    * @param data - Array of objects to export
    * @param options - Export configuration options
    */
-  exportToCSV(data: any[], options: ExportOptions = {}): void {
+  exportToCSV(data: never[], options: ExportOptions = {}): void {
     if (!data || data.length === 0) {
       console.warn('No data to export');
       return;
