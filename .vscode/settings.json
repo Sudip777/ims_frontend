@@ -1,5 +1,4 @@
 {
-  "editor.fontFamily": "'Fira Code', 'Courier New', monospace",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "eslint.useFlatConfig": true,

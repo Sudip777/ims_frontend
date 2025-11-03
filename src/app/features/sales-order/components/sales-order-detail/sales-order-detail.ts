@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -26,8 +26,10 @@ import { ToastModule } from 'primeng/toast';
 
 import { Avatar } from 'primeng/avatar';
 import { Badge } from 'primeng/badge';
+import { Subscription } from 'rxjs';
 import { ExportService } from '../../../../core/services/export.services';
 import { NotificationService } from '../../../../core/services/notification.services';
+import { SearchService } from '../../../../core/services/search.services';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { CustomerService } from '../../../customer/services/customer.services';
 import { ProductsService } from '../../../products/services/products.services';
@@ -85,7 +87,7 @@ interface Order {
   templateUrl: './sales-order-detail.html',
   styleUrls: ['./sales-order-detail.scss'],
 })
-export class SalesOrderDetail implements OnInit {
+export class SalesOrderDetail implements OnInit, OnDestroy {
   private readonly orderService = inject(SalesOrderService);
   private readonly notification = inject(NotificationService);
   private readonly fb = inject(FormBuilder);
@@ -95,6 +97,7 @@ export class SalesOrderDetail implements OnInit {
   private readonly exportService = inject(ExportService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly messageService = inject(MessageService);
+  private readonly searchService = inject(SearchService);
 
   salesOrderForm: FormGroup;
   orders: Order[] = [];
@@ -128,22 +131,44 @@ export class SalesOrderDetail implements OnInit {
     { label: 'Processing', value: 2 },
     { label: 'Completed', value: 3 },
   ];
+  //search relatedd
+  private searchSubscription: Subscription | undefined;
+  salesOrderSearchText = '';
 
   constructor() {
     this.salesOrderForm = this.createOrderForm();
   }
 
   ngOnInit() {
+    //debounced searchh logic hereee
+    this.searchSubscription = this.searchService.getSearchTime(300).subscribe((term) => {
+      this.salesOrderSearchText = term;
+      this.loadOrderDetails(
+        this.page,
+        this.pageSize,
+        this.salesOrderSearchText,
+        'salesOrderId',
+        'asc',
+      );
+    });
     this.loadCustomers();
     this.loadWarehouses();
     this.loadProducts();
   }
-  onLazyLoad(event: TableLazyLoadEvent) {
+
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
+  }
+  OnParamsChange(event: TableLazyLoadEvent) {
     const first = event.first ?? 0;
     const rows = event.rows ?? 10;
     const page = first / rows + 1;
     const pageSize = rows;
-    this.loadOrderDetails(page, pageSize);
+
+    const sortColumn = event.sortField;
+    const sortDirection = event.sortOrder === 1 ? 'asc' : 'desc';
+    const search = this.salesOrderSearchText ?? '';
+    this.loadOrderDetails(page, pageSize, search, sortColumn, sortDirection);
   }
   get orderDetails(): FormArray {
     return this.salesOrderForm.get('orderDetails') as FormArray;
@@ -182,22 +207,30 @@ export class SalesOrderDetail implements OnInit {
     };
   }
 
-  private loadOrderDetails(page: number, pageSize: number) {
-    this.orderService.getAllSalesOrder(page, pageSize).subscribe({
-      next: (res) => {
-        this.items = res.result.data;
-        this.totalCount = res.result.meta.totalCount;
-        this.page = res.result.meta.page;
-        this.pageSize = res.result.meta.pageSize;
-        console.log(res.result.data);
-      },
-      error: (err) => {
-        this.notification.error(
-          'Error!!',
-          `${err.error.message}` || 'Failed to Load Order Details',
-        );
-      },
-    });
+  private loadOrderDetails(
+    page: number,
+    pageSize: number,
+    search?: string,
+    sortColumn?: string | string[] | null | undefined,
+    sortDirection?: 'asc' | 'desc',
+  ) {
+    this.orderService
+      .getAllSalesOrder(page, pageSize, search, sortColumn, sortDirection)
+      .subscribe({
+        next: (res) => {
+          this.items = res.result.data;
+          this.totalCount = res.result.meta.totalCount;
+          this.page = res.result.meta.page;
+          this.pageSize = res.result.meta.pageSize;
+          console.log(res.result.data);
+        },
+        error: (err) => {
+          this.notification.error(
+            'Error!!',
+            `${err.error.message}` || 'Failed to Load Order Details',
+          );
+        },
+      });
   }
 
   private loadCustomers(): void {
@@ -420,6 +453,9 @@ export class SalesOrderDetail implements OnInit {
     });
   }
 
+  onSearchInput(value: string): void {
+    this.searchService.setSearchTerm(value);
+  }
   onRowExpand(event: TableRowExpandEvent): void {
     if (event?.data) {
       const orderId = event.data.orderId;
@@ -436,12 +472,6 @@ export class SalesOrderDetail implements OnInit {
       this.expandedRows = rest;
       this.orders = [...this.orders];
     }
-  }
-
-  onPageChange(event: { first: number; rows: number }): void {
-    const page = event.first / event.rows + 1;
-    const pageSize = event.rows;
-    this.loadOrderDetails(page, pageSize);
   }
 
   exportCSV() {

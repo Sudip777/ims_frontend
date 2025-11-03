@@ -7,10 +7,10 @@ export interface PurchaseOrder {
   totalAmount: number;
   orderDate: Date | string;
   createdByUserId: number;
-  purchaseOrderDetails: PurchaseOrderDetail[];
+  purchaseOrderDetails: PurchaseOrderDetailType[];
 }
 
-export interface PurchaseOrderDetail {
+export interface PurchaseOrderDetailType {
   purchaseOrderDetailId: number;
   productId: number;
   productName: string;
@@ -18,7 +18,7 @@ export interface PurchaseOrderDetail {
   unitPrice: number;
 }
 
-export type PurchaseOrderDetailRequest = Omit<PurchaseOrderDetail, 'purchaseOrderDetailId'>;
+export type PurchaseOrderDetailRequest = Omit<PurchaseOrderDetailType, 'purchaseOrderDetailId'>;
 
 export type PurchaseOrderRequest = Omit<
   PurchaseOrder,

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -26,39 +26,22 @@ import { ToastModule } from 'primeng/toast';
 
 import { Avatar } from 'primeng/avatar';
 import { Badge } from 'primeng/badge';
+import { Subscription } from 'rxjs';
 import { DropdownItem } from '../../../../core/models/drop-down.model';
 import { ExportService } from '../../../../core/services/export.services';
 import { NotificationService } from '../../../../core/services/notification.services';
+import { SearchService } from '../../../../core/services/search.services';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { AuthRoutingModule } from '../../../auth/auth-routing-module';
 import { ProductsService } from '../../../products/services/products.services';
 import { SupplierService } from '../../../supplier/services/supplier.services';
 import {
+  PurchaseOrder,
   PurchaseOrderDetailRequest,
+  PurchaseOrderDetailType,
   PurchaseOrderRequest,
 } from '../../models/purchase-order.model';
 import { PurchaseOrderService } from '../../services/purchase-order.services';
-
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export interface PurchaseOrderDetail {
-  purchaseOrderDetailId: number;
-  productId: number;
-  productName: string;
-  quantity: number;
-  unitPrice: number;
-}
-
-interface PurchaseOrder {
-  purchaseOrderId: number;
-  purchaseOrderDate: Date | string;
-  supplierName: string;
-  supplierId: number | null;
-  statusId: number;
-  statusName: string;
-  totalAmount: number;
-  createdByUserId: number;
-  purchaseOrderDetails: PurchaseOrderDetail[];
-}
 
 @Component({
   selector: 'app-purchase-order-detail',
@@ -90,8 +73,7 @@ interface PurchaseOrder {
   templateUrl: './purchase-order-detail.html',
   styleUrls: ['./purchase-order-detail.scss'],
 })
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export class PurchaseOrderDetail implements OnInit {
+export class PurchaseOrderDetail implements OnInit, OnDestroy {
   private readonly purchaseOrderService = inject(PurchaseOrderService);
   private readonly notification = inject(NotificationService);
   private readonly fb = inject(FormBuilder);
@@ -100,6 +82,7 @@ export class PurchaseOrderDetail implements OnInit {
   private readonly exportService = inject(ExportService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly messageService = inject(MessageService);
+  private readonly searchService = inject(SearchService);
 
   purchaseOrderForm: FormGroup;
   purchaseOrders: unknown[] = [];
@@ -120,6 +103,10 @@ export class PurchaseOrderDetail implements OnInit {
   totalCount = 0;
   pageSize = 5;
   page = 1;
+
+  private searchSubscription: Subscription | undefined;
+  purchaseOrderSearchText = '';
+
   severity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined =
     null;
 
@@ -136,15 +123,34 @@ export class PurchaseOrderDetail implements OnInit {
   ngOnInit() {
     this.loadSuppliers();
     this.loadProducts();
+
+    //debouncedd search
+    this.searchSubscription = this.searchService.getSearchTime(300).subscribe((term) => {
+      this.purchaseOrderSearchText = term;
+      this.loadPurchaseOrders(
+        this.page,
+        this.pageSize,
+        this.purchaseOrderSearchText,
+        'purchaseOrderId',
+        'asc',
+      );
+    });
+  }
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
   }
 
-  onLazyLoad(event: TableLazyLoadEvent) {
+  onPageChange(event: TableLazyLoadEvent) {
     const first = event.first ?? 0;
     const rows = event.rows ?? 10;
     const page = first / rows + 1;
     const pageSize = rows;
 
-    this.loadPurchaseOrders(page, pageSize);
+    const sortColumn: string | string[] | null | undefined = event.sortField ?? 'productId';
+    const sortDirection = event.sortOrder === 1 ? 'asc' : 'desc';
+    const search = this.purchaseOrderSearchText ?? '';
+
+    this.loadPurchaseOrders(page, pageSize, search, sortColumn, sortDirection);
   }
   get purchaseOrderDetails(): FormArray {
     return this.purchaseOrderForm.get('purchaseOrderDetails') as FormArray;
@@ -159,7 +165,7 @@ export class PurchaseOrderDetail implements OnInit {
     });
   }
 
-  private createPurchaseOrderDetailFormGroup(detail?: PurchaseOrderDetail): FormGroup {
+  private createPurchaseOrderDetailFormGroup(detail?: PurchaseOrderDetailType): FormGroup {
     return this.fb.group({
       productId: [detail?.productId || null, Validators.required],
       productName: [detail?.productName || '', Validators.required],
@@ -172,9 +178,9 @@ export class PurchaseOrderDetail implements OnInit {
   private createEmptyPurchaseOrder(): PurchaseOrder {
     return {
       purchaseOrderId: 0,
-      supplierId: null,
+      supplierId: 0,
       supplierName: '',
-      purchaseOrderDate: '',
+      orderDate: new Date(),
       statusId: 0,
       statusName: '',
       totalAmount: 0,
@@ -183,22 +189,30 @@ export class PurchaseOrderDetail implements OnInit {
     };
   }
 
-  private loadPurchaseOrders(page: number, pageSize: number) {
-    this.purchaseOrderService.getAllPurchaseOrders(page, pageSize).subscribe({
-      next: (res) => {
-        this.purchaseOrders = res.result.data;
-        this.totalCount = res.result.meta.totalCount;
-        this.page = res.result.meta.page;
-        this.pageSize = res.result.meta.pageSize;
-        console.log(this.purchaseOrders, 'abccc');
-      },
-      error: (err) => {
-        this.notification.error(
-          'Error!!',
-          `${err.error.message}` || 'Failed to Load Purchase Orders',
-        );
-      },
-    });
+  private loadPurchaseOrders(
+    page: number,
+    pageSize: number,
+    search?: string,
+    sortColumn?: string | string[] | null | undefined,
+    sortDirection?: 'asc' | 'desc',
+  ) {
+    this.purchaseOrderService
+      .getAllPurchaseOrders(page, pageSize, search, sortColumn, sortDirection)
+      .subscribe({
+        next: (res) => {
+          this.purchaseOrders = res.result.data;
+          this.totalCount = res.result.meta.totalCount;
+          this.page = res.result.meta.page;
+          this.pageSize = res.result.meta.pageSize;
+          console.log(this.purchaseOrders, 'abccc');
+        },
+        error: (err) => {
+          this.notification.error(
+            'Error!!',
+            `${err.error.message}` || 'Failed to Load Purchase Orders',
+          );
+        },
+      });
   }
 
   private loadSuppliers(): void {
@@ -327,6 +341,9 @@ export class PurchaseOrderDetail implements OnInit {
     this.purchaseOrderDetails.removeAt(index);
   }
 
+  onSearchInput(value: string) {
+    this.searchService.setSearchTerm(value);
+  }
   searchSupplier(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
     this.filteredSupplierItems =
@@ -357,7 +374,7 @@ export class PurchaseOrderDetail implements OnInit {
 
     this.purchaseOrderForm.patchValue({
       purchaseOrderId: po.purchaseOrderId,
-      purchaseOrderDate: po.purchaseOrderDate ? new Date(po.purchaseOrderDate) : new Date(),
+      purchaseOrderDate: po.orderDate ? new Date(po.orderDate) : new Date(),
       statusId: po.statusId ?? 1,
     });
 
@@ -429,12 +446,6 @@ export class PurchaseOrderDetail implements OnInit {
       this.expandedRows = rest;
       this.purchaseOrders = [...this.purchaseOrders];
     }
-  }
-
-  onPageChange(event: { first: number; rows: number }): void {
-    const page = event.first / event.rows + 1;
-    const pageSize = event.rows;
-    this.loadPurchaseOrders(page, pageSize);
   }
 
   exportCSV() {
