@@ -10,7 +10,7 @@ export class SearchService {
     this.searchSubject.next(term);
   }
 
-  getSearchTerm(debounceMs = 300): Observable<string> {
+  getSearchTime(debounceMs = 300): Observable<string> {
     return this.searchSubject.asObservable().pipe(debounceTime(debounceMs), distinctUntilChanged());
   }
 }

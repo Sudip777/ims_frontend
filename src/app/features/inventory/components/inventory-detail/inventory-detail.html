@@ -29,18 +29,19 @@
 
     <div>
       <p-table
-        #dt
         [value]="inventories"
-        [rows]="5"
+        [rows]="pageSize"
         [paginator]="true"
         [rowsPerPageOptions]="[5, 10, 20]"
         [globalFilterFields]="['productName', 'warehouseName', 'quantity', 'reorderLevel']"
-        [(selection)]="inventories"
         dataKey="customerId"
         [rowHover]="true"
         [tableStyle]="{ 'min-width': '40rem' }"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} customers"
         [showCurrentPageReport]="true"
+        (onLazyLoad)="onParamsChange($event)"
+        [lazy]="true"
+        [totalRecords]="totalCount"
       >
         <ng-template pTemplate="caption">
           <div class="flex gap-4 md:justify-between">
@@ -49,7 +50,7 @@
               <input
                 pInputText
                 type="text"
-                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                (input)="searchInventoryInput($event.target.value)"
                 placeholder="Search..."
                 class="w-full md:w-64"
               />
@@ -89,12 +90,11 @@
         </ng-template>
 
         <ng-template pTemplate="body" let-inventory>
-          <tr
-            [ngClass]="{
+          <tr>
+            <!-- [ngClass]="{
               'opacity-50 pointer-events-none bg-gray-100': inventory.isDisabled,
               'hover:bg-gray-50': !inventory.isDisabled,
-            }"
-          >
+            }" -->
             <td>
               <span class="font-semibold">{{ inventory.inventoryId }}</span>
             </td>
@@ -131,7 +131,7 @@
               ></p-button> -->
 
               <div class="flex flex-col items-center gap-2">
-                <p-toggleswitch [(ngModel)]="inventory.isDisabled" [readonly]="true" />
+                <!-- <p-toggleswitch [(ngModel)]="inventory.isDisabled" [readonly]="true" /> -->
                 <!--Readonly made controlled by backend-->
               </div>
             </td>

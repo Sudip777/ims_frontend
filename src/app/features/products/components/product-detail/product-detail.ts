@@ -96,7 +96,7 @@ export class ProductDetail implements OnInit, OnDestroy {
 
   ngOnInit() {
     // debouncing searchh
-    this.searchSubscription = this.searchService.getSearchTerm(300).subscribe((term) => {
+    this.searchSubscription = this.searchService.getSearchTime(300).subscribe((term) => {
       this.globalSearchText = term;
       this.loadProducts(1, this.pageSize, this.globalSearchText, 'productId', 'asc');
     });

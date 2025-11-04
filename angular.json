@@ -18,14 +18,8 @@
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
-<<<<<<< Updated upstream
-            "polyfills": [
-              "src/polyfills.ts"
-            ],
-=======
             "polyfills": ["src/polyfills.ts"],
             "outputPath": "dist/inventory-management-system",
->>>>>>> Stashed changes
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [

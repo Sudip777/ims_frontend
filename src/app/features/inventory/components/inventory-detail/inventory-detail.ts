@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
@@ -13,14 +13,16 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { SelectModule } from 'primeng/select';
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { ToolbarModule } from 'primeng/toolbar';
+import { Subscription } from 'rxjs';
 import { ExportService } from '../../../../core/services/export.services';
 import { NotificationService } from '../../../../core/services/notification.services';
+import { SearchService } from '../../../../core/services/search.services';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { ProductsService } from '../../../products/services/products.services';
 import { WarehouseService } from '../../../warehouse/services/warehouse.services';
@@ -68,13 +70,14 @@ type InventoryRequest = Pick<InventoryResponse, 'productId' | 'warehouseId' | 'q
   templateUrl: './inventory-detail.html',
   styleUrl: './inventory-detail.scss',
 })
-export class InventoryDetail implements OnInit {
+export class InventoryDetail implements OnInit, OnDestroy {
   //DI
   private readonly inventoryService = inject(InventoryService);
   private readonly notificationService = inject(NotificationService);
   private readonly productService = inject(ProductsService);
   private readonly warehouseService = inject(WarehouseService);
   private readonly exportService = inject(ExportService);
+  private readonly searchService = inject(SearchService);
 
   // UI state
   inventories: InventoryResponse[] = [];
@@ -90,27 +93,58 @@ export class InventoryDetail implements OnInit {
   filteredItems: unknown[] = [];
   filteredWarehouseItems: unknown[] = [];
   checked = false;
-
+  page = 1;
+  pageSize = 5;
+  totalCount = 0;
+  inventoriesSearchText = '';
+  private searchSubscription: Subscription | undefined;
   ngOnInit(): void {
-    this.loadInventories();
+    this.loadInventories(this.page, this.pageSize);
+
+    this.searchSubscription = this.searchService.getSearchTime(300).subscribe((term) => {
+      this.inventoriesSearchText = term;
+      console.log('Search Term:', term);
+
+      this.loadInventories(
+        this.page,
+        this.pageSize,
+        this.inventoriesSearchText,
+        'inventoryId',
+        'asc',
+      );
+    });
     this.loadCategories();
     this.loadProducts();
   }
+  ngOnDestroy(): void {
+    this.searchSubscription?.unsubscribe();
+  }
+  private loadInventories(
+    page: number,
+    pageSize: number,
+    search?: string,
+    sortColumn?: string | string[] | null | undefined,
+    sortDirection?: 'asc' | 'desc',
+  ): void {
+    this.inventoryService
+      .getAllInventories(page, pageSize, search, sortColumn, sortDirection)
+      .subscribe({
+        next: (res) => {
+          this.inventories = res.result.data.map((item) => ({
+            ...item,
+            // isDisabled: item.quantity <= item.reorderLevel, // auto-disable low-stock items
+          }));
+          this.totalCount = res.result.meta.totalCount;
+          this.page = res.result.meta.page;
+          this.pageSize = res.result.meta.pageSize;
+          console.log(this.inventories, 'abccc');
 
-  private loadInventories(): void {
-    this.inventoryService.getAllInventories().subscribe({
-      next: (res) => {
-        this.inventories = res.result.data.map((item) => ({
-          ...item,
-          isDisabled: item.quantity <= item.reorderLevel, // auto-disable low-stock items
-        }));
-
-        console.log(this.inventories, 'iiiiiiiii');
-      },
-      error: () => {
-        this.notificationService.error('Error', 'Failed to load inventory data');
-      },
-    });
+          console.log(this.inventories, 'iiiiiiiii');
+        },
+        error: () => {
+          this.notificationService.error('Error', 'Failed to load inventory data');
+        },
+      });
   }
 
   private loadProducts(): void {
@@ -160,6 +194,18 @@ export class InventoryDetail implements OnInit {
       console.log(`Inventory ${inventory.inventoryId} is unlocked for editing.`);
     }
   }
+
+  onParamsChange(event: TableLazyLoadEvent): void {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? 10;
+    const page = first / rows + 1;
+    const pageSize = rows;
+
+    const sortColumn = event.sortField;
+    const sortDirection = event.sortOrder === 1 ? 'asc' : 'desc';
+    const search = this.inventoriesSearchText ?? '';
+    this.loadInventories(page, pageSize, search, sortColumn, sortDirection);
+  }
   openNew(): void {
     this.isEditMode = false;
     this.inventory = this.createEmptyInventory();
@@ -184,7 +230,9 @@ export class InventoryDetail implements OnInit {
     this.inventoryDialog = false;
     this.submitted = false;
   }
-
+  searchInventoryInput(value: string): void {
+    this.searchService.setSearchTerm(value);
+  }
   searchProduct(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
     this.filteredItems =
@@ -215,7 +263,7 @@ export class InventoryDetail implements OnInit {
       next: () => {
         this.notificationService.success('Success', 'Inventory Created Successfully');
         this.hideDialog();
-        this.loadInventories();
+        this.loadInventories(this.page, this.pageSize);
       },
       error: (err) => {
         this.notificationService.error('Error', err.error?.message || 'Failed to Create Inventory');
@@ -228,7 +276,7 @@ export class InventoryDetail implements OnInit {
       next: () => {
         this.notificationService.success('Success', 'Inventory Updated Successfully');
         this.hideDialog();
-        this.loadInventories();
+        this.loadInventories(this.page, this.pageSize);
       },
       error: (err) => {
         this.notificationService.error('Error', err.error?.message || 'Failed to Update Inventory');
