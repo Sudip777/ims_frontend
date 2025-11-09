@@ -1,28 +1,26 @@
 <!-- eslint-disable @angular-eslint/template/interactive-supports-focus -->
 <!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
 
-<div class="flex h-screen overflow-hidden">
+<div class="flex gap-1 h-screen overflow-hidden">
   @if (sidebarOpen) {
-    <div (click)="closeSidebar()" class="fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
+  <div (click)="closeSidebar()" class="fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
   }
 
   <app-sidebar
     [sidebarOpen]="sidebarOpen"
     (closeSidebarEvent)="closeSidebar()"
-    class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transition-transform duration-300 lg:translate-x-0"
-    [ngClass]="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-  ></app-sidebar>
+    class="fixed lg:static inset-y-0 left-0 z-50 w-64 lg:w-72 bg-white border-r border-gray-200 transition-transform duration-300 lg:translate-x-0"
+    [ngClass]="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"></app-sidebar>
 
-  <div class="flex-1 flex flex-col h-screen">
-    <div class="lg:hidden flex justify-between px-2">
+  <div class="flex flex-col flex-1 h-screen overflow-hidden">
+    <div class="lg:hidden flex justify-between px-2 flex-shrink-0">
       <div
         class="px-4 py-6 hover:bg-ims-primary-hover-light rounded-lg transition-all duration-200 active:scale-95 items-center"
         (click)="toggleSidebar(true)"
         aria-label="Open menu"
         (keydown)="toggleSidebar(false)"
         (keyup)="toggleSidebar(true)"
-        (keypress)="toggleSidebar(true)"
-      >
+        (keypress)="toggleSidebar(true)">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="32"
@@ -33,15 +31,14 @@
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="lucide lucide-menu-icon lucide-menu"
-        >
+          class="lucide lucide-menu-icon lucide-menu">
           <path d="M4 5h16" />
           <path d="M4 12h16" />
           <path d="M4 19h16" />
         </svg>
       </div>
 
-      <div class="flex justify-center items-center lg:hidden">
+      <div>
         <app-icon name="app-logo" routerLink="/"></app-icon>
       </div>
     </div>
@@ -67,7 +64,7 @@
     </div>
     -->
 
-    <div class="flex-1 overflow-auto ml-2">
+    <div class="bg-gray-50 overflow-y-auto rounded-md">
       <router-outlet (activate)="onChildActivate($event)"></router-outlet>
     </div>
   </div>

@@ -1,5 +1,5 @@
 <main class="p-6 space-y-6 bg-gray-50">
-  <div class="max-w-6xl mx-auto space-y-6">
+  <div>
     <div>
       <h1 class="font-heading font-medium p-2 tracking-tight text-2xl">Supplier's Overview</h1>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
@@ -8,20 +8,9 @@
           value="100"
           [percentage]="12"
           [isPrimary]="true"
-          trend="up"
-        ></app-metric-card>
-        <app-metric-card
-          title="Inactive Suppliers"
-          value="20"
-          [percentage]="2"
-          trend="down"
-        ></app-metric-card>
-        <app-metric-card
-          title="Deleted Suppliers"
-          value="10"
-          [percentage]="2"
-          trend="up"
-        ></app-metric-card>
+          trend="up"></app-metric-card>
+        <app-metric-card title="Inactive Suppliers" value="20" [percentage]="2" trend="down"></app-metric-card>
+        <app-metric-card title="Deleted Suppliers" value="10" [percentage]="2" trend="up"></app-metric-card>
       </div>
     </div>
 
@@ -40,8 +29,7 @@
           [rowHover]="true"
           [tableStyle]="{ 'min-width': '40rem' }"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} suppliers"
-          [showCurrentPageReport]="true"
-        >
+          [showCurrentPageReport]="true">
           <ng-template pTemplate="caption">
             <div class="flex gap-4 md:justify-between">
               <p-iconfield>
@@ -50,8 +38,7 @@
                   pInputText
                   type="text"
                   (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-                  placeholder="Search..."
-                />
+                  placeholder="Search..." />
               </p-iconfield>
               <div class="flex gap-2">
                 <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
@@ -60,8 +47,7 @@
                   label="Export"
                   (onClick)="exportExcel()"
                   severity="secondary"
-                  [outlined]="true"
-                />
+                  [outlined]="true" />
               </div>
             </div>
           </ng-template>
@@ -77,9 +63,7 @@
               <th pSortableColumn="phone">Phone <p-sortIcon field="phone"></p-sortIcon></th>
               <th pSortableColumn="address">Addres<p-sortIcon field="address"></p-sortIcon></th>
               <th>Status</th>
-              <th pSortableColumn="createdAt">
-                Created At <p-sortIcon field="createdAt"></p-sortIcon>
-              </th>
+              <th pSortableColumn="createdAt">Created At <p-sortIcon field="createdAt"></p-sortIcon></th>
               <th style="min-width: 8rem">Actions</th>
             </tr>
           </ng-template>
@@ -107,10 +91,7 @@
               </td>
               <td>{{ supplier.address }}</td>
               <td>
-                <p-tag
-                  [value]="getStatusLabel(supplier.isActive)"
-                  [severity]="getSeverity(supplier.isActive)"
-                ></p-tag>
+                <p-tag [value]="getStatusLabel(supplier.isActive)" [severity]="getSeverity(supplier.isActive)"></p-tag>
               </td>
               <td>
                 <span> {{ supplier.createdAt | date: 'mediumDate' }}</span>
@@ -121,15 +102,13 @@
                   class="mr-2"
                   [rounded]="true"
                   [outlined]="true"
-                  (onClick)="editSupplier(supplier)"
-                ></p-button>
+                  (onClick)="editSupplier(supplier)"></p-button>
                 <p-button
                   icon="pi pi-trash"
                   severity="danger"
                   [rounded]="true"
                   [outlined]="true"
-                  (onClick)="deleteSupplier(supplier)"
-                ></p-button>
+                  (onClick)="deleteSupplier(supplier)"></p-button>
               </td>
             </tr>
           </ng-template>
@@ -143,8 +122,7 @@
     [style]="{ width: '480px' }"
     header="Supplier Details"
     [modal]="true"
-    [draggable]="false"
-  >
+    [draggable]="false">
     <ng-template pTemplate="content">
       <div class="flex flex-col gap-6">
         <div>
@@ -179,8 +157,7 @@
             optionLabel="label"
             optionValue="value"
             placeholder="Select Status"
-            fluid
-          ></p-select>
+            fluid></p-select>
         </div>
       </div>
     </ng-template>
