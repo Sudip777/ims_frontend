@@ -1,5 +1,5 @@
 <main class="p-6 space-y-6 bg-gray-50">
-  <div class="max-w-6xl mx-auto space-y-6">
+  <div>
     <div>
       <h1 class="font-heading font-medium text-2xl mb-4">Product's Overview</h1>
 
@@ -9,40 +9,14 @@
           value="100"
           [percentage]="12"
           [isPrimary]="true"
-          trend="up"
-        ></app-metric-card>
+          trend="up"></app-metric-card>
 
-        <app-metric-card
-          title="Out of Stock"
-          value="100"
-          [percentage]="2"
-          trend="down"
-        ></app-metric-card>
+        <app-metric-card title="Out of Stock" value="100" [percentage]="2" trend="down"></app-metric-card>
 
-        <app-metric-card
-          title="Products Booked"
-          value="270"
-          [percentage]="2"
-          trend="up"
-        ></app-metric-card>
-        <app-metric-card
-          title="Products Billed"
-          value="270"
-          [percentage]="2"
-          trend="up"
-        ></app-metric-card>
-        <app-metric-card
-          title="Products Billed"
-          value="270"
-          [percentage]="2"
-          trend="up"
-        ></app-metric-card>
-        <app-metric-card
-          title="Products Deleted"
-          value="270"
-          [percentage]="2"
-          trend="up"
-        ></app-metric-card>
+        <app-metric-card title="Products Booked" value="270" [percentage]="2" trend="up"></app-metric-card>
+        <app-metric-card title="Products Billed" value="270" [percentage]="2" trend="up"></app-metric-card>
+        <app-metric-card title="Products Billed" value="270" [percentage]="2" trend="up"></app-metric-card>
+        <app-metric-card title="Products Deleted" value="270" [percentage]="2" trend="up"></app-metric-card>
       </div>
     </div>
 
@@ -64,8 +38,7 @@
         [showCurrentPageReport]="true"
         [totalRecords]="totalCount"
         [lazy]="true"
-        (onLazyLoad)="onPageChange($event)"
-      >
+        (onLazyLoad)="onPageChange($event)">
         <ng-template pTemplate="caption">
           <div class="flex gap-4 md:justify-between">
             <p-iconfield>
@@ -75,8 +48,7 @@
                 type="text"
                 (input)="onSearchInput($event.target.value)"
                 placeholder="Search..."
-                class="w-full md:w-auto"
-              />
+                class="w-full md:w-auto" />
             </p-iconfield>
             <div>
               <div class="flex gap-2">
@@ -86,8 +58,7 @@
                   [outlined]="true"
                   icon="pi pi-upload"
                   label="Export"
-                  (onClick)="exportExcel()"
-                />
+                  (onClick)="exportExcel()" />
               </div>
             </div>
           </div>
@@ -95,13 +66,9 @@
 
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="productId" style="width: 4rem">
-              PID <p-sortIcon field="productId"></p-sortIcon>
-            </th>
+            <th pSortableColumn="productId" style="width: 4rem">PID <p-sortIcon field="productId"></p-sortIcon></th>
             <th style="width: 6rem">SKU</th>
-            <th pSortableColumn="name" style="width: 12rem">
-              Name <p-sortIcon field="name"></p-sortIcon>
-            </th>
+            <th pSortableColumn="name" style="width: 12rem">Name <p-sortIcon field="name"></p-sortIcon></th>
             <th pSortableColumn="unitPrice" style="width: 9rem">
               Unit Price <p-sortIcon field="unitPrice"></p-sortIcon>
             </th>
@@ -136,10 +103,7 @@
             <td class="text-center">{{ product.minStock }} - {{ product.maxStock }}</td>
             <td class="text-center">{{ product.reorderLevel }}</td>
             <td>
-              <p-tag
-                [value]="getStatusLabel(product.isActive)"
-                [severity]="getSeverity(product.isActive)"
-              ></p-tag>
+              <p-tag [value]="getStatusLabel(product.isActive)" [severity]="getSeverity(product.isActive)"></p-tag>
             </td>
             <td>
               <div class="flex flex-col gap-1">
@@ -154,15 +118,13 @@
                   [rounded]="true"
                   [outlined]="true"
                   severity="primary"
-                  (onClick)="editProduct(product)"
-                ></p-button>
+                  (onClick)="editProduct(product)"></p-button>
                 <p-button
                   icon="pi pi-trash"
                   severity="danger"
                   [rounded]="true"
                   [outlined]="true"
-                  (onClick)="deleteProduct(product)"
-                ></p-button>
+                  (onClick)="deleteProduct(product)"></p-button>
               </div>
             </td>
           </tr>
@@ -178,16 +140,13 @@
     [header]="isEditMode ? 'Update Product Details' : 'Add Product Details'"
     [draggable]="false"
     [modal]="true"
-    [draggable]="false"
-  >
+    [draggable]="false">
     <ng-template pTemplate="content">
       <div>
         <label for="Name" class="block font-bold mb-3">Product Name</label>
         <input type="text" pInputText id="Name" [(ngModel)]="product.name" required fluid />
 
-        <small class="text-red-500" *ngIf="submitted && !product.name as showError">
-          Name is required.
-        </small>
+        <small class="text-red-500" *ngIf="submitted && !product.name as showError"> Name is required. </small>
       </div>
 
       <div>
@@ -204,8 +163,7 @@
             mode="currency"
             currency="NPR"
             locale="en-US"
-            fluid
-          ></p-inputnumber>
+            fluid></p-inputnumber>
         </div>
 
         <div class="col-span-6">
@@ -216,8 +174,7 @@
             mode="currency"
             currency="NPR"
             locale="en-US"
-            fluid
-          ></p-inputnumber>
+            fluid></p-inputnumber>
         </div>
       </div>
 
@@ -232,8 +189,7 @@
               (completeMethod)="search($event)"
               optionLabel="label"
               placeholder="Select a Category"
-              [dropdown]="true"
-            />
+              [dropdown]="true" />
           </div>
         </div>
         <div class="col-span-6">
@@ -244,8 +200,7 @@
             (completeMethod)="searchSupplier($event)"
             optionLabel="label"
             placeholder="Select a Supplier"
-            [dropdown]="true"
-          />
+            [dropdown]="true" />
         </div>
       </div>
 
@@ -276,8 +231,7 @@
           optionLabel="label"
           optionValue="value"
           placeholder="Select Status"
-          fluid
-        ></p-select>
+          fluid></p-select>
       </div>
     </ng-template>
 

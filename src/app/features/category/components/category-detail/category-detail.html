@@ -1,112 +1,94 @@
-<main class="p-6 space-y-6 bg-gray-50">
-  <div class="max-w-6xl mx-auto space-y-6">
-    <div>
-      <h1 class="font-heading font-medium text-2xl mb-4">Category Overview</h1>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
-        <app-metric-card
-          title="Active Categories"
-          value="100"
-          [percentage]="12"
-          [isPrimary]="true"
-          trend="up"
-        ></app-metric-card>
-        <app-metric-card
-          title="Inactive Categories"
-          value="20"
-          [percentage]="2"
-          trend="down"
-        ></app-metric-card>
-        <app-metric-card
-          title="Deleted Categories"
-          value="10"
-          [percentage]="2"
-          trend="up"
-        ></app-metric-card>
-      </div>
+<main class="p-6 space-y-6">
+  <div>
+    <h1 class="font-heading font-medium text-2xl mb-4">Category Overview</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
+      <app-metric-card
+        title="Active Categories"
+        value="100"
+        [percentage]="12"
+        [isPrimary]="true"
+        trend="up"></app-metric-card>
+      <app-metric-card title="Inactive Categories" value="20" [percentage]="2" trend="down"></app-metric-card>
+      <app-metric-card title="Deleted Categories" value="10" [percentage]="2" trend="up"></app-metric-card>
     </div>
-    <div>
-      <h2 class="font-heading font-medium text-2xl mb-4">Category Details</h2>
+  </div>
 
-      <div class="overflow-x-auto bg-white rounded-2xl shadow-md">
-        <p-table
-          #dt
-          [value]="categories"
-          [rows]="5"
-          [paginator]="true"
-          [rowsPerPageOptions]="[5, 10, 20]"
-          [globalFilterFields]="['categoryName', 'categoryId']"
-          [(selection)]="categories"
-          dataKey="categoryId"
-          [rowHover]="true"
-          [tableStyle]="{ 'min-width': '40rem' }"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories"
-          [showCurrentPageReport]="true"
-        >
-          <ng-template pTemplate="caption">
-            <div class="flex gap-4 md:justify-between">
-              <p-iconfield>
-                <p-inputicon class="pi pi-search" />
-                <input
-                  pInputText
-                  type="text"
-                  (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-                  placeholder="Search..."
-                />
-              </p-iconfield>
-              <div class="flex gap-2">
-                <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
-                <p-button
-                  icon="pi pi-upload"
-                  label="Export"
-                  (onClick)="exportCSV($event)"
-                  severity="secondary"
-                  [outlined]="true"
-                />
-              </div>
+  <div>
+    <h2 class="font-heading font-medium text-2xl mb-4">Category Details</h2>
+
+    <div class="bg-white rounded-2xl shadow-md overflow-x-auto">
+      <p-table
+        #dt
+        [value]="categories"
+        [rows]="5"
+        [paginator]="true"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        [globalFilterFields]="['categoryName', 'categoryId']"
+        [(selection)]="categories"
+        dataKey="categoryId"
+        [rowHover]="true"
+        [tableStyle]="{ 'min-width': '40rem' }"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories"
+        [showCurrentPageReport]="true"
+        styleClass="h-full">
+        <ng-template pTemplate="caption">
+          <div class="flex gap-4 md:justify-between">
+            <p-iconfield>
+              <p-inputicon class="pi pi-search" />
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Search..." />
+            </p-iconfield>
+            <div class="flex gap-2">
+              <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+              <p-button
+                icon="pi pi-upload"
+                label="Export"
+                (onClick)="exportCSV($event)"
+                severity="secondary"
+                [outlined]="true" />
             </div>
-          </ng-template>
+          </div>
+        </ng-template>
 
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Category ID</th>
-              <th pSortableColumn="categoryName">
-                Category Name <p-sortIcon field="name"></p-sortIcon>
-              </th>
-              <th>Parent Category</th>
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Category ID</th>
+            <th pSortableColumn="categoryName">Category Name <p-sortIcon field="name"></p-sortIcon></th>
+            <th>Parent Category</th>
 
-              <th style="min-width: 8rem">Actions</th>
-            </tr>
-          </ng-template>
+            <th style="min-width: 8rem">Actions</th>
+          </tr>
+        </ng-template>
 
-          <ng-template pTemplate="body" let-category>
-            <tr>
-              <td>
-                <span class="font-semibold">{{ category.categoryId }}</span>
-              </td>
-              <td>{{ category.categoryName }}</td>
-              <td>
-                <span class="font-semibold">{{ category.parentCategoryName }}</span>
-              </td>
-              <td class="flex gap-3">
-                <p-button
-                  icon="pi pi-pencil"
-                  class="mr-2"
-                  [rounded]="true"
-                  [outlined]="true"
-                  (onClick)="editCategory(category)"
-                ></p-button>
-                <p-button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  [rounded]="true"
-                  [outlined]="true"
-                  (onClick)="deleteCategory(category)"
-                ></p-button>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </div>
+        <ng-template pTemplate="body" let-category>
+          <tr>
+            <td>
+              <span class="font-semibold">{{ category.categoryId }}</span>
+            </td>
+            <td>{{ category.categoryName }}</td>
+            <td>
+              <span class="font-semibold">{{ category.parentCategoryName }}</span>
+            </td>
+            <td class="flex gap-3">
+              <p-button
+                icon="pi pi-pencil"
+                class="mr-2"
+                [rounded]="true"
+                [outlined]="true"
+                (onClick)="editCategory(category)"></p-button>
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                [rounded]="true"
+                [outlined]="true"
+                (onClick)="deleteCategory(category)"></p-button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
   </div>
 
@@ -116,38 +98,19 @@
     [breakpoints]="{ '1024px': '78vw', '768px': '78vw', '425px': '94vw' }"
     header="Category Details"
     [modal]="true"
-    [draggable]="false"
-  >
+    [draggable]="false">
     <ng-template pTemplate="content">
       <div class="flex flex-col gap-6">
         <div>
           <label for="name" class="block font-bold mb-3">Category Name</label>
-          <input
-            type="text"
-            pInputText
-            id="name"
-            [(ngModel)]="category.categoryName"
-            required
-            fluid
-          />
-          <small class="text-red-500" *ngIf="submitted && !category.categoryName"
-            >Name is required.</small
-          >
+          <input type="text" pInputText id="name" [(ngModel)]="category.categoryName" required fluid />
+          <small class="text-red-500" *ngIf="submitted && !category.categoryName">Name is required.</small>
         </div>
 
         <div>
           <label for="parentCategoryName" class="block font-bold mb-3">Parent Category</label>
-          <input
-            type="text"
-            pInputText
-            id="name"
-            [(ngModel)]="category.parentCategoryName"
-            required
-            fluid
-          />
-          <small class="text-red-500" *ngIf="submitted && !category.parentCategoryName"
-            >Name is required.</small
-          >
+          <input type="text" pInputText id="name" [(ngModel)]="category.parentCategoryName" required fluid />
+          <small class="text-red-500" *ngIf="submitted && !category.parentCategoryName">Name is required.</small>
         </div>
       </div>
     </ng-template>

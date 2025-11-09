@@ -11,20 +11,19 @@
 
     <div class="flex flex-col gap-2 mt-4">
       @for (item of sidebarMenuItems; track item.route) {
-        <div
-          [routerLink]="[item.route]"
-          (click)="onNavigate()"
-          role="button"
-          tabindex="0"
-          routerLinkActive="bg-ims-primary-hover-light text-ims-primary"
-          [routerLinkActiveOptions]="{ exact: item.route === '/dashboard/overview' }"
-          class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
-        >
-          <app-icon [name]="item.icon"></app-icon>
-          <span class="text-sm font-medium font-heading">{{ item.label }}</span>
-        </div>
+      <div
+        [routerLink]="[item.route]"
+        (click)="onNavigate()"
+        role="button"
+        tabindex="0"
+        routerLinkActive="bg-ims-primary-hover-light text-ims-primary"
+        [routerLinkActiveOptions]="{ exact: item.route === '/dashboard/overview' }"
+        class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group">
+        <app-icon [name]="item.icon"></app-icon>
+        <span class="text-sm font-medium font-heading">{{ item.label }}</span>
+      </div>
       } @empty {
-        <p class="text-sm text-red-600">There are no items.</p>
+      <p class="text-sm text-red-600">There are no items.</p>
       }
     </div>
   </div>
@@ -37,17 +36,14 @@
           image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
           class="mr-2"
           size="xlarge"
-          shape="circle"
-        />
+          shape="circle" />
 
         <div>
           <p class="font-medium font-heading text-ims-text-general">
             <!-- TODO {{ userDetailItems.fullName }} -->
             {{ userName() }}
           </p>
-          <p class="text-sm font-semibold font-sans text-ims-text-secondary">
-            {{ roleName() }}
-          </p>
+          <p class="text-sm font-semibold font-sans text-ims-text-secondary">{{ roleName() }}</p>
         </div>
       </div>
       <div
@@ -56,8 +52,7 @@
         (keydown.space)="logout()"
         role="button"
         tabindex="0"
-        class="hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group p-2"
-      >
+        class="hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group p-2">
         <app-icon name="logout"></app-icon>
       </div>
     </div>

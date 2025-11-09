@@ -1,5 +1,5 @@
 <main class="p-6 space-y-6 bg-gray-50">
-  <div class="max-w-6xl mx-auto space-y-6">
+  <div>
     <div>
       <h1 class="font-heading font-medium text-2xl mb-4">Warehouse Overview</h1>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -8,20 +8,9 @@
           value="100"
           [percentage]="12"
           [isPrimary]="true"
-          trend="up"
-        ></app-metric-card>
-        <app-metric-card
-          title="Inactive Warehouse"
-          value="20"
-          [percentage]="2"
-          trend="down"
-        ></app-metric-card>
-        <app-metric-card
-          title="Deleted Warehouse"
-          value="10"
-          [percentage]="2"
-          trend="up"
-        ></app-metric-card>
+          trend="up"></app-metric-card>
+        <app-metric-card title="Inactive Warehouse" value="20" [percentage]="2" trend="down"></app-metric-card>
+        <app-metric-card title="Deleted Warehouse" value="10" [percentage]="2" trend="up"></app-metric-card>
       </div>
     </div>
 
@@ -41,8 +30,7 @@
           [tableStyle]="{ 'min-width': '40rem' }"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} warehouses"
           [showCurrentPageReport]="true"
-          class="rounded-2xl shadow-md"
-        >
+          class="rounded-2xl shadow-md">
           <ng-template pTemplate="caption">
             <div class="flex gap-2 md:justify-between">
               <p-iconfield>
@@ -52,8 +40,7 @@
                   type="text"
                   (input)="dt.filterGlobal($any($event.target).value, 'contains')"
                   placeholder="Search..."
-                  class="w-full md:w-64"
-                />
+                  class="w-full md:w-64" />
               </p-iconfield>
               <div class="flex gap-2">
                 <p-button label="Add" icon="pi pi-plus" (onClick)="openNew()" />
@@ -62,8 +49,7 @@
                   label="Export"
                   (onClick)="exportExcel()"
                   severity="secondary"
-                  [outlined]="true"
-                />
+                  [outlined]="true" />
               </div>
             </div>
           </ng-template>
@@ -91,8 +77,7 @@
                   class="mr-2"
                   [rounded]="true"
                   [outlined]="true"
-                  (onClick)="editWarehouse(warehouse)"
-                ></p-button>
+                  (onClick)="editWarehouse(warehouse)"></p-button>
               </td>
             </tr>
           </ng-template>
@@ -106,8 +91,7 @@
     [style]="{ width: '480px' }"
     header="Warehouse Details"
     [modal]="true"
-    [draggable]="false"
-  >
+    [draggable]="false">
     <ng-template pTemplate="content">
       <div class="flex flex-col gap-6">
         <div>
