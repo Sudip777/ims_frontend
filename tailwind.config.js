@@ -44,6 +44,15 @@ module.exports = {
         'ims-card': '0 2px 8px rgba(0, 0, 0, 0.05)',
         'ims-focus': '0 0 0 2px #A7F3D0',
       },
+      keyframes: {
+        dotBounce: {
+          '0%, 80%, 100%': { transform: 'translateY(0)' },
+          '40%': { transform: 'translateY(-8px)' },
+        },
+      },
+      animation: {
+        dotBounce: 'dotBounce 1.4s infinite ease-in-out',
+      },
     },
   },
   plugins: [require('tailwindcss-primeui')],

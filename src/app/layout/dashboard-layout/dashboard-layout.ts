@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
+import { LoadingService } from '../../core/services/loading';
 import { IconComponent } from '../../shared/icons/components/icon.component';
 import { Sidebar } from '../sidebar/components/sidebar-details/sidebar';
+import { Loader } from "../../shared/components/Loader/loader";
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -20,12 +22,15 @@ import { Sidebar } from '../sidebar/components/sidebar-details/sidebar';
     ButtonModule,
     BadgeModule,
     OverlayBadgeModule,
-  ],
+    Loader
+],
   templateUrl: './dashboard-layout.html',
   styleUrl: './dashboard-layout.scss',
 })
 export class DashboardLayout {
   sidebarOpen = false;
+  private loader = inject(LoadingService);
+  loading$ = this.loader.loading$;
 
   toggleSidebar(open: boolean) {
     this.sidebarOpen = open;
@@ -36,9 +41,7 @@ export class DashboardLayout {
     this.sidebarOpen = false;
   }
 
-  onChildActivate(component: {
-    sidebarToggle: { subscribe: (arg0: (open: boolean) => void) => void };
-  }) {
+  onChildActivate(component: { sidebarToggle: { subscribe: (arg0: (open: boolean) => void) => void } }) {
     // Subscribe to child component's sidebar toggle events
     if (component.sidebarToggle) {
       component.sidebarToggle.subscribe((open: boolean) => {

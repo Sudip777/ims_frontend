@@ -65,6 +65,7 @@ export class WarehouseDetail implements OnInit {
   warehouseDialog = false;
   submitted = false;
   isEditMode = false;
+  tableLoading = false;
 
   warehouse: Warehouse = {
     warehouseId: 0,
