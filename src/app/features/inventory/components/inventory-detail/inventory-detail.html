@@ -110,9 +110,18 @@
               ></p-button> -->
 
               <div class="flex flex-col items-center gap-2">
-                <!-- <p-toggleswitch [(ngModel)]="inventory.isDisabled" [readonly]="true" /> -->
+                <!--TODO <p-toggleswitch [(ngModel)]="inventory.isDisabled" [readonly]="true" /> -->
                 <!--Readonly made controlled by backend-->
               </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4" class="text-center py-8">
+              <p class="text-xl font-semibold text-surface-700 mb-2">No inventories found</p>
+              <p class="text-surface-500 mb-4">Get Started by creating Inventories</p>
+              <p-button label="Create Purchase Order" icon="pi pi-plus" (onClick)="openNew()"></p-button>
             </td>
           </tr>
         </ng-template>

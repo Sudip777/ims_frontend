@@ -11,6 +11,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { ProgressSpinner } from 'primeng/progressspinner';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
@@ -46,6 +47,7 @@ interface Category {
     InputIconModule,
     DatePickerModule,
     TagModule,
+    ProgressSpinner,
 
     // Custom
     MetricCardComponent,
