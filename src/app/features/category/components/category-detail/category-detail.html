@@ -19,18 +19,19 @@
     <div class="bg-white rounded-2xl shadow-md overflow-x-auto">
       <p-table
         #dt
-        [value]="categories"
+        [value]="items"
         [rows]="5"
         [paginator]="true"
         [rowsPerPageOptions]="[5, 10, 20]"
         [globalFilterFields]="['categoryName', 'categoryId']"
-        [(selection)]="categories"
+        [(selection)]="items"
         dataKey="categoryId"
         [rowHover]="true"
         [tableStyle]="{ 'min-width': '40rem' }"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories"
         [showCurrentPageReport]="true"
-        styleClass="h-full">
+        class="rounded-2xl shadow-md">
+        >
         <ng-template pTemplate="caption">
           <div class="flex gap-4 md:justify-between">
             <p-iconfield>
@@ -70,7 +71,7 @@
             </td>
             <td>{{ category.categoryName }}</td>
             <td>
-              <span class="font-semibold">{{ category.parentCategoryName }}</span>
+              <span class="font-semibold">{{ category.parentCategory }}</span>
             </td>
             <td class="flex gap-3">
               <p-button

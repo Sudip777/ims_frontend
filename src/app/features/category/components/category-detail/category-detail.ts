@@ -18,7 +18,10 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+import { NotificationService } from '../../../../core/services/notification.services';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
+import { CategoryResponse } from '../../models/category.model';
+import { CategoryService } from '../../services/category.services';
 interface Category {
   categoryId: number;
   categoryName: string;
@@ -49,17 +52,19 @@ interface Category {
     MetricCardComponent,
   ],
   templateUrl: './category-detail.html',
-  styleUrl: './category-detail.scss',
 })
 export class CategoryDetail implements OnInit {
+  private readonly categoryService = inject(CategoryService);
   private confirmationService = inject(ConfirmationService);
   private messageService = inject(MessageService);
+  private notificationService = inject(NotificationService);
 
   timePeriods = ['1d', '7d', '1m', '3m', '6m', '1y'];
   selectedPeriod = '1m';
   date: Date | null = null;
   categories: Category[] = [];
   selectedCategories: Category[] = [];
+  items: CategoryResponse[] = [];
 
   category: Category = {
     categoryId: 0,
@@ -70,65 +75,19 @@ export class CategoryDetail implements OnInit {
   submitted = false;
 
   ngOnInit() {
-    this.categories = [
-      {
-        categoryId: 1,
-        categoryName: 'Electronics',
-        parentCategoryName: 'Products',
-      },
-      {
-        categoryId: 2,
-        categoryName: 'Home Appliances',
-        parentCategoryName: 'Electronics',
-      },
-      {
-        categoryId: 3,
-        categoryName: 'Groceries',
-        parentCategoryName: 'Products',
-      },
-      {
-        categoryId: 4,
-        categoryName: 'Beverages',
-        parentCategoryName: 'Groceries',
-      },
-      {
-        categoryId: 5,
-        categoryName: 'Stationery',
-        parentCategoryName: 'Office Supplies',
-      },
-      {
-        categoryId: 6,
-        categoryName: 'Furniture',
-        parentCategoryName: 'Office Supplies',
-      },
-      {
-        categoryId: 7,
-        categoryName: 'Clothing',
-        parentCategoryName: 'Fashion',
-      },
-      {
-        categoryId: 8,
-        categoryName: 'Footwear',
-        parentCategoryName: 'Fashion',
-      },
-      {
-        categoryId: 9,
-        categoryName: 'Sports Equipment',
-        parentCategoryName: 'Outdoor & Fitness',
-      },
-      {
-        categoryId: 10,
-        categoryName: 'Health & Beauty',
-        parentCategoryName: 'Personal Care',
-      },
-      {
-        categoryId: 11,
-        categoryName: 'Automotive Accessories',
-        parentCategoryName: 'Vehicles',
-      },
-    ];
+    this.loadCategories();
   }
 
+  private loadCategories() {
+    this.categoryService.getAllCategories().subscribe({
+      next: (res) => {
+        this.items = res.result;
+      },
+      error: () => {
+        this.notificationService.error('Error', 'Failed to Load Warehouses');
+      },
+    });
+  }
   createEmptyCategory(): Category {
     return {
       categoryId: 0,

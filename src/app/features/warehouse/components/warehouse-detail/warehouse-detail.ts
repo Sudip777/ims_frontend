@@ -53,7 +53,6 @@ type WarehouseRequest = Omit<Warehouse, 'warehouseId' | 'createdByUserId'>;
     MetricCardComponent,
   ],
   templateUrl: './warehouse-detail.html',
-  // styleUrl: './warehouse-detail.scss',
 })
 export class WarehouseDetail implements OnInit {
   private readonly warehouseService = inject(WarehouseService);
