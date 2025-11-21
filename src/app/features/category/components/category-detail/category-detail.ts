@@ -20,8 +20,8 @@ import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { NotificationService } from '../../../../core/services/notification.services';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { CategoryResponse } from '../../models/category.model';
 import { CategoryService } from '../../services/category.services';
+
 interface Category {
   categoryId: number;
   categoryName: string;
@@ -32,7 +32,6 @@ interface Category {
   imports: [
     CommonModule,
     FormsModule,
-
     TableModule,
     ToolbarModule,
     ButtonModule,
@@ -64,7 +63,9 @@ export class CategoryDetail implements OnInit {
   date: Date | null = null;
   categories: Category[] = [];
   selectedCategories: Category[] = [];
-  items: CategoryResponse[] = [];
+  items: { label: string; value: number }[] = [];
+  parentCategory = '';
+  selectedParentCategory: Category | null = null;
 
   category: Category = {
     categoryId: 0,
@@ -81,7 +82,10 @@ export class CategoryDetail implements OnInit {
   private loadCategories() {
     this.categoryService.getAllCategories().subscribe({
       next: (res) => {
-        this.items = res.result;
+        this.items = res.result.map((val) => ({
+          label: val.parentCategoryId,
+          value: val.parentCategory,
+        }));
       },
       error: () => {
         this.notificationService.error('Error', 'Failed to Load Warehouses');
