@@ -105,7 +105,6 @@
   <p-dialog
     [(visible)]="categoryDialog"
     [style]="{ width: '70vw' }"
-    [breakpoints]="{ '1024px': '78vw', '768px': '78vw', '425px': '94vw' }"
     header="Category Details"
     [modal]="true"
     [draggable]="false">
@@ -117,10 +116,21 @@
           <small class="text-red-500" *ngIf="submitted && !category.categoryName">Name is required.</small>
         </div>
 
-        <div>
+        <!-- <div>
           <label for="parentCategoryName" class="block font-bold mb-3">Parent Category</label>
           <input type="text" pInputText id="name" [(ngModel)]="category.parentCategoryName" required fluid />
           <small class="text-red-500" *ngIf="submitted && !category.parentCategoryName">Name is required.</small>
+        </div> -->
+        <div class="card flex justify-center z-50">
+          <p-select
+            [options]="items"
+            [(ngModel)]="selectedParentCategory"
+            [checkmark]="true"
+            optionLabel="name"
+            [showClear]="true"
+            placeholder="Select a parent Category"
+            class="w-full md:w-56"
+            appendTo="body" />
         </div>
       </div>
     </ng-template>
