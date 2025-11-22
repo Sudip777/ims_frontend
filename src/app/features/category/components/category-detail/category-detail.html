@@ -19,12 +19,12 @@
     <div class="bg-white rounded-2xl shadow-md overflow-x-auto">
       <p-table
         #dt
-        [value]="items"
+        [value]="categoryItems"
         [rows]="5"
         [paginator]="true"
         [rowsPerPageOptions]="[5, 10, 20]"
         [globalFilterFields]="['categoryName', 'categoryId']"
-        [(selection)]="items"
+        [(selection)]="categoryItems"
         dataKey="categoryId"
         [rowHover]="true"
         [tableStyle]="{ 'min-width': '40rem' }"
@@ -104,7 +104,7 @@
 
   <p-dialog
     [(visible)]="categoryDialog"
-    [style]="{ width: '70vw' }"
+    [style]="{ width: '50vw' }"
     header="Category Details"
     [modal]="true"
     [draggable]="false">
@@ -112,24 +112,27 @@
       <div class="flex flex-col gap-6">
         <div>
           <label for="name" class="block font-bold mb-3">Category Name</label>
-          <input type="text" pInputText id="name" [(ngModel)]="category.categoryName" required fluid />
+          <input
+            type="text"
+            pInputText
+            id="name"
+            [(ngModel)]="category.categoryName"
+            required
+            fluid
+            placeholder="Enter a Category Name" />
           <small class="text-red-500" *ngIf="submitted && !category.categoryName">Name is required.</small>
         </div>
-
-        <!-- <div>
-          <label for="parentCategoryName" class="block font-bold mb-3">Parent Category</label>
-          <input type="text" pInputText id="name" [(ngModel)]="category.parentCategoryName" required fluid />
-          <small class="text-red-500" *ngIf="submitted && !category.parentCategoryName">Name is required.</small>
-        </div> -->
-        <div class="card flex justify-center z-50">
+        <div class="flex flex-col justify-center z-50 w-full">
+          <label for="name" class="block font-bold mb-3"> Parent Category</label>
           <p-select
             [options]="items"
+            optionLabel="value"
+            optionValue="label"
             [(ngModel)]="selectedParentCategory"
-            [checkmark]="true"
-            optionLabel="name"
-            [showClear]="true"
             placeholder="Select a parent Category"
-            class="w-full md:w-56"
+            [checkmark]="true"
+            [showClear]="true"
+            class="w-full"
             appendTo="body" />
         </div>
       </div>

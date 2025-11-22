@@ -20,12 +20,14 @@ import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { NotificationService } from '../../../../core/services/notification.services';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
+import { CategoryRequest, CategoryResponse } from '../../models/category.model';
 import { CategoryService } from '../../services/category.services';
 
 interface Category {
   categoryId: number;
   categoryName: string;
   parentCategoryName: string | '';
+  parentCategoryId: number;
 }
 @Component({
   selector: 'app-category-detail',
@@ -57,19 +59,19 @@ export class CategoryDetail implements OnInit {
   private confirmationService = inject(ConfirmationService);
   private messageService = inject(MessageService);
   private notificationService = inject(NotificationService);
-
-  timePeriods = ['1d', '7d', '1m', '3m', '6m', '1y'];
-  selectedPeriod = '1m';
   date: Date | null = null;
   categories: Category[] = [];
   selectedCategories: Category[] = [];
-  items: { label: string; value: number }[] = [];
+  items: { label: number | null; value: string }[] = [];
+  categoryItems: CategoryResponse[] = [];
   parentCategory = '';
   selectedParentCategory: Category | null = null;
+  isEditMode = false;
 
   category: Category = {
     categoryId: 0,
     categoryName: '',
+    parentCategoryId: 0,
     parentCategoryName: '',
   };
   categoryDialog = false;
@@ -82,9 +84,10 @@ export class CategoryDetail implements OnInit {
   private loadCategories() {
     this.categoryService.getAllCategories().subscribe({
       next: (res) => {
+        this.categoryItems = res.result;
         this.items = res.result.map((val) => ({
-          label: val.parentCategoryId,
-          value: val.parentCategory,
+          label: val.categoryId,
+          value: val.categoryName,
         }));
       },
       error: () => {
@@ -92,11 +95,13 @@ export class CategoryDetail implements OnInit {
       },
     });
   }
+
   createEmptyCategory(): Category {
     return {
       categoryId: 0,
       categoryName: '',
       parentCategoryName: '',
+      parentCategoryId: 0,
     };
   }
   openNew() {
@@ -113,32 +118,49 @@ export class CategoryDetail implements OnInit {
   saveCategory() {
     this.submitted = true;
 
-    if (this.category.categoryName.trim()) {
-      if (this.category.categoryId) {
-        const index = this.findIndexById(this.category.categoryId);
-        if (index !== -1) this.categories[index] = this.category;
+    if (!this.category.categoryName) {
+      this.notificationService.warn('Validation Error', 'Category name is required');
+      return;
+    }
 
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Category Updated',
-          life: 3000,
-        });
-      } else {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Category Created',
-          life: 3000,
-        });
-      }
+    const req: CategoryRequest = this.makeCategoryRequest();
 
-      this.categories = [...this.categories];
-      this.categoryDialog = false;
-      this.category = this.createEmptyCategory();
+    if (this.isEditMode) {
+      this.updateCategory(req);
+    } else {
+      this.createCategory(req);
     }
   }
 
+  private createCategory(req: CategoryRequest): void {
+    const payload = {
+      ...req,
+      parentCategoryId: req.parentCategoryId === 0 ? null : req.parentCategoryId,
+    };
+    this.categoryService.createCategory(payload).subscribe({
+      next: () => {
+        this.notificationService.success('Success', 'Category Created Successfully');
+        this.hideDialog();
+        this.loadCategories();
+      },
+      error: (err) => {
+        this.notificationService.error('Error', err.error?.message || 'Failed to Create Category');
+      },
+    });
+  }
+
+  private updateCategory(req: CategoryRequest): void {
+    this.categoryService.updateCategory(req, this.category.categoryId).subscribe({
+      next: () => {
+        this.notificationService.success('Success', 'Category Updated Successfully');
+        this.hideDialog();
+        this.loadCategories();
+      },
+      error: (err) => {
+        this.notificationService.error('Error', err.error?.message || 'Failed to Update Category');
+      },
+    });
+  }
   editCategory(category: Category) {
     this.category = { ...category };
     this.categoryDialog = true;
@@ -194,8 +216,11 @@ export class CategoryDetail implements OnInit {
     });
   }
 
-  findIndexById(id: number): number {
-    return this.categories.findIndex((p) => p.categoryId === id);
+  private makeCategoryRequest(): CategoryRequest {
+    return {
+      categoryName: this.category.categoryName,
+      parentCategoryId: Number(this.selectedParentCategory),
+    };
   }
 
   createId(): number {

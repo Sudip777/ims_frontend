@@ -157,42 +157,6 @@ export class WarehouseDetail implements OnInit {
     });
   }
 
-  // deleteWarehouse(warehouse: Warehouse): void {
-  //   this.confirmationService.confirm({
-  //     message: `Are you sure you want to delete "${warehouse.name}"?`,
-  //     header: 'Confirm Deletion',
-  // icon: 'pi pi-exclamation-triangle',
-  // acceptLabel: 'Confirm',
-  // rejectLabel: 'Cancel',
-  // rejectButtonStyleClass: 'p-button-secondary',
-  // acceptButtonStyleClass: 'p-button-danger',
-  //     accept: () => {
-  //       this.warehouseService.deleteWarehouse(warehouse.warehouseId).subscribe({
-  //         next: () => {
-  //           this.notificationService.success('Success', 'Warehouse Deleted Successfully');
-  //           this.loadWarehouses();
-  //         },
-  //         error: () => {
-  //           this.notificationService.error('Error', 'Failed to Delete Warehouse');
-  //         },
-  //       });
-  //     },
-  //   });
-  // }
-
-  // deleteSelectedWarehouses(): void {
-  //   this.confirmationService.confirm({
-  //     message: 'Are you sure you want to delete the selected Warehouses?',
-  //     header: 'Confirm',
-  //     icon: 'pi pi-exclamation-triangle',
-  //     accept: () => {
-  //       this.warehouses = this.warehouses.filter((val) => !this.selectedWarehouses.includes(val));
-  //       this.selectedWarehouses = [];
-  //       this.notificationService.success('Success', 'Selected Warehouses Deleted');
-  //     },
-  //   });
-  // }
-
   exportExcel(): void {
     try {
       this.exportService.exportToExcel(this.warehouses as never, {
