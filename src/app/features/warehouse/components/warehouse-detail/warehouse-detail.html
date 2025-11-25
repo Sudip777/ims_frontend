@@ -98,7 +98,7 @@
 
   <p-dialog
     [(visible)]="warehouseDialog"
-    [style]="{ width: '480px' }"
+    [styleClass]="'responsive-dialog'"
     header="Warehouse Details"
     [modal]="true"
     [draggable]="false">
@@ -107,7 +107,10 @@
         <div>
           <label for="name" class="block font-bold mb-3">Warehouse Name</label>
           <input type="text" pInputText id="name" [(ngModel)]="warehouse.name" required fluid />
-          <small class="text-red-500" *ngIf="submitted && !warehouse.name">Name is required.</small>
+
+          @if(submitted && !warehouse.name){
+          <small class="text-red-500">Name is required.</small>
+          }
         </div>
       </div>
     </ng-template>

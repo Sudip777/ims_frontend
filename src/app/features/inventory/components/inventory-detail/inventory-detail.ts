@@ -105,13 +105,7 @@ export class InventoryDetail implements OnInit, OnDestroy {
       this.inventoriesSearchText = term;
       console.log('Search Term:', term);
 
-      this.loadInventories(
-        this.page,
-        this.pageSize,
-        this.inventoriesSearchText,
-        'inventoryId',
-        'asc',
-      );
+      this.loadInventories(this.page, this.pageSize, this.inventoriesSearchText, 'inventoryId', 'asc');
     });
     this.loadCategories();
     this.loadProducts();
@@ -124,32 +118,32 @@ export class InventoryDetail implements OnInit, OnDestroy {
     pageSize: number,
     search?: string,
     sortColumn?: string | string[] | null | undefined,
-    sortDirection?: 'asc' | 'desc',
+    sortDirection?: 'asc' | 'desc'
   ): void {
-    this.inventoryService
-      .getAllInventories(page, pageSize, search, sortColumn, sortDirection)
-      .subscribe({
-        next: (res) => {
-          this.inventories = res.result.data.map((item) => ({
-            ...item,
-            // isDisabled: item.quantity <= item.reorderLevel, // auto-disable low-stock items
-          }));
-          this.totalCount = res.result.meta.totalCount;
-          this.page = res.result.meta.page;
-          this.pageSize = res.result.meta.pageSize;
-          console.log(this.inventories, 'abccc');
+    this.inventoryService.getAllInventories(page, pageSize, search, sortColumn, sortDirection).subscribe({
+      next: (res) => {
+        this.inventories = res.result.data.map((item) => ({
+          ...item,
+          // isDisabled: item.quantity <= item.reorderLevel, // auto-disable low-stock items
+        }));
+        this.totalCount = res.result.meta.totalCount;
+        this.page = res.result.meta.page;
+        this.pageSize = res.result.meta.pageSize;
+        console.log(this.inventories, 'abccc');
 
-          console.log(this.inventories, 'iiiiiiiii');
-        },
-        error: () => {
-          this.notificationService.error('Error', 'Failed to load inventory data');
-        },
-      });
+        console.log(this.inventories, 'iiiiiiiii');
+      },
+      error: () => {
+        this.notificationService.error('Error', 'Failed to load inventory data');
+      },
+    });
   }
 
   private loadProducts(): void {
     this.productService.getAllProducts().subscribe({
       next: (res) => {
+        console.log('aa', res.result);
+
         this.productItems = res.result.data.map((val) => ({
           label: val.name,
           value: val.productId,
@@ -217,8 +211,7 @@ export class InventoryDetail implements OnInit, OnDestroy {
     this.isEditMode = true;
     this.inventory = { ...inventory };
 
-    this.selectedProducts =
-      this.productItems.find((p) => p.value === inventory.productId) || inventory.productId;
+    this.selectedProducts = this.productItems.find((p) => p.value === inventory.productId) || inventory.productId;
     this.selectedWarehouse =
       this.warehouseItems.find((w) => w.value === inventory.warehouseId) || inventory.warehouseId;
 
@@ -235,13 +228,11 @@ export class InventoryDetail implements OnInit, OnDestroy {
   }
   searchProduct(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredItems =
-      this.productItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredItems = this.productItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
   searchWarehouse(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredWarehouseItems =
-      this.warehouseItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredWarehouseItems = this.warehouseItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   saveInventory(): void {

@@ -79,13 +79,15 @@
                 class="mr-2"
                 [rounded]="true"
                 [outlined]="true"
-                (onClick)="editCategory(category)"></p-button>
-              <p-button
+                (onClick)="saveCategory()"></p-button>
+              <!-- Todo
+               <p-button
                 icon="pi pi-trash"
                 severity="danger"
                 [rounded]="true"
                 [outlined]="true"
                 (onClick)="deleteCategory(category)"></p-button>
+            </td> -->
             </td>
           </tr>
         </ng-template>
@@ -104,8 +106,8 @@
 
   <p-dialog
     [(visible)]="categoryDialog"
-    [style]="{ width: '50vw' }"
-    header="Category Details"
+    [styleClass]="'responsive-dialog'"
+    [header]="isEditMode ? 'Update Category Details' : 'Add Category Details'"
     [modal]="true"
     [draggable]="false">
     <ng-template pTemplate="content">

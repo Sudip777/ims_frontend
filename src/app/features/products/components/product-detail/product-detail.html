@@ -144,8 +144,7 @@
 
   <p-dialog
     [(visible)]="productDialog"
-    [style]="{ width: '70vw' }"
-    [breakpoints]="{ '1024px': '78vw', '768px': '78vw', '425px': '94vw' }"
+    [styleClass]="'responsive-dialog'"
     [header]="isEditMode ? 'Update Product Details' : 'Add Product Details'"
     [draggable]="false"
     [modal]="true"
