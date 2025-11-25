@@ -131,12 +131,11 @@
 
   <p-dialog
     [(visible)]="inventoryDialog"
-    [style]="{ width: '70vw' }"
-    [breakpoints]="{ '1024px': '78vw', '768px': '78vw', '425px': '94vw' }"
+    [styleClass]="'responsive-dialog'"
     [header]="isEditMode ? 'Update Inventory Details' : 'Add Inventory Details'"
     [modal]="true">
     <ng-template pTemplate="content">
-      <div class="grid grid-col-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+      <div class="flex flex-col gap-4">
         <div>
           <label for="productId" class="block font-bold mb-3">Product Name</label>
           <p-autocomplete
@@ -146,6 +145,7 @@
             optionLabel="label"
             placeholder="Select a product"
             [dropdown]="true"
+            class="min-w-full"
             [disabled]="isEditMode"
             appendTo="body" />
         </div>
@@ -159,6 +159,7 @@
             optionLabel="label"
             placeholder="Select a warehouse"
             [dropdown]="true"
+            class="min-w-full"
             [disabled]="isEditMode"
             appendTo="body" />
         </div>

@@ -117,14 +117,7 @@ export class CategoryDetail implements OnInit {
 
   saveCategory() {
     this.submitted = true;
-
-    if (!this.category.categoryName) {
-      this.notificationService.warn('Validation Error', 'Category name is required');
-      return;
-    }
-
     const req: CategoryRequest = this.makeCategoryRequest();
-
     if (this.isEditMode) {
       this.updateCategory(req);
     } else {
@@ -161,59 +154,10 @@ export class CategoryDetail implements OnInit {
       },
     });
   }
-  editCategory(category: Category) {
-    this.category = { ...category };
-    this.categoryDialog = true;
-  }
-
-  deleteCategory(category: Category) {
-    this.confirmationService.confirm({
-      message: `Are you sure you want to delete "${category.categoryName}"?`,
-      header: 'Confirm Deletion',
-      icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Confirm',
-      rejectLabel: 'Cancel',
-      rejectButtonStyleClass: 'p-button-secondary',
-      acceptButtonStyleClass: 'p-button-danger',
-
-      accept: () => {
-        this.categories = this.categories.filter((p) => p.categoryId !== category.categoryId);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Supplier Deleted',
-          life: 3000,
-        });
-      },
-    });
-  }
-
-  deleteSelectedCategories() {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete the selected Suppliers?',
-      header: 'Confirm',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.categories = this.categories.filter((val) => !this.selectedCategories.includes(val));
-        this.selectedCategories = [];
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Suppliers Deleted',
-          life: 3000,
-        });
-      },
-    });
-  }
 
   exportCSV(event?: Event) {
     console.log('Export CSV clicked', event);
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Export',
-      detail: 'CSV Export started...',
-      life: 3000,
-    });
+    this.notificationService.info('CSV Data Exported');
   }
 
   private makeCategoryRequest(): CategoryRequest {
@@ -223,9 +167,6 @@ export class CategoryDetail implements OnInit {
     };
   }
 
-  createId(): number {
-    return Math.floor(Math.random() * 10000) + 100;
-  }
   getStatusLabel(isActive: boolean): string {
     return isActive ? 'Active' : 'Inactive';
   }

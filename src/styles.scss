@@ -49,3 +49,19 @@ body {
 .p-datatable-table tbody tr.p-highlight:hover {
   background-color: #a7f3d0 !important;
 }
+
+// For Dialog
+/* For screens < 768px */
+@media (max-width: 767px) {
+  .responsive-dialog {
+    width: 60vw !important;
+    max-width: 100% !important;
+  }
+}
+
+/* For screens ≥ 768px */
+@media (min-width: 768px) {
+  .responsive-dialog {
+    width: 500px !important;
+  }
+}
