@@ -121,7 +121,7 @@
   <p-dialog
     [(visible)]="customerDialog"
     [styleClass]="'responsive-dialog'"
-    header="customer Details"
+    [header]="isEditMode? 'Update Customer Details':'Add Customer Details'"
     [modal]="true"
     [draggable]="false">
     <ng-template pTemplate="content">

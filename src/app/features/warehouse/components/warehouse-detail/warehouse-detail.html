@@ -99,7 +99,7 @@
   <p-dialog
     [(visible)]="warehouseDialog"
     [styleClass]="'responsive-dialog'"
-    header="Warehouse Details"
+    [header]="isEditMode ? 'Update Warehouse Details' : 'Add Warehouse Details'"
     [modal]="true"
     [draggable]="false">
     <ng-template pTemplate="content">
