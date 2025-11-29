@@ -47,7 +47,7 @@
               <p-button
                 icon="pi pi-upload"
                 label="Export"
-                (onClick)="exportCSV($event)"
+                (onClick)="exportExcel()"
                 severity="secondary"
                 [outlined]="true" />
             </div>
@@ -79,7 +79,7 @@
                 class="mr-2"
                 [rounded]="true"
                 [outlined]="true"
-                (onClick)="saveCategory()"></p-button>
+                (onClick)="editCategory(category)"></p-button>
               <!-- Todo
                <p-button
                 icon="pi pi-trash"

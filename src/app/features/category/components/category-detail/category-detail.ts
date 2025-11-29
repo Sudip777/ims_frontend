@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -18,6 +17,7 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+import { ExportService } from '../../../../core/services/export.services';
 import { NotificationService } from '../../../../core/services/notification.services';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { CategoryRequest, CategoryResponse } from '../../models/category.model';
@@ -56,8 +56,7 @@ interface Category {
 })
 export class CategoryDetail implements OnInit {
   private readonly categoryService = inject(CategoryService);
-  private confirmationService = inject(ConfirmationService);
-  private messageService = inject(MessageService);
+  private exportService = inject(ExportService);
   private notificationService = inject(NotificationService);
   date: Date | null = null;
   categories: Category[] = [];
@@ -67,6 +66,7 @@ export class CategoryDetail implements OnInit {
   parentCategory = '';
   selectedParentCategory: Category | null = null;
   isEditMode = false;
+  selectedParentCategoryForDropdown: number | { label: string; value: number } | null = null;
 
   category: Category = {
     categoryId: 0,
@@ -109,6 +109,12 @@ export class CategoryDetail implements OnInit {
     this.submitted = false;
     this.categoryDialog = true;
   }
+  editCategory(category: Category): void {
+    this.isEditMode = true;
+    this.category = { ...category };
+    // this.selectedParentCategoryForDropdown = this.items.find((p) => p.value === category.parentCategoryId);
+    this.categoryDialog = true;
+  }
 
   hideDialog() {
     this.categoryDialog = false;
@@ -142,7 +148,10 @@ export class CategoryDetail implements OnInit {
     });
   }
 
-  private updateCategory(req: CategoryRequest): void {
+  updateCategory(req: CategoryRequest): void {
+    this.categoryDialog = true;
+    this.isEditMode = true;
+
     this.categoryService.updateCategory(req, this.category.categoryId).subscribe({
       next: () => {
         this.notificationService.success('Success', 'Category Updated Successfully');
@@ -155,9 +164,17 @@ export class CategoryDetail implements OnInit {
     });
   }
 
-  exportCSV(event?: Event) {
-    console.log('Export CSV clicked', event);
-    this.notificationService.info('CSV Data Exported');
+  exportExcel(): void {
+    try {
+      this.exportService.exportToExcel(this.categories as never, {
+        fileName: 'Warehouses_Excel_Report',
+        sheetName: 'Warehouse Data',
+        title: 'The Unity Ware Excel Report',
+      });
+      this.notificationService.success('Export', 'Excel Export Completed');
+    } catch {
+      this.notificationService.error('Export', 'Excel Export Failed');
+    }
   }
 
   private makeCategoryRequest(): CategoryRequest {
@@ -167,11 +184,11 @@ export class CategoryDetail implements OnInit {
     };
   }
 
-  getStatusLabel(isActive: boolean): string {
-    return isActive ? 'Active' : 'Inactive';
-  }
+  //   getStatusLabel(isActive: boolean): string {
+  //     return isActive ? 'Active' : 'Inactive';
+  //   }
 
-  getSeverity(isActive: boolean): 'success' | 'danger' {
-    return isActive ? 'success' : 'danger';
-  }
+  //   getSeverity(isActive: boolean): 'success' | 'danger' {
+  //     return isActive ? 'success' : 'danger';
+  //   }
 }
