@@ -5,10 +5,10 @@ import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
-import { LoadingService } from '../../core/services/loading';
+import { LoadingService } from '../../core/services/loading.service';
+import { Loader } from '../../shared/components/Loader/loader';
 import { IconComponent } from '../../shared/icons/components/icon.component';
 import { Sidebar } from '../sidebar/components/sidebar-details/sidebar';
-import { Loader } from "../../shared/components/Loader/loader";
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -22,8 +22,8 @@ import { Loader } from "../../shared/components/Loader/loader";
     ButtonModule,
     BadgeModule,
     OverlayBadgeModule,
-    Loader
-],
+    Loader,
+  ],
   templateUrl: './dashboard-layout.html',
   styleUrl: './dashboard-layout.scss',
 })

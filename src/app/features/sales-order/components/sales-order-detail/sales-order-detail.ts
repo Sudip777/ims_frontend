@@ -1,13 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
@@ -27,9 +20,9 @@ import { ToastModule } from 'primeng/toast';
 import { Avatar } from 'primeng/avatar';
 import { Badge } from 'primeng/badge';
 import { Subscription } from 'rxjs';
-import { ExportService } from '../../../../core/services/export.services';
-import { NotificationService } from '../../../../core/services/notification.services';
-import { SearchService } from '../../../../core/services/search.services';
+import { ExportService } from '../../../../core/services/export.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { SearchService } from '../../../../core/services/search.service';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { CustomerService } from '../../../customer/services/customer.services';
 import { ProductsService } from '../../../products/services/products.services';
@@ -123,8 +116,7 @@ export class SalesOrderDetail implements OnInit, OnDestroy {
   pageSize = 5;
   page = 1;
 
-  severity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined =
-    null;
+  severity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined = null;
 
   statusOptions = [
     { label: 'Pending', value: 1 },
@@ -143,13 +135,7 @@ export class SalesOrderDetail implements OnInit, OnDestroy {
     //debounced searchh logic hereee
     this.searchSubscription = this.searchService.getSearchTime(300).subscribe((term) => {
       this.salesOrderSearchText = term;
-      this.loadOrderDetails(
-        this.page,
-        this.pageSize,
-        this.salesOrderSearchText,
-        'salesOrderId',
-        'asc',
-      );
+      this.loadOrderDetails(this.page, this.pageSize, this.salesOrderSearchText, 'salesOrderId', 'asc');
     });
     this.loadCustomers();
     this.loadWarehouses();
@@ -212,25 +198,20 @@ export class SalesOrderDetail implements OnInit, OnDestroy {
     pageSize: number,
     search?: string,
     sortColumn?: string | string[] | null | undefined,
-    sortDirection?: 'asc' | 'desc',
+    sortDirection?: 'asc' | 'desc'
   ) {
-    this.orderService
-      .getAllSalesOrder(page, pageSize, search, sortColumn, sortDirection)
-      .subscribe({
-        next: (res) => {
-          this.items = res.result.data;
-          this.totalCount = res.result.meta.totalCount;
-          this.page = res.result.meta.page;
-          this.pageSize = res.result.meta.pageSize;
-          console.log(res.result.data);
-        },
-        error: (err) => {
-          this.notification.error(
-            'Error!!',
-            `${err.error.message}` || 'Failed to Load Order Details',
-          );
-        },
-      });
+    this.orderService.getAllSalesOrder(page, pageSize, search, sortColumn, sortDirection).subscribe({
+      next: (res) => {
+        this.items = res.result.data;
+        this.totalCount = res.result.meta.totalCount;
+        this.page = res.result.meta.page;
+        this.pageSize = res.result.meta.pageSize;
+        console.log(res.result.data);
+      },
+      error: (err) => {
+        this.notification.error('Error!!', `${err.error.message}` || 'Failed to Load Order Details');
+      },
+    });
   }
 
   private loadCustomers(): void {
@@ -323,7 +304,7 @@ export class SalesOrderDetail implements OnInit, OnDestroy {
           warehouseId: detail.warehouseId?.value ?? detail.warehouseId,
           quantity: detail.quantity,
           unitPrice: detail.unitPrice,
-        }),
+        })
       ),
     };
   }
@@ -358,20 +339,17 @@ export class SalesOrderDetail implements OnInit, OnDestroy {
 
   searchCustomer(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredItems =
-      this.customerItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredItems = this.customerItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   searchWarehouse(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredWarehouseItems =
-      this.warehouseItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredWarehouseItems = this.warehouseItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   searchProduct(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredProductItems =
-      this.productItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredProductItems = this.productItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   saveOrder() {
@@ -412,15 +390,9 @@ export class SalesOrderDetail implements OnInit, OnDestroy {
         const warehouseOption = this.warehouseItems.find((w) => w.value === d.warehouseId);
 
         const fg = this.fb.group({
-          productId: [
-            productOption ?? { label: d.productName, value: d.productId },
-            Validators.required,
-          ],
+          productId: [productOption ?? { label: d.productName, value: d.productId }, Validators.required],
           productName: [d.productName, Validators.required],
-          warehouseId: [
-            warehouseOption ?? { label: d.productName ?? '', value: d.warehouseId },
-            Validators.required,
-          ],
+          warehouseId: [warehouseOption ?? { label: d.productName ?? '', value: d.warehouseId }, Validators.required],
           quantity: [d.quantity, [Validators.required, Validators.min(1)]],
           unitPrice: [d.unitPrice, [Validators.required, Validators.min(0)]],
         });
@@ -477,23 +449,18 @@ export class SalesOrderDetail implements OnInit, OnDestroy {
   exportCSV() {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      (this.exportService.exportToExcel(this.orders as never),
+      this.exportService.exportToExcel(this.orders as never),
         {
           fileName: 'Sales_Order_Excel_Export',
           sheetName: 'Sales Order Data',
-        });
+        };
       this.notification.success('Export', 'Excel Export Completed');
     } catch (e) {
       this.notification.error('Export', `Excel Export Failed | ${e}`);
     }
   }
-  getStatusSeverity(
-    status: string,
-  ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
-    const severityMap: Record<
-      string,
-      'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast'
-    > = {
+  getStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
+    const severityMap: Record<string, 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast'> = {
       Pending: 'warn',
       Approved: 'success',
       Rejected: 'danger',

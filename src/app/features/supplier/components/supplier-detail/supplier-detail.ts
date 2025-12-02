@@ -18,8 +18,8 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { ExportService } from '../../../../core/services/export.services';
-import { NotificationService } from '../../../../core/services/notification.services';
+import { ExportService } from '../../../../core/services/export.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { SupplierService } from '../../services/supplier.services';
 
@@ -142,10 +142,7 @@ export class SupplierDetail implements OnInit {
     this.submitted = true;
 
     if (!this.supplier.name || !this.supplier.phone || !this.supplier.email) {
-      this.notificationService.warn(
-        'Validation Error',
-        'Supplier Name, Phone and Email are required',
-      );
+      this.notificationService.warn('Validation Error', 'Supplier Name, Phone and Email are required');
       return;
     }
 
@@ -166,10 +163,7 @@ export class SupplierDetail implements OnInit {
         this.loadSuppliers();
       },
       error: (err) => {
-        this.notificationService.error(
-          'Error!!',
-          err.error?.message || 'Failed to Create Supplier',
-        );
+        this.notificationService.error('Error!!', err.error?.message || 'Failed to Create Supplier');
       },
     });
   }

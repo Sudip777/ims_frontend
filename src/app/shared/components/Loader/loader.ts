@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { LoadingService } from '../../../core/services/loading';
+import { LoadingService } from '../../../core/services/loading.service';
 
 @Component({
   selector: 'app-loader',

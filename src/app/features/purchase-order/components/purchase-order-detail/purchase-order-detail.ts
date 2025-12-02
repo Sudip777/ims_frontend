@@ -1,13 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
@@ -28,9 +21,9 @@ import { Avatar } from 'primeng/avatar';
 import { Badge } from 'primeng/badge';
 import { Subscription } from 'rxjs';
 import { DropdownItem } from '../../../../core/models/drop-down.model';
-import { ExportService } from '../../../../core/services/export.services';
-import { NotificationService } from '../../../../core/services/notification.services';
-import { SearchService } from '../../../../core/services/search.services';
+import { ExportService } from '../../../../core/services/export.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { SearchService } from '../../../../core/services/search.service';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { AuthRoutingModule } from '../../../auth/auth-routing-module';
 import { ProductsService } from '../../../products/services/products.services';
@@ -107,8 +100,7 @@ export class PurchaseOrderDetail implements OnInit, OnDestroy {
   private searchSubscription: Subscription | undefined;
   purchaseOrderSearchText = '';
 
-  severity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined =
-    null;
+  severity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined = null;
 
   statusOptions = [
     { label: 'Pending', value: 1 },
@@ -127,13 +119,7 @@ export class PurchaseOrderDetail implements OnInit, OnDestroy {
     //debouncedd search
     this.searchSubscription = this.searchService.getSearchTime(300).subscribe((term) => {
       this.purchaseOrderSearchText = term;
-      this.loadPurchaseOrders(
-        this.page,
-        this.pageSize,
-        this.purchaseOrderSearchText,
-        'purchaseOrderId',
-        'asc',
-      );
+      this.loadPurchaseOrders(this.page, this.pageSize, this.purchaseOrderSearchText, 'purchaseOrderId', 'asc');
     });
   }
   ngOnDestroy() {
@@ -194,25 +180,20 @@ export class PurchaseOrderDetail implements OnInit, OnDestroy {
     pageSize: number,
     search?: string,
     sortColumn?: string | string[] | null | undefined,
-    sortDirection?: 'asc' | 'desc',
+    sortDirection?: 'asc' | 'desc'
   ) {
-    this.purchaseOrderService
-      .getAllPurchaseOrders(page, pageSize, search, sortColumn, sortDirection)
-      .subscribe({
-        next: (res) => {
-          this.purchaseOrders = res.result.data;
-          this.totalCount = res.result.meta.totalCount;
-          this.page = res.result.meta.page;
-          this.pageSize = res.result.meta.pageSize;
-          console.log(this.purchaseOrders, 'abccc');
-        },
-        error: (err) => {
-          this.notification.error(
-            'Error!!',
-            `${err.error.message}` || 'Failed to Load Purchase Orders',
-          );
-        },
-      });
+    this.purchaseOrderService.getAllPurchaseOrders(page, pageSize, search, sortColumn, sortDirection).subscribe({
+      next: (res) => {
+        this.purchaseOrders = res.result.data;
+        this.totalCount = res.result.meta.totalCount;
+        this.page = res.result.meta.page;
+        this.pageSize = res.result.meta.pageSize;
+        console.log(this.purchaseOrders, 'abccc');
+      },
+      error: (err) => {
+        this.notification.error('Error!!', `${err.error.message}` || 'Failed to Load Purchase Orders');
+      },
+    });
   }
 
   private loadSuppliers(): void {
@@ -260,8 +241,7 @@ export class PurchaseOrderDetail implements OnInit, OnDestroy {
         : Number(formValue.supplierId ?? 0);
 
     const normalizedDetails = formValue.purchaseOrderDetails.map((detail) => {
-      const productId =
-        typeof detail.productId === 'object' ? detail.productId.value : Number(detail.productId);
+      const productId = typeof detail.productId === 'object' ? detail.productId.value : Number(detail.productId);
 
       const productOption = this.productItems.find((p) => p.value === productId);
       const productName = productOption?.label ?? '';
@@ -295,22 +275,17 @@ export class PurchaseOrderDetail implements OnInit, OnDestroy {
   }
 
   private updatePurchaseOrder(request: PurchaseOrderRequest): void {
-    this.purchaseOrderService
-      .updatePurchaseOrder(this.purchaseOrder.purchaseOrderId, request)
-      .subscribe({
-        next: () => {
-          this.notification.success('Success', 'Purchase Order Updated Successfully');
-          this.hideDialog();
-          this.loadPurchaseOrders(this.page, this.pageSize);
-          this.isEditMode = false;
-        },
-        error: (err) => {
-          this.notification.error(
-            'Error!',
-            err.error?.message || 'Failed to Update Purchase Order',
-          );
-        },
-      });
+    this.purchaseOrderService.updatePurchaseOrder(this.purchaseOrder.purchaseOrderId, request).subscribe({
+      next: () => {
+        this.notification.success('Success', 'Purchase Order Updated Successfully');
+        this.hideDialog();
+        this.loadPurchaseOrders(this.page, this.pageSize);
+        this.isEditMode = false;
+      },
+      error: (err) => {
+        this.notification.error('Error!', err.error?.message || 'Failed to Update Purchase Order');
+      },
+    });
   }
 
   openNew() {
@@ -346,14 +321,12 @@ export class PurchaseOrderDetail implements OnInit, OnDestroy {
   }
   searchSupplier(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredSupplierItems =
-      this.supplierItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredSupplierItems = this.supplierItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   searchProduct(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredProductItems =
-      this.productItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredProductItems = this.productItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   savePurchaseOrder() {
@@ -391,10 +364,7 @@ export class PurchaseOrderDetail implements OnInit, OnDestroy {
         const productOption = this.productItems.find((p) => p.value === d.productId);
 
         const fg = this.fb.group({
-          productId: [
-            productOption ?? { label: d.productName, value: d.productId },
-            Validators.required,
-          ],
+          productId: [productOption ?? { label: d.productName, value: d.productId }, Validators.required],
           productName: [d.productName, Validators.required],
           quantity: [d.quantity, [Validators.required, Validators.min(1)]],
           unitPrice: [d.unitPrice, [Validators.required, Validators.min(0)]],
@@ -418,7 +388,7 @@ export class PurchaseOrderDetail implements OnInit, OnDestroy {
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.purchaseOrders = (this.purchaseOrders as PurchaseOrder[]).filter(
-          (p) => p.purchaseOrderId !== po.purchaseOrderId,
+          (p) => p.purchaseOrderId !== po.purchaseOrderId
         );
 
         this.messageService.add({
@@ -451,23 +421,18 @@ export class PurchaseOrderDetail implements OnInit, OnDestroy {
   exportCSV() {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      (this.exportService.exportToExcel(this.purchaseOrders as never),
+      this.exportService.exportToExcel(this.purchaseOrders as never),
         {
           fileName: 'Purchase_Order_Excel_Export',
           sheetName: 'Purchase Order Data',
-        });
+        };
       this.notification.success('Export', 'Excel Export Completed');
     } catch (e) {
       this.notification.error('Export', `Excel Export Failed | ${e}`);
     }
   }
-  getStatusSeverity(
-    status: string,
-  ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
-    const severityMap: Record<
-      string,
-      'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast'
-    > = {
+  getStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
+    const severityMap: Record<string, 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast'> = {
       Pending: 'warn',
       Approved: 'success',
       Rejected: 'danger',
