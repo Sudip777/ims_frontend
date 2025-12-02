@@ -16,8 +16,8 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { ExportService } from '../../../../core/services/export.services';
-import { NotificationService } from '../../../../core/services/notification.services';
+import { ExportService } from '../../../../core/services/export.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { WarehouseService } from '../../services/warehouse.services';
 

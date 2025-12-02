@@ -18,8 +18,8 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { ExportService } from '../../../../core/services/export.services';
-import { NotificationService } from '../../../../core/services/notification.services';
+import { ExportService } from '../../../../core/services/export.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { CustomerService } from '../../services/customer.services';
 
@@ -166,10 +166,7 @@ export class CustomerDetail implements OnInit {
         this.loadCustomers();
       },
       error: (err) => {
-        this.notificationService.error(
-          'Error!!',
-          err.error?.message || 'Failed to Create Customer',
-        );
+        this.notificationService.error('Error!!', err.error?.message || 'Failed to Create Customer');
       },
     });
   }

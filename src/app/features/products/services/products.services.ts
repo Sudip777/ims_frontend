@@ -2,7 +2,7 @@ import { HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { Meta, PaginatedApiResponse } from '../../../core/models/api-response.model';
-import { ApiService } from '../../../core/services/api.services';
+import { ApiService } from '../../../core/services/api.service';
 import { Product, ProductRequest, ProductUpdate } from '../models/product.model';
 
 @Injectable({
@@ -16,16 +16,12 @@ export class ProductsService {
     pageSize?: number,
     search?: string,
     sortColumn?: string | string[] | null,
-    sortDirection?: string,
+    sortDirection?: string
   ): Observable<PaginatedApiResponse<Product[], Meta>> {
     let params = new HttpParams();
 
     if (search?.trim()) params = params.set('search', search.trim());
-    if (sortColumn)
-      params = params.set(
-        'sortColumn',
-        Array.isArray(sortColumn) ? sortColumn.join(',') : sortColumn,
-      );
+    if (sortColumn) params = params.set('sortColumn', Array.isArray(sortColumn) ? sortColumn.join(',') : sortColumn);
     if (sortDirection) params = params.set('sortDirection', sortDirection);
     if (page != null) params = params.set('page', page.toString());
     if (pageSize != null) params = params.set('pageSize', pageSize.toString());

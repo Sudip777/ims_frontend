@@ -1,7 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { ApiResponse } from '../../../core/models/api-response.model';
 import { UserDetail } from '../../../core/models/user-detail.model';
-import { ApiService } from '../../../core/services/api.services';
+import { ApiService } from '../../../core/services/api.service';
 import { SidebarMenuItems } from '../models/sidebar.models';
 
 @Injectable({

@@ -21,9 +21,9 @@ import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { Subscription } from 'rxjs';
-import { ExportService } from '../../../../core/services/export.services';
-import { NotificationService } from '../../../../core/services/notification.services';
-import { SearchService } from '../../../../core/services/search.services';
+import { ExportService } from '../../../../core/services/export.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { SearchService } from '../../../../core/services/search.service';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { CategoryService } from '../../../category/services/category.services';
 import { SupplierService } from '../../../supplier/services/supplier.services';
@@ -112,21 +112,19 @@ export class ProductDetail implements OnInit, OnDestroy {
     pageSize: number,
     search?: string,
     sortColumn?: string | string[] | null | undefined,
-    sortDirection?: string,
+    sortDirection?: string
   ): void {
-    this.productsService
-      .getAllProducts(page, pageSize, search, sortColumn, sortDirection)
-      .subscribe({
-        next: (res) => {
-          this.products = res.result.data;
-          this.totalCount = res.result.meta.totalCount;
-          this.page = res.result.meta.page;
-          this.pageSize = res.result.meta.pageSize;
-        },
-        error: () => {
-          this.notificationService.error('Error!!', 'Failed to Load Products');
-        },
-      });
+    this.productsService.getAllProducts(page, pageSize, search, sortColumn, sortDirection).subscribe({
+      next: (res) => {
+        this.products = res.result.data;
+        this.totalCount = res.result.meta.totalCount;
+        this.page = res.result.meta.page;
+        this.pageSize = res.result.meta.pageSize;
+      },
+      error: () => {
+        this.notificationService.error('Error!!', 'Failed to Load Products');
+      },
+    });
   }
 
   private loadCategories(): void {
@@ -294,14 +292,12 @@ export class ProductDetail implements OnInit, OnDestroy {
 
   search(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredItems =
-      this.items.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredItems = this.items.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   searchSupplier(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredSupplierItems =
-      this.supplierItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredSupplierItems = this.supplierItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   getStatusLabel(isActive: boolean): string {

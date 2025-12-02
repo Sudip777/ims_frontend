@@ -1,21 +1,21 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, concatMap, map, pipe, throwError } from 'rxjs';
-import { injectLocalStorage } from 'ngxtension/inject-local-storage';
-import { explicitEffect } from 'ngxtension/explicit-effect';
-import { createEffect } from 'ngxtension/create-effect';
-import { MessageService } from 'primeng/api';
 import { jwtDecode } from 'jwt-decode';
-import { HttpErrorResponse } from '@angular/common/http';
-import { AuthPayload, AuthService } from '../services/auth.services';
+import { createEffect } from 'ngxtension/create-effect';
+import { explicitEffect } from 'ngxtension/explicit-effect';
+import { injectLocalStorage } from 'ngxtension/inject-local-storage';
+import { catchError, concatMap, map, pipe, throwError } from 'rxjs';
 import { TokenDecoded } from '../models/token.model';
+import { AuthPayload, AuthService } from '../services/auth.service';
+import { NotificationService } from '../services/notification.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthStore {
   private authService = inject(AuthService);
-  private messageService = inject(MessageService);
+  private notificationService = inject(NotificationService);
   private router = inject(Router);
 
   token = injectLocalStorage<string | null>('accessToken', {
@@ -39,7 +39,7 @@ export class AuthStore {
           this.router.navigateByUrl('/login');
         }
       },
-      { defer: true },
+      { defer: true }
     );
   }
 
@@ -59,48 +59,41 @@ export class AuthStore {
       concatMap((payload) =>
         this.authService.login(payload).pipe(
           map((response) => {
-            const token = response.result.access_token;
-            this.token.set(token);
+            const accessToken = response.result.access_token;
+            this.token.set(accessToken);
+            this.notificationService.success('Login Successfull', `Welcome, ${payload.username}!`);
 
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Login Successful',
-              detail: `Welcome, ${payload.username}!`,
-              life: 3000,
-            });
-
+            // backend sets refresh cookie automatically
+            this.router.navigateByUrl('/dashboard/overview');
             return response;
           }),
+
           catchError((err: HttpErrorResponse) => {
             if (err.status === 401) {
-              this.messageService.add({
-                severity: 'error',
-                summary: 'Authentication Failed',
-                detail: 'Invalid username or password.',
-                life: 4000,
-              });
-            } else if (err.status === 0) {
-              this.messageService.add({
-                severity: 'error',
-                summary: 'Server Unreachable',
-                detail: 'Cannot connect to API. Please try again later.',
-                life: 4000,
-              });
+              this.notificationService.error('Login Failed', 'Invalid Username or Password');
+            } else if (err.status === 500) {
+              this.notificationService.error('Server Unreachable ', 'Cannot connect to API. Please try again later.');
             } else {
-              this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: err.error?.message || 'An unexpected error occurred.',
-                life: 3000,
-              });
+              this.notificationService.error('Error', err.error?.message || 'An unexpected error occured');
             }
 
             return throwError(() => err);
-          }),
-        ),
-      ),
-    ),
+          })
+        )
+      )
+    )
   );
+
+  // Refresh Access Token
+  refresh() {
+    return this.authService.refreshToken().pipe(
+      map((res) => {
+        const newAccess = res.result.access_token;
+        this.token.set(newAccess);
+        return newAccess;
+      })
+    );
+  }
 
   /** Log out and clear token */
   logout() {

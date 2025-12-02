@@ -41,7 +41,7 @@ export class ApiService {
             console.error('Unauthorized - Token may be invalid or expired');
           }
           return throwError(() => err);
-        }),
+        })
       );
   }
 
