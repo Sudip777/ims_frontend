@@ -7,23 +7,32 @@ export class TokenRefresher {
   private authStore = inject(AuthStore);
 
   constructor() {
-    // Check every 30 seconds
-    interval(30000).subscribe(() => {
-      const token = this.authStore.token();
-      if (!token) return;
+    // Check immediatelyy on startup
+    this.checkAndRefresh();
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const decoded: any = this.authStore.tokenDecoded();
-      if (!decoded?.exp) return;
+    //  checkk every 30 seconds
+    interval(30000).subscribe(() => this.checkAndRefresh());
+  }
 
-      const expiresIn = decoded.exp * 1000 - Date.now();
-      if (expiresIn < 60000) {
-        // refresh 1 minute before expiry
-        this.authStore.refresh().subscribe({
-          next: () => console.log('Token refreshed'),
-          error: () => this.authStore.logout(),
-        });
-      }
-    });
+  private checkAndRefresh() {
+    const token = this.authStore.token();
+    if (!token) return;
+
+    const decoded = this.authStore.tokenDecoded();
+    if (!decoded?.exp) return;
+
+    const expiresIn = decoded.exp * 1000 - Date.now();
+    console.log(`Token expires in: ${Math.floor(expiresIn / 1000)} seconds`);
+
+    if (expiresIn < 60000) {
+      console.log(' Refreshing token...');
+      this.authStore.refresh().subscribe({
+        next: () => console.log('Token refreshed'),
+        error: (err) => {
+          console.error('Refresh failed:', err);
+          this.authStore.logout();
+        },
+      });
+    }
   }
 }
