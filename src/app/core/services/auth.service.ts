@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment.prod';
-import { ApiService } from './api.service';
 
 export interface LoginResult {
   access_token: string;
@@ -22,7 +21,6 @@ export interface AuthPayload {
 })
 export class AuthService {
   http = inject(HttpClient);
-  apiService = inject(ApiService);
 
   /**
    * Logs in the user with the provided credentials.
@@ -37,7 +35,7 @@ export class AuthService {
     return this.http.post<{ result: { access_token: string; refresh_token: string } }>(
       `${environment.apiUrl}/auth/refresh-token`,
       {},
-      { withCredentials: true }
+      { withCredentials: true } // due to backend use cookie
     );
   }
 }

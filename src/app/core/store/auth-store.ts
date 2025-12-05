@@ -43,7 +43,6 @@ export class AuthStore {
     );
   }
 
-  /** Decode a JWT token */
   private decodeToken(token: string): TokenDecoded | null {
     try {
       return jwtDecode<TokenDecoded>(token);
@@ -89,13 +88,15 @@ export class AuthStore {
     return this.authService.refreshToken().pipe(
       map((res) => {
         const newAccess = res.result.access_token;
+        console.log(newAccess, 'new access token');
         this.token.set(newAccess);
         return newAccess;
       })
     );
   }
 
-  /** Log out and clear token */
+  // TODO: Need to Implement logout api for now just clear token
+  // Log out and clear token
   logout() {
     this.token.set(null);
     this.router.navigateByUrl('/login');
