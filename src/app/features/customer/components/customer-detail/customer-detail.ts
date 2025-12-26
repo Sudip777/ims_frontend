@@ -21,6 +21,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { ExportService } from '../../../../core/services/export.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
+import { SkeletonComponent } from '../../../../shared/components/skeleton/skeleton.component';
 import { CustomerService } from '../../services/customer.services';
 
 interface CustomerResponse {
@@ -34,7 +35,10 @@ interface CustomerResponse {
   createdByUserId: number;
 }
 
-type CustomerRequest = Omit<CustomerResponse, 'customerId' | 'createdAt' | 'createdByUserId'>;
+type CustomerRequest = Omit<
+  CustomerResponse,
+  'customerId' | 'createdAt' | 'createdByUserId'
+>;
 
 @Component({
   selector: 'app-customer-detail',
@@ -61,6 +65,7 @@ type CustomerRequest = Omit<CustomerResponse, 'customerId' | 'createdAt' | 'crea
     DatePickerModule,
     TagModule,
     MetricCardComponent,
+    SkeletonComponent,
   ],
 })
 export class CustomerDetail implements OnInit {
@@ -79,6 +84,7 @@ export class CustomerDetail implements OnInit {
   customerDialog = false;
   submitted = false;
   isEditMode = false;
+  tableLoading = false;
 
   // Active Customer Model
   customer: CustomerResponse = {
@@ -98,13 +104,16 @@ export class CustomerDetail implements OnInit {
   }
 
   private loadCustomers(): void {
+    this.tableLoading = true;
     this.customerService.getAllCustomers().subscribe({
       next: (res) => {
         this.items = res.result;
         console.log(res.result, 'suppp');
+        this.tableLoading = false;
       },
       error: () => {
         this.notificationService.error('Error!!', 'Failed to Load Customers');
+        this.tableLoading = false;
       },
     });
   }
@@ -145,7 +154,10 @@ export class CustomerDetail implements OnInit {
     this.submitted = true;
 
     if (!this.customer.name || !this.customer.phone) {
-      this.notificationService.warn('Validation Error', 'Customer name and phone are required');
+      this.notificationService.warn(
+        'Validation Error',
+        'Customer name and phone are required'
+      );
       return;
     }
 
@@ -161,27 +173,41 @@ export class CustomerDetail implements OnInit {
   private createCustomer(req: CustomerRequest): void {
     this.customerService.createCustomer(req).subscribe({
       next: () => {
-        this.notificationService.success('Success', 'Customer Created Successfully');
+        this.notificationService.success(
+          'Success',
+          'Customer Created Successfully'
+        );
         this.hideDialog();
         this.loadCustomers();
       },
       error: (err) => {
-        this.notificationService.error('Error!!', err.error?.message || 'Failed to Create Customer');
+        this.notificationService.error(
+          'Error!!',
+          err.error?.message || 'Failed to Create Customer'
+        );
       },
     });
   }
 
   private updateCustomer(req: CustomerRequest): void {
-    this.customerService.updateCustomer(req, this.customer.customerId).subscribe({
-      next: () => {
-        this.notificationService.success('Success', 'Customer Updated Successfully');
-        this.hideDialog();
-        this.loadCustomers();
-      },
-      error: () => {
-        this.notificationService.error('Error!!', 'Failed to Update Customer');
-      },
-    });
+    this.customerService
+      .updateCustomer(req, this.customer.customerId)
+      .subscribe({
+        next: () => {
+          this.notificationService.success(
+            'Success',
+            'Customer Updated Successfully'
+          );
+          this.hideDialog();
+          this.loadCustomers();
+        },
+        error: () => {
+          this.notificationService.error(
+            'Error!!',
+            'Failed to Update Customer'
+          );
+        },
+      });
   }
 
   deleteCustomer(customer: CustomerResponse): void {
@@ -196,11 +222,17 @@ export class CustomerDetail implements OnInit {
       accept: () => {
         this.customerService.deleteCustomer(customer.customerId).subscribe({
           next: () => {
-            this.notificationService.success('Success', 'Customer Deleted Successfully');
+            this.notificationService.success(
+              'Success',
+              'Customer Deleted Successfully'
+            );
             this.loadCustomers();
           },
           error: () => {
-            this.notificationService.error('Error!!', 'Failed to Delete Customer');
+            this.notificationService.error(
+              'Error!!',
+              'Failed to Delete Customer'
+            );
           },
         });
       },
@@ -213,9 +245,14 @@ export class CustomerDetail implements OnInit {
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.customers = this.customers.filter((val) => !this.selectedCustomers.includes(val));
+        this.customers = this.customers.filter(
+          (val) => !this.selectedCustomers.includes(val)
+        );
         this.selectedCustomers = [];
-        this.notificationService.success('Success', 'Customers Deleted Successfully');
+        this.notificationService.success(
+          'Success',
+          'Customers Deleted Successfully'
+        );
       },
     });
   }

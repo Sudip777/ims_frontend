@@ -8,14 +8,37 @@
           value="100"
           [percentage]="12"
           [isPrimary]="true"
-          trend="up"></app-metric-card>
-        <app-metric-card title="Inactive customers" value="20" [percentage]="2" trend="down"></app-metric-card>
-        <app-metric-card title="Deleted customers" value="10" [percentage]="2" trend="up"></app-metric-card>
+          trend="up"
+        ></app-metric-card>
+        <app-metric-card
+          title="Inactive customers"
+          value="20"
+          [percentage]="2"
+          trend="down"
+        ></app-metric-card>
+        <app-metric-card
+          title="Deleted customers"
+          value="10"
+          [percentage]="2"
+          trend="up"
+        ></app-metric-card>
       </div>
     </div>
 
     <h2 class="font-heading font-medium p-2 text-2xl">Customer Detail</h2>
-    <div class="overflow-x-auto bg-white rounded-2xl shadow-lg border-surface-200">
+    <div
+      class="overflow-x-auto bg-white rounded-2xl shadow-lg border-surface-200"
+    >
+      <!-- Show skeleton when loading -->
+      @if (tableLoading) {
+      <app-skeleton
+        type="table"
+        [tableColumnsCount]="7"
+        [tableRowsCount]="5"
+        width="100%"
+        height="400px"
+      />
+      } @else {
       <p-table
         #dt
         [value]="items"
@@ -28,7 +51,8 @@
         [rowHover]="true"
         [tableStyle]="{ 'min-width': '40rem' }"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} customers"
-        [showCurrentPageReport]="true">
+        [showCurrentPageReport]="true"
+      >
         <ng-template pTemplate="caption">
           <div class="flex justify-between items-center">
             <p-iconfield>
@@ -38,16 +62,23 @@
                 type="text"
                 (input)="dt.filterGlobal($any($event.target).value, 'contains')"
                 placeholder="Search..."
-                class="w-full md:w-auto" />
+                class="w-full md:w-auto"
+              />
             </p-iconfield>
             <div class="flex gap-2">
-              <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+              <p-button
+                label="Add"
+                icon="pi pi-plus"
+                class="mr-2"
+                (onClick)="openNew()"
+              />
               <p-button
                 icon="pi pi-upload"
                 label="Export"
                 (onClick)="exportExcel()"
                 severity="secondary"
-                [outlined]="true" />
+                [outlined]="true"
+              />
             </div>
           </div>
         </ng-template>
@@ -55,7 +86,9 @@
         <ng-template pTemplate="header">
           <tr>
             <th class="w-2">ID</th>
-            <th pSortableColumn="name" class="w-2">Name <p-sortIcon field="name"></p-sortIcon></th>
+            <th pSortableColumn="name" class="w-2">
+              Name <p-sortIcon field="name"></p-sortIcon>
+            </th>
             <th class="w-2">Email</th>
             <th class="w-2">Phone</th>
             <th class="w-2">Address</th>
@@ -86,7 +119,10 @@
             </td>
             <td>{{ customer.address }}</td>
             <td>
-              <p-tag [value]="getStatusLabel(customer.isActive)" [severity]="getSeverity(customer.isActive)"></p-tag>
+              <p-tag
+                [value]="getStatusLabel(customer.isActive)"
+                [severity]="getSeverity(customer.isActive)"
+              ></p-tag>
             </td>
             <td>
               <p-button
@@ -94,27 +130,38 @@
                 class="mr-2"
                 [rounded]="true"
                 [outlined]="true"
-                (onClick)="editCustomer(customer)"></p-button>
+                (onClick)="editCustomer(customer)"
+              ></p-button>
               <p-button
                 icon="pi pi-trash"
                 severity="danger"
                 [rounded]="true"
                 [outlined]="true"
-                (onClick)="deleteCustomer(customer)"></p-button>
+                (onClick)="deleteCustomer(customer)"
+              ></p-button>
             </td>
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="4" class="text-center py-8">
-              <p class="text-xl font-semibold text-surface-700 mb-2">No customers found</p>
+              <p class="text-xl font-semibold text-surface-700 mb-2">
+                No customers found
+              </p>
 
-              <p class="text-surface-500 mb-4">Get Started by creating Customer</p>
-              <p-button label="Create Purchase Order" icon="pi pi-plus" (onClick)="openNew()"></p-button>
+              <p class="text-surface-500 mb-4">
+                Get Started by creating Customer
+              </p>
+              <p-button
+                label="Create Purchase Order"
+                icon="pi pi-plus"
+                (onClick)="openNew()"
+              ></p-button>
             </td>
           </tr>
         </ng-template>
       </p-table>
+      }
     </div>
   </div>
 
@@ -123,32 +170,64 @@
     [styleClass]="'responsive-dialog'"
     [header]="isEditMode? 'Update Customer Details':'Add Customer Details'"
     [modal]="true"
-    [draggable]="false">
+    [draggable]="false"
+  >
     <ng-template pTemplate="content">
       <div class="flex flex-col gap-6">
         <div>
           <label for="name" class="block font-bold mb-3">Customer Name</label>
-          <input type="text" pInputText id="name" [(ngModel)]="customer.name" required fluid />
-          <small class="text-red-500" *ngIf="submitted && !customer.name">Name is required.</small>
+          <input
+            type="text"
+            pInputText
+            id="name"
+            [(ngModel)]="customer.name"
+            required
+            fluid
+          />
+          <small class="text-red-500" *ngIf="submitted && !customer.name"
+            >Name is required.</small
+          >
         </div>
 
         <div>
           <label for="email" class="block font-bold mb-3">Email</label>
-          <input type="email" pInputText id="email" [(ngModel)]="customer.email" required fluid />
+          <input
+            type="email"
+            pInputText
+            id="email"
+            [(ngModel)]="customer.email"
+            required
+            fluid
+          />
         </div>
 
         <div>
           <label for="phone" class="block font-bold mb-3">Phone</label>
-          <input type="text" pInputText id="phone" [(ngModel)]="customer.phone" required fluid />
+          <input
+            type="text"
+            pInputText
+            id="phone"
+            [(ngModel)]="customer.phone"
+            required
+            fluid
+          />
         </div>
 
         <div>
           <label for="address" class="block font-bold mb-3">Address</label>
-          <textarea pTextarea id="address" [(ngModel)]="customer.address" rows="3" fluid></textarea>
+          <textarea
+            pTextarea
+            id="address"
+            [(ngModel)]="customer.address"
+            rows="3"
+            fluid
+          ></textarea>
         </div>
 
         <div>
-          <label for="isActive" class="block font-bold mb-3">Active Status</label>
+          <label for="isActive" class="block font-bold mb-3"
+            >Active Status</label
+          >
           <p-select
             [(ngModel)]="customer.isActive"
             [options]="[
@@ -158,13 +237,19 @@
             optionLabel="label"
             optionValue="value"
             placeholder="Select Status"
-            fluid></p-select>
+            fluid
+          ></p-select>
         </div>
       </div>
     </ng-template>
 
     <ng-template pTemplate="footer">
-      <p-button label="Cancel" icon="pi pi-times" text (onClick)="hideDialog()" />
+      <p-button
+        label="Cancel"
+        icon="pi pi-times"
+        text
+        (onClick)="hideDialog()"
+      />
       <p-button label="Save" icon="pi pi-check" (onClick)="saveCustomer()" />
     </ng-template>
   </p-dialog>
