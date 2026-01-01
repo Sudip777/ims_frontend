@@ -30,15 +30,7 @@
       class="overflow-x-auto bg-white rounded-2xl shadow-lg border-surface-200"
     >
       <!-- Show skeleton when loading -->
-      @if (tableLoading) {
-      <app-skeleton
-        type="table"
-        [tableColumnsCount]="7"
-        [tableRowsCount]="5"
-        width="100%"
-        height="400px"
-      />
-      } @else {
+      @if (!tableLoading) {
       <p-table
         #dt
         [value]="items"

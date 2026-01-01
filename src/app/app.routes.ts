@@ -1,16 +1,16 @@
 import { Routes } from '@angular/router';
-import { MainLayout } from './layout/main-layout/main-layout';
-import { DashboardLayout } from './layout/dashboard-layout/dashboard-layout';
 import { authGuard } from './core/guards/auth-guard';
+import { DashboardLayout } from './layout/dashboard-layout/dashboard-layout';
+import { MainLayout } from './layout/main-layout/main-layout';
 
 export const routes: Routes = [
   { path: '', component: MainLayout },
-  {
+  /* {
     path: 'onboarding',
     title: 'New User Onborading Management',
     loadComponent: () =>
       import('./features/onboarding/components/onboarding').then((m) => m.OnboardingComponent),
-  },
+  }, */
   {
     path: 'login',
     title: 'User Management',

@@ -21,7 +21,6 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { ExportService } from '../../../../core/services/export.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { SkeletonComponent } from '../../../../shared/components/skeleton/skeleton.component';
 import { CustomerService } from '../../services/customer.services';
 
 interface CustomerResponse {
@@ -65,7 +64,6 @@ type CustomerRequest = Omit<
     DatePickerModule,
     TagModule,
     MetricCardComponent,
-    SkeletonComponent,
   ],
 })
 export class CustomerDetail implements OnInit {
