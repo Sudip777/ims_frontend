@@ -1,17 +1,30 @@
-<main
-  class="bg-white text-ims-text-primary font-sans antialiased h-full [overflow-y:auto!important] [overflow-x:hidden!important]">
-  <header class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-    <div class="flex justify-between items-center px-6 py-4">
-      <app-icon name="app-logo"></app-icon>
+<main class="bg-white text-ims-text-primary font-sans antialiased h-screen overflow-hidden">
+  <div class="h-full overflow-y-auto scroll-smooth">
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-md border-b border-gray-100/50">
+      <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+        <div class="flex items-center">
+          <app-icon name="app-logo" class="cursor-pointer" routerLink="/"></app-icon>
+        </div>
 
-      <app-button type="button" color="primary" size="md" routerLink="/onboarding">
-        <span class="flex justify-center items-center gap-2.5 font-heading text-sm font-semibold text-white px-2">
-          Sign in
-          <app-icon name="arrow-right"></app-icon>
-        </span>
-      </app-button>
-    </div>
-  </header>
+        <nav class="hidden md:flex items-center gap-8">
+          <a class="text-sm font-medium text-ims-text-secondary hover:text-ims-primary transition-colors cursor-pointer">Features</a>
+          <a class="text-sm font-medium text-ims-text-secondary hover:text-ims-primary transition-colors cursor-pointer">Solutions</a>
+          <a class="text-sm font-medium text-ims-text-secondary hover:text-ims-primary transition-colors cursor-pointer">Pricing</a>
+          <a class="text-sm font-medium text-ims-text-secondary hover:text-ims-primary transition-colors cursor-pointer">About</a>
+        </nav>
+
+        <div class="flex items-center gap-4">
+          <app-button type="button" color="primary" size="md" routerLink="/login">
+            <span class="flex justify-center items-center gap-2 font-heading text-sm font-bold text-white px-2">
+              Login
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </span>
+          </app-button>
+        </div>
+      </div>
+    </header>
 
   <!-- Hero Section -->
   <section
@@ -47,9 +60,9 @@
 
       <!-- CTAs -->
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-        <app-button type="button" color="primary" size="lg" routerLink="/onboarding">
+        <app-button type="button" color="primary" size="lg" routerLink="/login">
           <span class="flex items-center gap-3 font-heading text-base font-semibold px-6">
-            Start Free Trial
+            Login
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
@@ -76,7 +89,7 @@
               d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
               clip-rule="evenodd" />
           </svg>
-          <span>Free 30-day trial</span>
+          <span>Professional Inventory Management</span>
         </div>
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 text-ims-primary" fill="currentColor" viewBox="0 0 20 20">
@@ -85,7 +98,7 @@
               d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
               clip-rule="evenodd" />
           </svg>
-          <span>No credit card required</span>
+          <span>Real-time Tracking</span>
         </div>
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 text-ims-primary" fill="currentColor" viewBox="0 0 20 20">
@@ -94,7 +107,7 @@
               d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
               clip-rule="evenodd" />
           </svg>
-          <span>Cancel anytime</span>
+          <span>Enterprise Ready</span>
         </div>
       </div>
     </div>
@@ -223,9 +236,9 @@
       <p class="text-lg md:text-xl text-ims-text-secondary">Join hundreds of businesses already using TheUnityWare</p>
 
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
-        <app-button type="button" color="primary" size="lg" routerLink="/onboarding">
+        <app-button type="button" color="primary" size="lg" routerLink="/login">
           <span class="flex items-center gap-3 font-heading text-base font-semibold px-8">
-            Get Started Free
+            Get Started
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
@@ -247,11 +260,12 @@
       </div>
 
       <div class="flex items-center justify-center gap-8 pt-8 text-sm text-ims-text-tertiary">
-        <span>✓ No credit card</span>
-        <span>✓ 30-day free trial</span>
-        <span>✓ Cancel anytime</span>
+        <span>✓ Secure Access</span>
+        <span>✓ Scalable Solution</span>
+        <span>✓ 24/7 Monitoring</span>
       </div>
     </div>
   </section>
-  <app-footer></app-footer>
+    <app-footer></app-footer>
+  </div>
 </main>

@@ -5,9 +5,7 @@ import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
-import { LoadingService } from '../../core/services/loading.service';
 import { TokenRefresher } from '../../core/services/token-refresher.service';
-import { Loader } from '../../shared/components/Loader/loader';
 import { IconComponent } from '../../shared/icons/components/icon.component';
 import { Sidebar } from '../sidebar/components/sidebar-details/sidebar';
 
@@ -23,15 +21,12 @@ import { Sidebar } from '../sidebar/components/sidebar-details/sidebar';
     ButtonModule,
     BadgeModule,
     OverlayBadgeModule,
-    Loader,
   ],
   templateUrl: './dashboard-layout.html',
   styleUrl: './dashboard-layout.scss',
 })
 export class DashboardLayout {
   sidebarOpen = false;
-  private loader = inject(LoadingService);
-  loading$ = this.loader.loading$;
   tokenRefresher = inject(TokenRefresher);
 
   toggleSidebar(open: boolean) {
