@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConfirmationService } from 'primeng/api';
+import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -13,20 +13,20 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { SelectModule } from 'primeng/select';
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
-import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { NotificationService } from '../../../../core/services/notification.services';
-import { ExportService } from '../../../../core/services/export.services';
-import { InventoryService } from '../../services/inventory.services';
-import { WarehouseService } from '../../../warehouse/services/warehouse.services';
-import { ProductsService } from '../../../products/services/products.services';
-import { Product } from '../../../products/models/product.model';
-import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { ToolbarModule } from 'primeng/toolbar';
+import { Subscription } from 'rxjs';
+import { ExportService } from '../../../../core/services/export.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { SearchService } from '../../../../core/services/search.service';
+import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
+import { ProductsService } from '../../../products/services/products.services';
+import { WarehouseService } from '../../../warehouse/services/warehouse.services';
+import { InventoryService } from '../../services/inventory.services';
 
 interface InventoryResponse {
   inventoryId: number;
@@ -70,13 +70,14 @@ type InventoryRequest = Pick<InventoryResponse, 'productId' | 'warehouseId' | 'q
   templateUrl: './inventory-detail.html',
   styleUrl: './inventory-detail.scss',
 })
-export class InventoryDetail {
+export class InventoryDetail implements OnInit, OnDestroy {
   //DI
   private readonly inventoryService = inject(InventoryService);
   private readonly notificationService = inject(NotificationService);
   private readonly productService = inject(ProductsService);
   private readonly warehouseService = inject(WarehouseService);
   private readonly exportService = inject(ExportService);
+  private readonly searchService = inject(SearchService);
 
   // UI state
   inventories: InventoryResponse[] = [];
@@ -85,27 +86,50 @@ export class InventoryDetail {
   inventoryDialog = false;
   submitted = false;
   isEditMode = false;
-  productItems: any[] = [];
-  warehouseItems: any[] = [];
-  selectedProducts: number | null = null;
-  selectedWarehouse: number | null = null;
-  filteredItems: any[] = [];
-  filteredWarehouseItems: any[] = [];
-  checked: boolean = false;
-
+  productItems: { label: string; value: number }[] = [];
+  warehouseItems: { label: string; value: number }[] = [];
+  selectedProducts: number | { label: string; value: number } | null = null;
+  selectedWarehouse: number | { label: string; value: number } | null = null;
+  filteredItems: unknown[] = [];
+  filteredWarehouseItems: unknown[] = [];
+  checked = false;
+  page = 1;
+  pageSize = 5;
+  totalCount = 0;
+  inventoriesSearchText = '';
+  private searchSubscription: Subscription | undefined;
   ngOnInit(): void {
-    this.loadInventories();
+    this.loadInventories(this.page, this.pageSize);
+
+    this.searchSubscription = this.searchService.getSearchTime(300).subscribe((term) => {
+      this.inventoriesSearchText = term;
+      console.log('Search Term:', term);
+
+      this.loadInventories(this.page, this.pageSize, this.inventoriesSearchText, 'inventoryId', 'asc');
+    });
     this.loadCategories();
     this.loadProducts();
   }
-
-  private loadInventories(): void {
-    this.inventoryService.getAllInventories().subscribe({
+  ngOnDestroy(): void {
+    this.searchSubscription?.unsubscribe();
+  }
+  private loadInventories(
+    page: number,
+    pageSize: number,
+    search?: string,
+    sortColumn?: string | string[] | null | undefined,
+    sortDirection?: 'asc' | 'desc'
+  ): void {
+    this.inventoryService.getAllInventories(page, pageSize, search, sortColumn, sortDirection).subscribe({
       next: (res) => {
-        this.inventories = res.result.data.map((item: any) => ({
+        this.inventories = res.result.data.map((item) => ({
           ...item,
-          isDisabled: item.quantity <= item.reorderLevel, // auto-disable low-stock items
+          // isDisabled: item.quantity <= item.reorderLevel, // auto-disable low-stock items
         }));
+        this.totalCount = res.result.meta.totalCount;
+        this.page = res.result.meta.page;
+        this.pageSize = res.result.meta.pageSize;
+        console.log(this.inventories, 'abccc');
 
         console.log(this.inventories, 'iiiiiiiii');
       },
@@ -118,6 +142,8 @@ export class InventoryDetail {
   private loadProducts(): void {
     this.productService.getAllProducts().subscribe({
       next: (res) => {
+        console.log('aa', res.result);
+
         this.productItems = res.result.data.map((val) => ({
           label: val.name,
           value: val.productId,
@@ -155,12 +181,24 @@ export class InventoryDetail {
       createdbyUserId: 0,
     };
   }
-  onToggleChange(inventory: any) {
+  onToggleChange(inventory: { isDisabled: boolean; inventoryId: number }) {
     if (inventory.isDisabled) {
       console.log(`Inventory ${inventory.inventoryId} is locked (low stock or manually disabled).`);
     } else {
       console.log(`Inventory ${inventory.inventoryId} is unlocked for editing.`);
     }
+  }
+
+  onParamsChange(event: TableLazyLoadEvent): void {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? 10;
+    const page = first / rows + 1;
+    const pageSize = rows;
+
+    const sortColumn = event.sortField;
+    const sortDirection = event.sortOrder === 1 ? 'asc' : 'desc';
+    const search = this.inventoriesSearchText ?? '';
+    this.loadInventories(page, pageSize, search, sortColumn, sortDirection);
   }
   openNew(): void {
     this.isEditMode = false;
@@ -173,8 +211,7 @@ export class InventoryDetail {
     this.isEditMode = true;
     this.inventory = { ...inventory };
 
-    this.selectedProducts =
-      this.productItems.find((p) => p.value === inventory.productId) || inventory.productId;
+    this.selectedProducts = this.productItems.find((p) => p.value === inventory.productId) || inventory.productId;
     this.selectedWarehouse =
       this.warehouseItems.find((w) => w.value === inventory.warehouseId) || inventory.warehouseId;
 
@@ -186,16 +223,16 @@ export class InventoryDetail {
     this.inventoryDialog = false;
     this.submitted = false;
   }
-
+  searchInventoryInput(value: string): void {
+    this.searchService.setSearchTerm(value);
+  }
   searchProduct(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredItems =
-      this.productItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredItems = this.productItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
   searchWarehouse(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredWarehouseItems =
-      this.warehouseItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredWarehouseItems = this.warehouseItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   saveInventory(): void {
@@ -217,7 +254,7 @@ export class InventoryDetail {
       next: () => {
         this.notificationService.success('Success', 'Inventory Created Successfully');
         this.hideDialog();
-        this.loadInventories();
+        this.loadInventories(this.page, this.pageSize);
       },
       error: (err) => {
         this.notificationService.error('Error', err.error?.message || 'Failed to Create Inventory');
@@ -230,7 +267,7 @@ export class InventoryDetail {
       next: () => {
         this.notificationService.success('Success', 'Inventory Updated Successfully');
         this.hideDialog();
-        this.loadInventories();
+        this.loadInventories(this.page, this.pageSize);
       },
       error: (err) => {
         this.notificationService.error('Error', err.error?.message || 'Failed to Update Inventory');
@@ -240,7 +277,7 @@ export class InventoryDetail {
 
   exportExcel(): void {
     try {
-      this.exportService.exportToExcel(this.inventories, {
+      this.exportService.exportToExcel(this.inventories as never, {
         fileName: 'Inventory_Report',
         sheetName: 'Inventory Data',
         title: 'The Unity Ware Inventory Excel Report',
@@ -252,15 +289,7 @@ export class InventoryDetail {
   }
 
   private makeInventoryRequest(): InventoryRequest {
-    return {
-      productId: this.selectedProducts || this.inventory.productId,
-      warehouseId: this.selectedWarehouse || this.inventory.warehouseId,
-      quantity: this.inventory.quantity,
-    };
-  }
-
-  private makeUpdateInventoryRequest(): InventoryRequest {
-    const extractValue = (field: any): number => {
+    const extractValue = (field: number | { label: string; value: number } | null): number => {
       if (field && typeof field === 'object' && 'value' in field) {
         return field.value;
       }
@@ -268,8 +297,23 @@ export class InventoryDetail {
     };
 
     return {
-      productId: extractValue(this.selectedProducts || this.inventory.productId),
-      warehouseId: extractValue(this.selectedWarehouse || this.inventory.warehouseId),
+      productId: extractValue(this.selectedProducts) || this.inventory.productId,
+      warehouseId: extractValue(this.selectedWarehouse) || this.inventory.warehouseId,
+      quantity: Number(this.inventory.quantity) || 0,
+    };
+  }
+
+  private makeUpdateInventoryRequest(): InventoryRequest {
+    const extractValue = (field: number | { value: number } | null): number => {
+      if (field && typeof field === 'object' && 'value' in field) {
+        return field.value;
+      }
+      return Number(field) || 0;
+    };
+
+    return {
+      productId: extractValue(this.selectedProducts),
+      warehouseId: extractValue(this.selectedWarehouse),
       quantity: Number(this.inventory.quantity) || 0,
     };
   }

@@ -1,5 +1,5 @@
 <main class="p-6 space-y-6 bg-gray-50">
-  <div class="max-w-6xl mx-auto space-y-6">
+  <div>
     <div>
       <h1 class="font-heading font-medium p-2 text-2xl">Inventory Overview</h1>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -8,20 +8,9 @@
           value="100"
           [percentage]="12"
           [isPrimary]="true"
-          trend="up"
-        ></app-metric-card>
-        <app-metric-card
-          title="Inactive customers"
-          value="20"
-          [percentage]="2"
-          trend="down"
-        ></app-metric-card>
-        <app-metric-card
-          title="Deleted customers"
-          value="10"
-          [percentage]="2"
-          trend="up"
-        ></app-metric-card>
+          trend="up"></app-metric-card>
+        <app-metric-card title="Inactive customers" value="20" [percentage]="2" trend="down"></app-metric-card>
+        <app-metric-card title="Deleted customers" value="10" [percentage]="2" trend="up"></app-metric-card>
       </div>
     </div>
 
@@ -29,19 +18,19 @@
 
     <div>
       <p-table
-        #dt
         [value]="inventories"
-        [rows]="5"
+        [rows]="pageSize"
         [paginator]="true"
         [rowsPerPageOptions]="[5, 10, 20]"
         [globalFilterFields]="['productName', 'warehouseName', 'quantity', 'reorderLevel']"
-        [(selection)]="inventories"
         dataKey="customerId"
         [rowHover]="true"
         [tableStyle]="{ 'min-width': '40rem' }"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} customers"
         [showCurrentPageReport]="true"
-      >
+        (onLazyLoad)="onParamsChange($event)"
+        [lazy]="true"
+        [totalRecords]="totalCount">
         <ng-template pTemplate="caption">
           <div class="flex gap-4 md:justify-between">
             <p-iconfield>
@@ -49,10 +38,9 @@
               <input
                 pInputText
                 type="text"
-                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                (input)="searchInventoryInput($event.target.value)"
                 placeholder="Search..."
-                class="w-full md:w-64"
-              />
+                class="w-full md:w-64" />
             </p-iconfield>
             <div class="flex gap-2">
               <p-button label="Add" icon="pi pi-plus" (onClick)="openNew()" />
@@ -62,8 +50,7 @@
                 label="Export"
                 (onClick)="exportExcel()"
                 severity="secondary"
-                [outlined]="true"
-              />
+                [outlined]="true" />
             </div>
           </div>
         </ng-template>
@@ -72,29 +59,22 @@
           <tr>
             <th>Inventory ID</th>
             <th>PID</th>
-            <th pSortableColumn="productName">
-              Product Name <p-sortIcon field="productName"></p-sortIcon>
-            </th>
+            <th pSortableColumn="productName">Product Name <p-sortIcon field="productName"></p-sortIcon></th>
             <th>WID</th>
-            <th pSortableColumn="warehouseName">
-              Warehouse Name <p-sortIcon field="warehouseName"></p-sortIcon>
-            </th>
+            <th pSortableColumn="warehouseName">Warehouse Name <p-sortIcon field="warehouseName"></p-sortIcon></th>
             <th pSortableColumn="quantity">Quantity <p-sortIcon field="quantity"></p-sortIcon></th>
-            <th pSortableColumn="reorderLevel">
-              Reorder Level<p-sortIcon field="reorderLevel"></p-sortIcon>
-            </th>
+            <th pSortableColumn="reorderLevel">Reorder Level<p-sortIcon field="reorderLevel"></p-sortIcon></th>
 
             <th style="min-width: 8rem">Actions</th>
           </tr>
         </ng-template>
 
         <ng-template pTemplate="body" let-inventory>
-          <tr
-            [ngClass]="{
+          <tr>
+            <!-- [ngClass]="{
               'opacity-50 pointer-events-none bg-gray-100': inventory.isDisabled,
-              'hover:bg-gray-50': !inventory.isDisabled
-            }"
-          >
+              'hover:bg-gray-50': !inventory.isDisabled,
+            }" -->
             <td>
               <span class="font-semibold">{{ inventory.inventoryId }}</span>
             </td>
@@ -119,8 +99,7 @@
                 class="mr-2"
                 [rounded]="true"
                 [outlined]="true"
-                (onClick)="editInventory(inventory)"
-              ></p-button>
+                (onClick)="editInventory(inventory)"></p-button>
               <!--TODO Later-->
               <!-- <p-button
                 icon="pi pi-trash"
@@ -131,9 +110,18 @@
               ></p-button> -->
 
               <div class="flex flex-col items-center gap-2">
-                <p-toggleswitch [(ngModel)]="inventory.isDisabled" [readonly]="true" />
+                <!--TODO <p-toggleswitch [(ngModel)]="inventory.isDisabled" [readonly]="true" /> -->
                 <!--Readonly made controlled by backend-->
               </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4" class="text-center py-8">
+              <p class="text-xl font-semibold text-surface-700 mb-2">No inventories found</p>
+              <p class="text-surface-500 mb-4">Get Started by creating Inventories</p>
+              <p-button label="Create Purchase Order" icon="pi pi-plus" (onClick)="openNew()"></p-button>
             </td>
           </tr>
         </ng-template>
@@ -143,13 +131,11 @@
 
   <p-dialog
     [(visible)]="inventoryDialog"
-    [style]="{ width: '70vw' }"
-    [breakpoints]="{ '1024px': '78vw', '768px': '78vw', '425px': '94vw' }"
+    [styleClass]="'responsive-dialog'"
     [header]="isEditMode ? 'Update Inventory Details' : 'Add Inventory Details'"
-    [modal]="true"
-  >
+    [modal]="true">
     <ng-template pTemplate="content">
-      <div class="grid grid-col-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+      <div class="flex flex-col gap-4">
         <div>
           <label for="productId" class="block font-bold mb-3">Product Name</label>
           <p-autocomplete
@@ -159,9 +145,9 @@
             optionLabel="label"
             placeholder="Select a product"
             [dropdown]="true"
+            class="min-w-full"
             [disabled]="isEditMode"
-            appendTo="body"
-          />
+            appendTo="body" />
         </div>
 
         <div>
@@ -173,26 +159,15 @@
             optionLabel="label"
             placeholder="Select a warehouse"
             [dropdown]="true"
+            class="min-w-full"
             [disabled]="isEditMode"
-            appendTo="body"
-          />
+            appendTo="body" />
         </div>
 
         <div>
           <label for="Quantity" class="block font-bold mb-3">Quantity</label>
-          <input
-            type="number"
-            pInputText
-            id="Quantity"
-            [(ngModel)]="inventory.quantity"
-            required
-            autofocus
-            fluid
-            class="w-6"
-          />
-          <small class="text-red-500" *ngIf="submitted && !inventory.quantity"
-            >Quantity is required.</small
-          >
+          <input type="number" pInputText id="Quantity" [(ngModel)]="inventory.quantity" required fluid class="w-6" />
+          <small class="text-red-500" *ngIf="submitted && !inventory.quantity">Quantity is required.</small>
         </div>
       </div>
     </ng-template>

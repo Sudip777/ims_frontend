@@ -18,7 +18,7 @@ export interface OrderDetail {
   warehouseId: number;
   productName: string;
 }
-export interface OrderDetailRequest extends Omit<OrderDetail, 'orderDetailId' | 'productName'> {}
+export type OrderDetailRequest = Omit<OrderDetail, 'orderDetailId' | 'productName'>;
 export interface OrderRequest
   extends Omit<
     OrderResponse,

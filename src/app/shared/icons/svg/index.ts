@@ -88,7 +88,7 @@ export const REPORT_AANALYTICS_ICON = `<svg width="52" height="55" viewBox="0 0 
 </svg>
 `;
 
-export const APP_LOGO = ` <svg width="220" height="73" viewBox="0 0 300 83" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const APP_LOGO = ` <svg width="180" height="73" viewBox="0 0 300 83" fill="none" xmlns="http://www.w3.org/2000/svg">
 
       <mask id="mask0_2167_9121" style="mask-type: luminance" maskUnits="userSpaceOnUse" x="87" y="12" width="11"
         height="12">
@@ -903,7 +903,7 @@ export const LOGOUT = `<svg
            class="group-hover:stroke-ims-primary transition-colors"
         />
       </svg>`;
-export const ICONS_MAP: { [key: string]: string } = {
+export const ICONS_MAP: Record<string, string> = {
   'app-logo': APP_LOGO,
   'arrow-right': ARROW_RIGHT,
   order: ORDER_ICON,

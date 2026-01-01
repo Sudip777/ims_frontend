@@ -1,7 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Toast } from 'primeng/toast';
-import { AuthService } from './core/services/auth.services';
+import { AuthService } from './core/services/auth.service';
+import { TokenRefresher } from './core/services/token-refresher.service';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,7 @@ import { AuthService } from './core/services/auth.services';
 export class App {
   protected readonly title = signal('inventory-management-system');
   authService = inject(AuthService);
+  tokenRefresher = inject(TokenRefresher);
 
-  userDetails: any[] = [];
+  userDetails: unknown[] = [];
 }

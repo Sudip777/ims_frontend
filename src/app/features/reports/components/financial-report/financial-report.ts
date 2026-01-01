@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-financial-report',
   imports: [],
   templateUrl: './financial-report.html',
-  styleUrl: './financial-report.scss'
+  styleUrl: './financial-report.scss',
 })
-export class FinancialReport {
-
-}
+export class FinancialReport {}

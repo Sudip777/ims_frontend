@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-custom-report-builder',
   imports: [],
   templateUrl: './custom-report-builder.html',
-  styleUrl: './custom-report-builder.scss'
+  styleUrl: './custom-report-builder.scss',
 })
-export class CustomReportBuilder {
-
-}
+export class CustomReportBuilder {}

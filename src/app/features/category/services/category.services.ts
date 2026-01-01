@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
-import { ApiService } from '../../../core/services/api.services';
+import { inject, Injectable } from '@angular/core';
 import { ApiResponse } from '../../../core/models/api-response.model';
-import { CategoryResponse } from '../models/category.model';
+import { ApiService } from '../../../core/services/api.service';
+import { CategoryRequest, CategoryResponse } from '../models/category.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CategoryService {
-  constructor(private api: ApiService) {}
+  private api = inject(ApiService);
 
   getAllCategories() {
     return this.api.get<ApiResponse<CategoryResponse[]>>('/categories');
@@ -17,12 +17,12 @@ export class CategoryService {
     return this.api.get<ApiResponse<CategoryResponse>>(`/categories/${id}`);
   }
 
-  createCategory(category: CategoryResponse) {
-    return this.api.post<CategoryResponse>('/categories', category);
+  createCategory(category: CategoryRequest) {
+    return this.api.post<CategoryRequest>('/categories', category);
   }
 
-  updateCategory(category: CategoryResponse) {
-    return this.api.put<CategoryResponse>(`/categories/${category.categoryId}`, category);
+  updateCategory(category: CategoryRequest, categoryId: number) {
+    return this.api.put<CategoryRequest>(`/categories/${categoryId}`, category);
   }
 
   deleteCategory(id: number) {

@@ -1,7 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { ApiService } from '../../../core/services/api.services';
 import { ApiResponse } from '../../../core/models/api-response.model';
 import { UserDetail } from '../../../core/models/user-detail.model';
+import { ApiService } from '../../../core/services/api.service';
 import { SidebarMenuItems } from '../models/sidebar.models';
 
 @Injectable({
@@ -10,7 +10,7 @@ import { SidebarMenuItems } from '../models/sidebar.models';
 export class SidebarService {
   apiService = inject(ApiService);
 
-  userDetails = signal<any>(null);
+  userDetails = signal<unknown>(null);
 
   getAllUserMenuItems() {
     return this.apiService.get<ApiResponse<SidebarMenuItems[]>>('/user-menu');

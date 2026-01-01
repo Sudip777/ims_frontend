@@ -1,13 +1,8 @@
-import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { Product, ProductRequest, ProductUpdate } from '../../models/product.model';
-import { ProductsService } from '../../services/products.services';
-import { CategoryService } from '../../../category/services/category.services';
-import { SupplierService } from '../../../supplier/services/supplier.services';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -20,13 +15,20 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { SelectModule } from 'primeng/select';
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { NotificationService } from '../../../../core/services/notification.services';
-import { ExportService } from '../../../../core/services/export.services';
+import { Subscription } from 'rxjs';
+import { ExportService } from '../../../../core/services/export.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { SearchService } from '../../../../core/services/search.service';
+import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
+import { CategoryService } from '../../../category/services/category.services';
+import { SupplierService } from '../../../supplier/services/supplier.services';
+import { Product, ProductRequest, ProductUpdate } from '../../models/product.model';
+import { ProductsService } from '../../services/products.services';
 
 interface AutoCompleteCompleteEvent {
   originalEvent: Event;
@@ -61,20 +63,22 @@ interface AutoCompleteCompleteEvent {
   ],
   providers: [ConfirmationService, MessageService],
 })
-export class ProductDetail {
+export class ProductDetail implements OnInit, OnDestroy {
   private readonly categoryService = inject(CategoryService);
   private readonly supplierService = inject(SupplierService);
   private readonly productsService = inject(ProductsService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly notificationService = inject(NotificationService);
   private readonly exportService = inject(ExportService);
+  private readonly searchService = inject(SearchService);
+  private searchSubscription: Subscription | undefined;
 
   products: Product[] = [];
   selectedProducts: Product[] = [];
-  items: any[] = [];
-  supplierItems: any[] = [];
-  filteredItems: any[] = [];
-  filteredSupplierItems: any[] = [];
+  items: { label: string; value: number }[] = [];
+  supplierItems: { label: string; value: number }[] = [];
+  filteredItems: unknown[] = [];
+  filteredSupplierItems: unknown[] = [];
   productDialog = false;
   submitted = false;
   isEditMode = false;
@@ -87,20 +91,30 @@ export class ProductDetail {
   pageSize = 5;
   page = 1;
   date: Date | null = null;
+  globalFilterFields: unknown;
+  globalSearchText = '';
 
   ngOnInit() {
-    // this.loadProducts();
+    // debouncing searchh
+    this.searchSubscription = this.searchService.getSearchTime(300).subscribe((term) => {
+      this.globalSearchText = term;
+      this.loadProducts(1, this.pageSize, this.globalSearchText, 'productId', 'asc');
+    });
     this.loadCategories();
     this.loadSuppliers();
   }
-
-  onLazyLoad(event: any) {
-    const page = event.first / event.rows + 1;
-    const pageSize = event.rows;
-    this.loadProducts(page, pageSize);
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
   }
-  private loadProducts(page: number, pageSize: number): void {
-    this.productsService.getAllProducts(page, pageSize).subscribe({
+
+  private loadProducts(
+    page: number,
+    pageSize: number,
+    search?: string,
+    sortColumn?: string | string[] | null | undefined,
+    sortDirection?: string
+  ): void {
+    this.productsService.getAllProducts(page, pageSize, search, sortColumn, sortDirection).subscribe({
       next: (res) => {
         this.products = res.result.data;
         this.totalCount = res.result.meta.totalCount;
@@ -116,7 +130,7 @@ export class ProductDetail {
   private loadCategories(): void {
     this.categoryService.getAllCategories().subscribe({
       next: (res) => {
-        this.items = res.result.map((val: any) => ({
+        this.items = res.result.map((val) => ({
           label: val.categoryName,
           value: val.categoryId,
         }));
@@ -130,7 +144,7 @@ export class ProductDetail {
   private loadSuppliers(): void {
     this.supplierService.getAllSuppliers().subscribe({
       next: (res) => {
-        this.supplierItems = res.result.map((val: any) => ({
+        this.supplierItems = res.result.map((val) => ({
           label: val.name,
           value: val.supplierId,
         }));
@@ -141,10 +155,20 @@ export class ProductDetail {
     });
   }
 
-  onPageChange(event: any): void {
-    const page = event.first / event.rows + 1;
-    const pageSize = event.rows;
-    this.loadProducts(page, pageSize);
+  onPageChange(event: TableLazyLoadEvent): void {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? 10;
+    const page = first / rows + 1;
+    const pageSize = rows;
+
+    const sortColumn: string | string[] | null | undefined = event.sortField ?? 'productId';
+    const sortDirection = event.sortOrder === 1 ? 'asc' : 'desc';
+    const search = this.globalSearchText ?? '';
+
+    this.loadProducts(page, pageSize, search, sortColumn, sortDirection);
+  }
+  onSearchInput(value: string) {
+    this.searchService.setSearchTerm(value);
   }
 
   openNew(): void {
@@ -254,28 +278,26 @@ export class ProductDetail {
 
   exportExcel() {
     try {
-      this.exportService.exportToExcel(this.products, {
+      this.exportService.exportToExcel(this.products as never, {
         fileName: 'Products_Excel_Report',
         sheetName: 'Product Data',
         title: 'The Unity Ware Excel Report',
       });
 
       this.notificationService.success('Export', 'Excel Export Completed');
-    } catch (error) {
-      this.notificationService.error('Export', 'Excel Export Failed');
+    } catch (err) {
+      this.notificationService.error('Export', `Excel Export Failed || ${err}`);
     }
   }
 
   search(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredItems =
-      this.items.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredItems = this.items.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   searchSupplier(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredSupplierItems =
-      this.supplierItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredSupplierItems = this.supplierItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   getStatusLabel(isActive: boolean): string {

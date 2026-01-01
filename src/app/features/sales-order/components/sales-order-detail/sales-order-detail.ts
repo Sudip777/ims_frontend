@@ -1,15 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -20,20 +13,22 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule } from 'primeng/paginator';
 import { SelectModule } from 'primeng/select';
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule, TableRowExpandEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 
-import { ExportService } from '../../../../core/services/export.services';
-import { NotificationService } from '../../../../core/services/notification.services';
+import { Avatar } from 'primeng/avatar';
+import { Badge } from 'primeng/badge';
+import { Subscription } from 'rxjs';
+import { ExportService } from '../../../../core/services/export.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { SearchService } from '../../../../core/services/search.service';
+import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { CustomerService } from '../../../customer/services/customer.services';
 import { ProductsService } from '../../../products/services/products.services';
 import { WarehouseService } from '../../../warehouse/services/warehouse.services';
 import { OrderRequest } from '../../models/sales-order.model';
 import { SalesOrderService } from '../../services/sales-order.services';
-import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { Avatar } from 'primeng/avatar';
-import { Badge } from 'primeng/badge';
 
 interface OrderDetail {
   orderDetailId: number;
@@ -85,7 +80,7 @@ interface Order {
   templateUrl: './sales-order-detail.html',
   styleUrls: ['./sales-order-detail.scss'],
 })
-export class SalesOrderDetail {
+export class SalesOrderDetail implements OnInit, OnDestroy {
   private readonly orderService = inject(SalesOrderService);
   private readonly notification = inject(NotificationService);
   private readonly fb = inject(FormBuilder);
@@ -95,53 +90,71 @@ export class SalesOrderDetail {
   private readonly exportService = inject(ExportService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly messageService = inject(MessageService);
+  private readonly searchService = inject(SearchService);
 
   salesOrderForm: FormGroup;
   orders: Order[] = [];
-  items: any[] = [];
-  customerItems: any[] = [];
-  warehouseItems: any[] = [];
-  productItems: any[] = [];
-  filteredItems: any[] = [];
-  filteredWarehouseItems: any[] = [];
-  filteredProductItems: any[] = [];
+  items: unknown[] = [];
+  customerItems: { label: string; value: number }[] = [];
+  warehouseItems: { label: string; value: number }[] = [];
+  productItems: { label: string; value: number }[] = [];
+  filteredItems: unknown[] = [];
+  filteredWarehouseItems: unknown[] = [];
+  filteredProductItems: unknown[] = [];
 
   order: Order = this.createEmptyOrder();
-  selectedCustomer: any = null;
-  selectedWarehouse: any = null;
-  selectedProduct: any = null;
+  selectedCustomer: unknown = null;
+  selectedWarehouse: unknown = null;
+  selectedProduct: unknown = null;
 
   orderDialog = false;
   submitted = false;
   isEditMode = false;
 
-  expandedRows: { [key: number]: boolean } = {};
+  expandedRows: Record<number, boolean> = {};
   totalCount = 0;
   pageSize = 5;
   page = 1;
-  severity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined =
-    null;
+
+  severity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined = null;
 
   statusOptions = [
     { label: 'Pending', value: 1 },
     { label: 'Processing', value: 2 },
     { label: 'Completed', value: 3 },
   ];
+  //search relatedd
+  private searchSubscription: Subscription | undefined;
+  salesOrderSearchText = '';
 
   constructor() {
     this.salesOrderForm = this.createOrderForm();
   }
 
   ngOnInit() {
+    //debounced searchh logic hereee
+    this.searchSubscription = this.searchService.getSearchTime(300).subscribe((term) => {
+      this.salesOrderSearchText = term;
+      this.loadOrderDetails(this.page, this.pageSize, this.salesOrderSearchText, 'salesOrderId', 'asc');
+    });
     this.loadCustomers();
     this.loadWarehouses();
     this.loadProducts();
   }
-  onLazyLoad(event: any) {
-    const page = event.first / event.rows + 1; // 1 based indexx
-    const pageSize = event.rows;
 
-    this.loadOrderDetails(page, pageSize);
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
+  }
+  OnParamsChange(event: TableLazyLoadEvent) {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? 10;
+    const page = first / rows + 1;
+    const pageSize = rows;
+
+    const sortColumn = event.sortField;
+    const sortDirection = event.sortOrder === 1 ? 'asc' : 'desc';
+    const search = this.salesOrderSearchText ?? '';
+    this.loadOrderDetails(page, pageSize, search, sortColumn, sortDirection);
   }
   get orderDetails(): FormArray {
     return this.salesOrderForm.get('orderDetails') as FormArray;
@@ -180,8 +193,14 @@ export class SalesOrderDetail {
     };
   }
 
-  private loadOrderDetails(page: number, pageSize: number) {
-    this.orderService.getAllSalesOrder(page, pageSize).subscribe({
+  private loadOrderDetails(
+    page: number,
+    pageSize: number,
+    search?: string,
+    sortColumn?: string | string[] | null | undefined,
+    sortDirection?: 'asc' | 'desc'
+  ) {
+    this.orderService.getAllSalesOrder(page, pageSize, search, sortColumn, sortDirection).subscribe({
       next: (res) => {
         this.items = res.result.data;
         this.totalCount = res.result.meta.totalCount;
@@ -190,10 +209,7 @@ export class SalesOrderDetail {
         console.log(res.result.data);
       },
       error: (err) => {
-        this.notification.error(
-          'Error!!',
-          `${err.error.message}` || 'Failed to Load Order Details'
-        );
+        this.notification.error('Error!!', `${err.error.message}` || 'Failed to Load Order Details');
       },
     });
   }
@@ -201,7 +217,7 @@ export class SalesOrderDetail {
   private loadCustomers(): void {
     this.customerService.getAllCustomers().subscribe({
       next: (res) => {
-        this.customerItems = res.result.map((val: any) => ({
+        this.customerItems = res.result.map((val) => ({
           label: val.name,
           value: val.customerId,
         }));
@@ -216,7 +232,7 @@ export class SalesOrderDetail {
   private loadWarehouses(): void {
     this.warehouseService.getAllWarehouses().subscribe({
       next: (res) => {
-        this.warehouseItems = res.result.map((val: any) => ({
+        this.warehouseItems = res.result.map((val) => ({
           label: val.name,
           value: val.warehouseId,
         }));
@@ -231,7 +247,7 @@ export class SalesOrderDetail {
   private loadProducts(): void {
     this.productService.getAllProducts().subscribe({
       next: (res) => {
-        this.productItems = res.result.data.map((val: any) => ({
+        this.productItems = res.result.data.map((val) => ({
           label: val.name,
           value: val.productId,
         }));
@@ -277,12 +293,19 @@ export class SalesOrderDetail {
       orderId: this.order?.orderId ?? undefined,
       customerId: formValue.customerId?.value ?? formValue.customerId,
       statusId: formValue.statusId,
-      orderDetails: formValue.orderDetails.map((detail: any) => ({
-        productId: detail.productId?.value ?? detail.productId,
-        warehouseId: detail.warehouseId?.value ?? detail.warehouseId,
-        quantity: detail.quantity,
-        unitPrice: detail.unitPrice,
-      })),
+      orderDetails: formValue.orderDetails.map(
+        (detail: {
+          productId: { value: number };
+          warehouseId: { value: number };
+          quantity: number;
+          unitPrice: number;
+        }) => ({
+          productId: detail.productId?.value ?? detail.productId,
+          warehouseId: detail.warehouseId?.value ?? detail.warehouseId,
+          quantity: detail.quantity,
+          unitPrice: detail.unitPrice,
+        })
+      ),
     };
   }
 
@@ -316,20 +339,17 @@ export class SalesOrderDetail {
 
   searchCustomer(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredItems =
-      this.customerItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredItems = this.customerItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   searchWarehouse(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredWarehouseItems =
-      this.warehouseItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredWarehouseItems = this.warehouseItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   searchProduct(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredProductItems =
-      this.productItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredProductItems = this.productItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   saveOrder() {
@@ -370,15 +390,9 @@ export class SalesOrderDetail {
         const warehouseOption = this.warehouseItems.find((w) => w.value === d.warehouseId);
 
         const fg = this.fb.group({
-          productId: [
-            productOption ?? { label: d.productName, value: d.productId },
-            Validators.required,
-          ],
+          productId: [productOption ?? { label: d.productName, value: d.productId }, Validators.required],
           productName: [d.productName, Validators.required],
-          warehouseId: [
-            warehouseOption ?? { label: d.productName ?? '', value: d.warehouseId },
-            Validators.required,
-          ],
+          warehouseId: [warehouseOption ?? { label: d.productName ?? '', value: d.warehouseId }, Validators.required],
           quantity: [d.quantity, [Validators.required, Validators.min(1)]],
           unitPrice: [d.unitPrice, [Validators.required, Validators.min(0)]],
         });
@@ -411,9 +425,13 @@ export class SalesOrderDetail {
     });
   }
 
-  onRowExpand(event: { data: Order }) {
-    if (event.data) {
-      this.expandedRows[event.data.orderId] = true;
+  onSearchInput(value: string): void {
+    this.searchService.setSearchTerm(value);
+  }
+  onRowExpand(event: TableRowExpandEvent): void {
+    if (event?.data) {
+      const orderId = event.data.orderId;
+      this.expandedRows[orderId] = true;
       this.expandedRows = { ...this.expandedRows };
       this.orders = [...this.orders];
     }
@@ -421,36 +439,28 @@ export class SalesOrderDetail {
 
   onRowCollapse(event: { data: Order }) {
     if (event.data) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [event.data.orderId]: _, ...rest } = this.expandedRows;
       this.expandedRows = rest;
       this.orders = [...this.orders];
     }
   }
 
-  onPageChange(event: any): void {
-    const page = event.first / event.rows + 1;
-    const pageSize = event.rows;
-    this.loadOrderDetails(page, pageSize);
-  }
-
   exportCSV() {
     try {
-      this.exportService.exportToExcel(this.orders),
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      this.exportService.exportToExcel(this.orders as never),
         {
           fileName: 'Sales_Order_Excel_Export',
           sheetName: 'Sales Order Data',
         };
       this.notification.success('Export', 'Excel Export Completed');
     } catch (e) {
-      this.notification.error('Export', 'Excel Export Failed');
+      this.notification.error('Export', `Excel Export Failed | ${e}`);
     }
   }
-  getStatusSeverity(
-    status: string
-  ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
-    const severityMap: {
-      [key: string]: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast';
-    } = {
+  getStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
+    const severityMap: Record<string, 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast'> = {
       Pending: 'warn',
       Approved: 'success',
       Rejected: 'danger',
@@ -461,7 +471,7 @@ export class SalesOrderDetail {
   }
 
   getStatusIcon(status: string): string {
-    const iconMap: { [key: string]: string } = {
+    const iconMap: Record<string, string> = {
       Pending: 'pi pi-clock',
       Approved: 'pi pi-check-circle',
       Rejected: 'pi pi-times-circle',

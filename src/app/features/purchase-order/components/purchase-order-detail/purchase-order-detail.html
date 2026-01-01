@@ -1,5 +1,5 @@
 <main class="space-y-6 p-6 bg-gray-50">
-  <div class="max-w-6xl mx-auto space-y-6">
+  <div>
     <div>
       <h1 class="font-heading font-medium p-2 text-2xl">Purchase Order Overview</h1>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -8,27 +8,15 @@
           value="100"
           [percentage]="12"
           [isPrimary]="true"
-          trend="up"
-        ></app-metric-card>
-        <app-metric-card
-          title="Inactive Purchase Orders"
-          value="20"
-          [percentage]="2"
-          trend="down"
-        ></app-metric-card>
-        <app-metric-card
-          title="Deleted Purchase Orders"
-          value="10"
-          [percentage]="2"
-          trend="up"
-        ></app-metric-card>
+          trend="up"></app-metric-card>
+        <app-metric-card title="Inactive Purchase Orders" value="20" [percentage]="2" trend="down"></app-metric-card>
+        <app-metric-card title="Deleted Purchase Orders" value="10" [percentage]="2" trend="up"></app-metric-card>
       </div>
     </div>
 
     <h2 class="font-heading font-medium text-2xl">Purchase Order Details</h2>
     <div class="overflow-x-auto rounded-2xl shadow-lg border border-surface-200">
       <p-table
-        #dt
         [value]="purchaseOrders"
         dataKey="purchaseOrderId"
         [lazy]="true"
@@ -38,13 +26,12 @@
         [totalRecords]="totalCount"
         [showCurrentPageReport]="true"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} purchase orders"
-        [globalFilterFields]="['supplierName', 'statusName']"
+        [globalFilterFields]="['supplierName', 'purchaseOrderId', 'orderDate']"
         [tableStyle]="{ 'min-width': '40rem' }"
         [expandedRowKeys]="expandedRows"
-        (onRowExpand)="onRowExpand($event.data)"
+        (onRowExpand)="onRowExpand($event)"
         (onRowCollapse)="onRowCollapse($event.data)"
-        (onLazyLoad)="onLazyLoad($event)"
-      >
+        (onLazyLoad)="onPageChange($event)">
         <ng-template pTemplate="caption">
           <div class="flex justify-between items-center">
             <p-iconfield>
@@ -52,10 +39,9 @@
               <input
                 pInputText
                 type="text"
-                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                (input)="onSearchInput($event.target.value)"
                 placeholder="Search..."
-                class="w-full md:w-auto"
-              />
+                class="w-full md:w-auto" />
             </p-iconfield>
             <div class="flex gap-2">
               <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
@@ -64,8 +50,7 @@
                 label="Export"
                 (onClick)="exportCSV()"
                 severity="secondary"
-                [outlined]="true"
-              />
+                [outlined]="true" />
             </div>
           </div>
         </ng-template>
@@ -105,8 +90,7 @@
                 [rounded]="true"
                 [plain]="true"
                 size="small"
-                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-              ></p-button>
+                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></p-button>
             </td>
             <td>
               <span class="font-semibold">{{ po.purchaseOrderId }}</span>
@@ -120,15 +104,14 @@
             <td>
               <div class="flex items-center gap-2">
                 <i class="pi pi-calendar text-surface-500"></i>
-                <span>{{ po.orderDate | date : 'mediumDate' }}</span>
+                <span>{{ po.orderDate | date: 'mediumDate' }}</span>
               </div>
             </td>
             <td>
               <p-tag
                 [value]="po.statusName"
                 [severity]="getStatusSeverity(po.statusName)"
-                [icon]="getStatusIcon(po.statusName)"
-              ></p-tag>
+                [icon]="getStatusIcon(po.statusName)"></p-tag>
             </td>
             <td class="text-right">
               <span class="font-bold text-lg">{{ po.totalAmount | currency }}</span>
@@ -139,8 +122,7 @@
                   [label]="po.createdByUserId.toString()"
                   shape="circle"
                   size="normal"
-                  class="bg-primary-100 text-primary-700"
-                ></p-avatar>
+                  class="bg-primary-100 text-primary-700"></p-avatar>
                 <!-- <span>User {{ po.createdByUserId }}</span> -->
               </div>
             </td>
@@ -152,8 +134,7 @@
                 pTooltip="Edit"
                 tooltipPosition="top"
                 [outlined]="true"
-                (onClick)="editPurchaseOrder(po)"
-              ></p-button>
+                (onClick)="editPurchaseOrder(po)"></p-button>
               <!--
               <p-button
               icon="pi pi-trash"
@@ -182,24 +163,17 @@
                       po.purchaseOrderDetails?.length === 1
                         ? '1 item'
                         : po.purchaseOrderDetails?.length + ' items'
-                    "
-                  ></p-badge>
+                    "></p-badge>
                 </div>
 
-                <div
-                  class="bg-surface-0 rounded-lg shadow-sm border border-surface-200 overflow-hidden"
-                >
-                  <p-table
-                    [value]="po.purchaseOrderDetails"
-                    dataKey="purchaseOrderDetailId"
-                    class="p-datatable-sm"
-                  >
+                <div class="bg-surface-0 rounded-lg shadow-sm border border-surface-200 overflow-hidden">
+                  <p-table [value]="po.purchaseOrderDetails" dataKey="purchaseOrderDetailId" class="p-datatable-sm">
                     <ng-template pTemplate="header">
                       <tr>
                         <th>
                           <div class="flex items-center gap-2">
                             <i class="pi pi-box text-surface-500"></i>
-                            Product ID
+                            Product Name
                           </div>
                         </th>
                         <th class="text-center">Quantity</th>
@@ -212,7 +186,7 @@
                     <ng-template pTemplate="body" let-detail>
                       <tr>
                         <td>
-                          <span class="font-medium">{{ detail.productId }}</span>
+                          <span class="font-medium">{{ detail.productName }}</span>
                         </td>
                         <td class="text-center">
                           <p-badge [value]="detail.quantity" severity="secondary"></p-badge>
@@ -221,9 +195,7 @@
                           <span class="text-surface-700">{{ detail.unitPrice | currency }}</span>
                         </td>
                         <td class="text-right">
-                          <span class="font-semibold">
-                            {{ detail.quantity * detail.unitPrice | currency }}
-                          </span>
+                          <span class="font-semibold"> {{ detail.quantity * detail.unitPrice | currency }} </span>
                         </td>
                       </tr>
                     </ng-template>
@@ -231,9 +203,7 @@
                       <tr class="bg-surface-50">
                         <td colspan="3" class="text-right font-semibold">Grand Total:</td>
                         <td class="text-right">
-                          <span class="text-xl font-semibold">
-                            {{ po.totalAmount | currency }}
-                          </span>
+                          <span class="text-xl font-semibold"> {{ po.totalAmount | currency }} </span>
                         </td>
                       </tr>
                     </ng-template>
@@ -258,11 +228,7 @@
               <i class="pi pi-shopping-cart text-6xl text-surface-400 mb-4"></i>
               <p class="text-xl font-semibold text-surface-700 mb-2">No purchase orders found</p>
               <p class="text-surface-500 mb-4">Get started by creating your first purchase order</p>
-              <p-button
-                label="Create Purchase Order"
-                icon="pi pi-plus"
-                (onClick)="openNew()"
-              ></p-button>
+              <p-button label="Create Purchase Order" icon="pi pi-plus" (onClick)="openNew()"></p-button>
             </td>
           </tr>
         </ng-template>
@@ -276,36 +242,33 @@
     [breakpoints]="{ '1024px': '78vw', '768px': '78vw', '425px': '94vw' }"
     [header]="!isEditMode ? 'Add Purchase Order Details' : 'Edit Purchase Order Details'"
     [modal]="true"
-    [draggable]="false"
-  >
+    [draggable]="false">
     <ng-template pTemplate="content">
       <form [formGroup]="purchaseOrderForm" (ngSubmit)="savePurchaseOrder()">
         <div class="flex flex-col gap-6">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label class="block font-bold mb-3">Supplier Name</label>
+              <label for="supplierId" class="block font-bold mb-3">Supplier Name</label>
               <p-autocomplete
                 formControlName="supplierId"
                 [suggestions]="filteredSupplierItems"
                 (completeMethod)="searchSupplier($event)"
                 optionLabel="label"
-                placeholder="Search Supplier"
-              />
+                placeholder="Search Supplier" />
             </div>
 
             <div>
-              <label class="block font-bold mb-3">Order Date</label>
+              <label for="purchaseOrderDate" class="block font-bold mb-3">Order Date</label>
               <p-datepicker
                 formControlName="purchaseOrderDate"
                 dateFormat="yy-mm-dd"
                 [showIcon]="true"
                 class="w-full"
-                [disabled]="!isEditMode"
-              ></p-datepicker>
+                [disabled]="!isEditMode"></p-datepicker>
             </div>
 
             <div>
-              <label class="block font-bold mb-3">Status</label>
+              <label for="statusId" class="block font-bold mb-3">Status</label>
               <p-select
                 formControlName="statusId"
                 [options]="statusOptions"
@@ -313,8 +276,7 @@
                 optionValue="value"
                 placeholder="Select Status"
                 [disabled]="!isEditMode"
-                class="w-full"
-              ></p-select>
+                class="w-full"></p-select>
             </div>
           </div>
 
@@ -343,8 +305,7 @@
                     (completeMethod)="searchProduct($event)"
                     optionLabel="label"
                     placeholder="Search Product"
-                    appendTo="body"
-                  />
+                    appendTo="body" />
                 </td>
                 <td>
                   <p-inputnumber formControlName="quantity" size="small"></p-inputnumber>
@@ -354,41 +315,28 @@
                     formControlName="unitPrice"
                     mode="currency"
                     currency="NPR"
-                    size="small"
-                  ></p-inputnumber>
+                    size="small"></p-inputnumber>
                 </td>
-                <td>
-                  {{
-                    detailControl.get('quantity')?.value * detailControl.get('unitPrice')?.value
-                      | currency
-                  }}
-                </td>
+                <td>{{ detailControl.get('quantity')?.value * detailControl.get('unitPrice')?.value | currency }}</td>
                 <td>
                   <p-button
                     icon="pi pi-trash"
                     [text]="true"
                     severity="danger"
-                    (onClick)="removePurchaseOrderDetail(rowIndex)"
-                  ></p-button>
+                    (onClick)="removePurchaseOrderDetail(rowIndex)"></p-button>
                 </td>
               </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
               <tr>
-                <td colspan="5" class="text-center">
-                  No items added yet. Click "Add Item" to start.
-                </td>
+                <td colspan="5" class="text-center">No items added yet. Click "Add Item" to start.</td>
               </tr>
             </ng-template>
           </p-table>
 
           <div class="mt-2">
-            <p-button
-              icon="pi pi-plus"
-              label="Add Item"
-              (onClick)="addPurchaseOrderDetail()"
-            ></p-button>
+            <p-button icon="pi pi-plus" label="Add Item" (onClick)="addPurchaseOrderDetail()"></p-button>
           </div>
         </div>
       </form>

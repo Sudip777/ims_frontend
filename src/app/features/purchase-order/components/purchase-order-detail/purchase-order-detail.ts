@@ -1,15 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -20,43 +13,28 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule } from 'primeng/paginator';
 import { SelectModule } from 'primeng/select';
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule, TableRowExpandEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 
-import { ExportService } from '../../../../core/services/export.services';
-import { NotificationService } from '../../../../core/services/notification.services';
-import { SupplierService } from '../../../supplier/services/supplier.services';
-import { ProductsService } from '../../../products/services/products.services';
-import { PurchaseOrderService } from '../../services/purchase-order.services';
-import {
-  PurchaseOrderDetailRequest,
-  PurchaseOrderRequest,
-} from '../../models/purchase-order.model';
-import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { Avatar } from 'primeng/avatar';
 import { Badge } from 'primeng/badge';
+import { Subscription } from 'rxjs';
+import { DropdownItem } from '../../../../core/models/drop-down.model';
+import { ExportService } from '../../../../core/services/export.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { SearchService } from '../../../../core/services/search.service';
+import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { AuthRoutingModule } from '../../../auth/auth-routing-module';
-
-export interface PurchaseOrderDetail {
-  purchaseOrderDetailId: number;
-  productId: number;
-  productName: string;
-  quantity: number;
-  unitPrice: number;
-}
-
-interface PurchaseOrder {
-  purchaseOrderId: number;
-  purchaseOrderDate: Date | string;
-  supplierName: string;
-  supplierId: number | null;
-  statusId: number;
-  statusName: string;
-  totalAmount: number;
-  createdByUserId: number;
-  purchaseOrderDetails: PurchaseOrderDetail[];
-}
+import { ProductsService } from '../../../products/services/products.services';
+import { SupplierService } from '../../../supplier/services/supplier.services';
+import {
+  PurchaseOrder,
+  PurchaseOrderDetailRequest,
+  PurchaseOrderDetailType,
+  PurchaseOrderRequest,
+} from '../../models/purchase-order.model';
+import { PurchaseOrderService } from '../../services/purchase-order.services';
 
 @Component({
   selector: 'app-purchase-order-detail',
@@ -88,7 +66,7 @@ interface PurchaseOrder {
   templateUrl: './purchase-order-detail.html',
   styleUrls: ['./purchase-order-detail.scss'],
 })
-export class PurchaseOrderDetail {
+export class PurchaseOrderDetail implements OnInit, OnDestroy {
   private readonly purchaseOrderService = inject(PurchaseOrderService);
   private readonly notification = inject(NotificationService);
   private readonly fb = inject(FormBuilder);
@@ -97,28 +75,32 @@ export class PurchaseOrderDetail {
   private readonly exportService = inject(ExportService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly messageService = inject(MessageService);
+  private readonly searchService = inject(SearchService);
 
   purchaseOrderForm: FormGroup;
-  purchaseOrders: any[] = [];
-  supplierItems: any[] = [];
-  productItems: any[] = [];
-  filteredSupplierItems: any[] = [];
-  filteredProductItems: any[] = [];
+  purchaseOrders: unknown[] = [];
+  supplierItems: DropdownItem[] = [];
+  productItems: DropdownItem[] = [];
+  filteredSupplierItems: unknown[] = [];
+  filteredProductItems: unknown[] = [];
 
   purchaseOrder: PurchaseOrder = this.createEmptyPurchaseOrder();
-  selectedSupplier: any = null;
-  selectedProduct: any = null;
+  selectedSupplier: unknown = null;
+  selectedProduct: unknown = null;
 
   purchaseOrderDialog = false;
   submitted = false;
   isEditMode = false;
 
-  expandedRows: { [key: number]: boolean } = {};
+  expandedRows: Record<number, boolean> = {};
   totalCount = 0;
   pageSize = 5;
   page = 1;
-  severity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined =
-    null;
+
+  private searchSubscription: Subscription | undefined;
+  purchaseOrderSearchText = '';
+
+  severity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined = null;
 
   statusOptions = [
     { label: 'Pending', value: 1 },
@@ -131,16 +113,30 @@ export class PurchaseOrderDetail {
   }
 
   ngOnInit() {
-    // this.loadPurchaseOrders();
     this.loadSuppliers();
     this.loadProducts();
+
+    //debouncedd search
+    this.searchSubscription = this.searchService.getSearchTime(300).subscribe((term) => {
+      this.purchaseOrderSearchText = term;
+      this.loadPurchaseOrders(this.page, this.pageSize, this.purchaseOrderSearchText, 'purchaseOrderId', 'asc');
+    });
+  }
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
   }
 
-  onLazyLoad(event: any) {
-    const page = event.first / event.rows + 1; // 1 based indexx
-    const pageSize = event.rows;
+  onPageChange(event: TableLazyLoadEvent) {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? 10;
+    const page = first / rows + 1;
+    const pageSize = rows;
 
-    this.loadPurchaseOrders(page, pageSize);
+    const sortColumn: string | string[] | null | undefined = event.sortField ?? 'productId';
+    const sortDirection = event.sortOrder === 1 ? 'asc' : 'desc';
+    const search = this.purchaseOrderSearchText ?? '';
+
+    this.loadPurchaseOrders(page, pageSize, search, sortColumn, sortDirection);
   }
   get purchaseOrderDetails(): FormArray {
     return this.purchaseOrderForm.get('purchaseOrderDetails') as FormArray;
@@ -155,7 +151,7 @@ export class PurchaseOrderDetail {
     });
   }
 
-  private createPurchaseOrderDetailFormGroup(detail?: PurchaseOrderDetail): FormGroup {
+  private createPurchaseOrderDetailFormGroup(detail?: PurchaseOrderDetailType): FormGroup {
     return this.fb.group({
       productId: [detail?.productId || null, Validators.required],
       productName: [detail?.productName || '', Validators.required],
@@ -168,9 +164,9 @@ export class PurchaseOrderDetail {
   private createEmptyPurchaseOrder(): PurchaseOrder {
     return {
       purchaseOrderId: 0,
-      supplierId: null,
+      supplierId: 0,
       supplierName: '',
-      purchaseOrderDate: '',
+      orderDate: new Date(),
       statusId: 0,
       statusName: '',
       totalAmount: 0,
@@ -179,8 +175,14 @@ export class PurchaseOrderDetail {
     };
   }
 
-  private loadPurchaseOrders(page: number, pageSize: number) {
-    this.purchaseOrderService.getAllPurchaseOrders(page, pageSize).subscribe({
+  private loadPurchaseOrders(
+    page: number,
+    pageSize: number,
+    search?: string,
+    sortColumn?: string | string[] | null | undefined,
+    sortDirection?: 'asc' | 'desc'
+  ) {
+    this.purchaseOrderService.getAllPurchaseOrders(page, pageSize, search, sortColumn, sortDirection).subscribe({
       next: (res) => {
         this.purchaseOrders = res.result.data;
         this.totalCount = res.result.meta.totalCount;
@@ -189,10 +191,7 @@ export class PurchaseOrderDetail {
         console.log(this.purchaseOrders, 'abccc');
       },
       error: (err) => {
-        this.notification.error(
-          'Error!!',
-          `${err.error.message}` || 'Failed to Load Purchase Orders'
-        );
+        this.notification.error('Error!!', `${err.error.message}` || 'Failed to Load Purchase Orders');
       },
     });
   }
@@ -200,7 +199,7 @@ export class PurchaseOrderDetail {
   private loadSuppliers(): void {
     this.supplierService.getAllSuppliers().subscribe({
       next: (res) => {
-        this.supplierItems = res.result.map((val: any) => ({
+        this.supplierItems = res.result.map((val) => ({
           label: val.name,
           value: val.supplierId,
         }));
@@ -214,7 +213,7 @@ export class PurchaseOrderDetail {
   private loadProducts(): void {
     this.productService.getAllProducts().subscribe({
       next: (res) => {
-        this.productItems = res.result.data.map((val: any) => ({
+        this.productItems = res.result.data.map((val) => ({
           label: val.name,
           value: val.productId,
         }));
@@ -227,27 +226,23 @@ export class PurchaseOrderDetail {
 
   private createPurchaseOrderRequest(): PurchaseOrderRequest {
     const formValue = this.purchaseOrderForm.value as {
-      supplierId: number | { value: number } | null;
+      supplierId: number | DropdownItem | null;
       statusId: number | string;
-      purchaseOrderDetails: Array<{
-        productId: number | { value: number };
+      purchaseOrderDetails: {
+        productId: number | DropdownItem;
         quantity: number;
         unitPrice: number;
-      }>;
+      }[];
     };
 
     const normalizedSupplierId =
       typeof formValue.supplierId === 'object' && formValue.supplierId !== null
-        ? Number(formValue.supplierId.value)
+        ? formValue.supplierId.value
         : Number(formValue.supplierId ?? 0);
 
     const normalizedDetails = formValue.purchaseOrderDetails.map((detail) => {
-      const productId =
-        typeof detail.productId === 'object'
-          ? Number(detail.productId.value)
-          : Number(detail.productId);
+      const productId = typeof detail.productId === 'object' ? detail.productId.value : Number(detail.productId);
 
-      // Derive productName from a known selected option list if available
       const productOption = this.productItems.find((p) => p.value === productId);
       const productName = productOption?.label ?? '';
 
@@ -263,7 +258,7 @@ export class PurchaseOrderDetail {
       supplierId: normalizedSupplierId,
       statusId: Number(formValue.statusId),
       purchaseOrderDetails: normalizedDetails,
-    } as PurchaseOrderRequest;
+    };
   }
 
   private createPurchaseOrder(request: PurchaseOrderRequest): void {
@@ -280,22 +275,17 @@ export class PurchaseOrderDetail {
   }
 
   private updatePurchaseOrder(request: PurchaseOrderRequest): void {
-    this.purchaseOrderService
-      .updatePurchaseOrder(this.purchaseOrder.purchaseOrderId, request)
-      .subscribe({
-        next: () => {
-          this.notification.success('Success', 'Purchase Order Updated Successfully');
-          this.hideDialog();
-          this.loadPurchaseOrders(this.page, this.pageSize);
-          this.isEditMode = false;
-        },
-        error: (err) => {
-          this.notification.error(
-            'Error!',
-            err.error?.message || 'Failed to Update Purchase Order'
-          );
-        },
-      });
+    this.purchaseOrderService.updatePurchaseOrder(this.purchaseOrder.purchaseOrderId, request).subscribe({
+      next: () => {
+        this.notification.success('Success', 'Purchase Order Updated Successfully');
+        this.hideDialog();
+        this.loadPurchaseOrders(this.page, this.pageSize);
+        this.isEditMode = false;
+      },
+      error: (err) => {
+        this.notification.error('Error!', err.error?.message || 'Failed to Update Purchase Order');
+      },
+    });
   }
 
   openNew() {
@@ -326,16 +316,17 @@ export class PurchaseOrderDetail {
     this.purchaseOrderDetails.removeAt(index);
   }
 
+  onSearchInput(value: string) {
+    this.searchService.setSearchTerm(value);
+  }
   searchSupplier(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredSupplierItems =
-      this.supplierItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredSupplierItems = this.supplierItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   searchProduct(event: AutoCompleteCompleteEvent): void {
     const query = event.query.toLowerCase();
-    this.filteredProductItems =
-      this.productItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
+    this.filteredProductItems = this.productItems.filter((item) => item.label.toLowerCase().includes(query)) ?? [];
   }
 
   savePurchaseOrder() {
@@ -356,7 +347,7 @@ export class PurchaseOrderDetail {
 
     this.purchaseOrderForm.patchValue({
       purchaseOrderId: po.purchaseOrderId,
-      purchaseOrderDate: po.purchaseOrderDate ? new Date(po.purchaseOrderDate) : new Date(),
+      purchaseOrderDate: po.orderDate ? new Date(po.orderDate) : new Date(),
       statusId: po.statusId ?? 1,
     });
 
@@ -373,10 +364,7 @@ export class PurchaseOrderDetail {
         const productOption = this.productItems.find((p) => p.value === d.productId);
 
         const fg = this.fb.group({
-          productId: [
-            productOption ?? { label: d.productName, value: d.productId },
-            Validators.required,
-          ],
+          productId: [productOption ?? { label: d.productName, value: d.productId }, Validators.required],
           productName: [d.productName, Validators.required],
           quantity: [d.quantity, [Validators.required, Validators.min(1)]],
           unitPrice: [d.unitPrice, [Validators.required, Validators.min(0)]],
@@ -399,9 +387,10 @@ export class PurchaseOrderDetail {
       rejectButtonStyleClass: 'p-button-secondary',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.purchaseOrders = this.purchaseOrders.filter(
+        this.purchaseOrders = (this.purchaseOrders as PurchaseOrder[]).filter(
           (p) => p.purchaseOrderId !== po.purchaseOrderId
         );
+
         this.messageService.add({
           severity: 'success',
           summary: 'Deleted',
@@ -412,7 +401,7 @@ export class PurchaseOrderDetail {
     });
   }
 
-  onRowExpand(event: { data: PurchaseOrder }) {
+  onRowExpand(event: TableRowExpandEvent) {
     if (event.data) {
       this.expandedRows[event.data.purchaseOrderId] = true;
       this.expandedRows = { ...this.expandedRows };
@@ -422,36 +411,28 @@ export class PurchaseOrderDetail {
 
   onRowCollapse(event: { data: PurchaseOrder }) {
     if (event.data) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [event.data.purchaseOrderId]: _, ...rest } = this.expandedRows;
       this.expandedRows = rest;
       this.purchaseOrders = [...this.purchaseOrders];
     }
   }
 
-  onPageChange(event: any): void {
-    const page = event.first / event.rows + 1;
-    const pageSize = event.rows;
-    this.loadPurchaseOrders(page, pageSize);
-  }
-
   exportCSV() {
     try {
-      this.exportService.exportToExcel(this.purchaseOrders),
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      this.exportService.exportToExcel(this.purchaseOrders as never),
         {
           fileName: 'Purchase_Order_Excel_Export',
           sheetName: 'Purchase Order Data',
         };
       this.notification.success('Export', 'Excel Export Completed');
     } catch (e) {
-      this.notification.error('Export', 'Excel Export Failed');
+      this.notification.error('Export', `Excel Export Failed | ${e}`);
     }
   }
-  getStatusSeverity(
-    status: string
-  ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
-    const severityMap: {
-      [key: string]: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast';
-    } = {
+  getStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
+    const severityMap: Record<string, 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast'> = {
       Pending: 'warn',
       Approved: 'success',
       Rejected: 'danger',
@@ -462,7 +443,7 @@ export class PurchaseOrderDetail {
   }
 
   getStatusIcon(status: string): string {
-    const iconMap: { [key: string]: string } = {
+    const iconMap: Record<string, string> = {
       Pending: 'pi pi-clock',
       Approved: 'pi pi-check-circle',
       Rejected: 'pi pi-times-circle',

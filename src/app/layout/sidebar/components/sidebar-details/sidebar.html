@@ -10,14 +10,15 @@
     </p-iconfield>
 
     <div class="flex flex-col gap-2 mt-4">
-      @for(item of sidebarMenuItems; track item.route){
+      @for (item of sidebarMenuItems; track item.route) {
       <div
         [routerLink]="[item.route]"
         (click)="onNavigate()"
+        role="button"
+        tabindex="0"
         routerLinkActive="bg-ims-primary-hover-light text-ims-primary"
         [routerLinkActiveOptions]="{ exact: item.route === '/dashboard/overview' }"
-        class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group"
-      >
+        class="flex gap-2 cursor-pointer px-3 py-1.5 text-ims-text-general hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group">
         <app-icon [name]="item.icon"></app-icon>
         <span class="text-sm font-medium font-heading">{{ item.label }}</span>
       </div>
@@ -27,31 +28,33 @@
     </div>
   </div>
 
-  <hr class="bg-gray-200 w-full shadow-md" />
-  <div class="flex items-center justify-between border-t border-gray-200 pt-4 cursor-pointer">
-    <div class="flex items-center gap-4">
-      <p-avatar
-        image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
-        class="mr-2"
-        size="xlarge"
-        shape="circle"
-      />
+  <div>
+    <hr class="bg-gray-200 w-full shadow-lg" />
+    <div class="flex items-center justify-between border-t border-gray-200 cursor-pointer">
+      <div class="flex items-center gap-4">
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+          class="mr-2"
+          size="xlarge"
+          shape="circle" />
 
-      <div>
-        <p class="font-medium font-heading text-ims-text-general">
-          <!-- TODO {{ userDetailItems.fullName }} -->
-          {{ userName() }}
-        </p>
-        <p class="text-sm font-semibold font-sans text-ims-text-secondary">
-          {{ roleName() }}
-        </p>
+        <div>
+          <p class="font-medium font-heading text-ims-text-general">
+            <!-- TODO {{ userDetailItems.fullName }} -->
+            {{ userName() }}
+          </p>
+          <p class="text-sm font-semibold font-sans text-ims-text-secondary">{{ roleName() }}</p>
+        </div>
       </div>
-    </div>
-    <div
-      (click)="logout()"
-      class="hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group p-2"
-    >
-      <app-icon name="logout"></app-icon>
+      <div
+        (click)="logout()"
+        (keydown.enter)="logout()"
+        (keydown.space)="logout()"
+        role="button"
+        tabindex="0"
+        class="hover:bg-ims-primary-hover-light rounded-lg transition-colors hover:text-ims-primary group p-2">
+        <app-icon name="logout"></app-icon>
+      </div>
     </div>
   </div>
 </aside>

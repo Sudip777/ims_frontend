@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -17,10 +16,10 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+import { ExportService } from '../../../../core/services/export.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { WarehouseService } from '../../services/warehouse.services';
-import { NotificationService } from '../../../../core/services/notification.services';
-import { ExportService } from '../../../../core/services/export.services';
 
 interface Warehouse {
   warehouseId: number;
@@ -54,12 +53,10 @@ type WarehouseRequest = Omit<Warehouse, 'warehouseId' | 'createdByUserId'>;
     MetricCardComponent,
   ],
   templateUrl: './warehouse-detail.html',
-  // styleUrl: './warehouse-detail.scss',
 })
-export class WarehouseDetail {
+export class WarehouseDetail implements OnInit {
   private readonly warehouseService = inject(WarehouseService);
   private readonly notificationService = inject(NotificationService);
-  private readonly confirmationService = inject(ConfirmationService);
   private readonly exportService = inject(ExportService);
 
   warehouses: Warehouse[] = [];
@@ -67,6 +64,7 @@ export class WarehouseDetail {
   warehouseDialog = false;
   submitted = false;
   isEditMode = false;
+  tableLoading = false;
 
   warehouse: Warehouse = {
     warehouseId: 0,
@@ -159,45 +157,9 @@ export class WarehouseDetail {
     });
   }
 
-  // deleteWarehouse(warehouse: Warehouse): void {
-  //   this.confirmationService.confirm({
-  //     message: `Are you sure you want to delete "${warehouse.name}"?`,
-  //     header: 'Confirm Deletion',
-  // icon: 'pi pi-exclamation-triangle',
-  // acceptLabel: 'Confirm',
-  // rejectLabel: 'Cancel',
-  // rejectButtonStyleClass: 'p-button-secondary',
-  // acceptButtonStyleClass: 'p-button-danger',
-  //     accept: () => {
-  //       this.warehouseService.deleteWarehouse(warehouse.warehouseId).subscribe({
-  //         next: () => {
-  //           this.notificationService.success('Success', 'Warehouse Deleted Successfully');
-  //           this.loadWarehouses();
-  //         },
-  //         error: () => {
-  //           this.notificationService.error('Error', 'Failed to Delete Warehouse');
-  //         },
-  //       });
-  //     },
-  //   });
-  // }
-
-  // deleteSelectedWarehouses(): void {
-  //   this.confirmationService.confirm({
-  //     message: 'Are you sure you want to delete the selected Warehouses?',
-  //     header: 'Confirm',
-  //     icon: 'pi pi-exclamation-triangle',
-  //     accept: () => {
-  //       this.warehouses = this.warehouses.filter((val) => !this.selectedWarehouses.includes(val));
-  //       this.selectedWarehouses = [];
-  //       this.notificationService.success('Success', 'Selected Warehouses Deleted');
-  //     },
-  //   });
-  // }
-
   exportExcel(): void {
     try {
-      this.exportService.exportToExcel(this.warehouses, {
+      this.exportService.exportToExcel(this.warehouses as never, {
         fileName: 'Warehouses_Excel_Report',
         sheetName: 'Warehouse Data',
         title: 'The Unity Ware Excel Report',

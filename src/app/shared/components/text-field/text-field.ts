@@ -1,13 +1,13 @@
-import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
-import {
-  ControlValueAccessor,
-  NG_VALUE_ACCESSOR,
-  NG_VALIDATORS,
-  Validator,
-  AbstractControl,
-  ValidationErrors,
-} from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
+import {
+  AbstractControl,
+  ControlValueAccessor,
+  NG_VALIDATORS,
+  NG_VALUE_ACCESSOR,
+  ValidationErrors,
+  Validator,
+} from '@angular/forms';
 
 export type TextFieldSize = 'sm' | 'md' | 'lg';
 
@@ -55,7 +55,9 @@ export class TextFieldComponent implements ControlValueAccessor, Validator {
   focused = false;
   uniqueId = `text-field-${Math.random().toString(36).substr(2, 9)}`;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onChange: (value: string) => void = () => {};
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onTouched: () => void = () => {};
 
   get inputType(): string {

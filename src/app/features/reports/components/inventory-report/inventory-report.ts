@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-inventory-report',
   imports: [],
   templateUrl: './inventory-report.html',
-  styleUrl: './inventory-report.scss'
+  styleUrl: './inventory-report.scss',
 })
-export class InventoryReport {
-
-}
+export class InventoryReport {}

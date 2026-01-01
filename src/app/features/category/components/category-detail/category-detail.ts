@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -17,19 +17,23 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+import { ExportService } from '../../../../core/services/export.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { CategoryRequest, CategoryResponse } from '../../models/category.model';
+import { CategoryService } from '../../services/category.services';
+
 interface Category {
   categoryId: number;
   categoryName: string;
   parentCategoryName: string | '';
+  parentCategoryId: number;
 }
 @Component({
   selector: 'app-category-detail',
   imports: [
     CommonModule,
     FormsModule,
-
     TableModule,
     ToolbarModule,
     ButtonModule,
@@ -46,91 +50,50 @@ interface Category {
     InputIconModule,
     DatePickerModule,
     TagModule,
-
-    // Custom
     MetricCardComponent,
   ],
   templateUrl: './category-detail.html',
-  styleUrl: './category-detail.scss',
 })
-export class CategoryDetail {
-  timePeriods = ['1d', '7d', '1m', '3m', '6m', '1y'];
-  selectedPeriod = '1m';
+export class CategoryDetail implements OnInit {
+  private readonly categoryService = inject(CategoryService);
+  private exportService = inject(ExportService);
+  private notificationService = inject(NotificationService);
   date: Date | null = null;
   categories: Category[] = [];
   selectedCategories: Category[] = [];
+  items: { label: number | null; value: string }[] = [];
+  categoryItems: CategoryResponse[] = [];
+  parentCategory = '';
+  selectedParentCategory: Category | null = null;
+  isEditMode = false;
+  selectedParentCategoryForDropdown: number | { label: string; value: number } | null = null;
 
   category: Category = {
     categoryId: 0,
     categoryName: '',
+    parentCategoryId: 0,
     parentCategoryName: '',
   };
   categoryDialog = false;
   submitted = false;
 
-  constructor(
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService
-  ) {}
-
   ngOnInit() {
-    this.categories = [
-      {
-        categoryId: 1,
-        categoryName: 'Electronics',
-        parentCategoryName: 'Products',
+    this.loadCategories();
+  }
+
+  private loadCategories() {
+    this.categoryService.getAllCategories().subscribe({
+      next: (res) => {
+        this.categoryItems = res.result;
+        this.items = res.result.map((val) => ({
+          label: val.categoryId,
+          value: val.categoryName,
+        }));
       },
-      {
-        categoryId: 2,
-        categoryName: 'Home Appliances',
-        parentCategoryName: 'Electronics',
+      error: () => {
+        this.notificationService.error('Error', 'Failed to Load Warehouses');
       },
-      {
-        categoryId: 3,
-        categoryName: 'Groceries',
-        parentCategoryName: 'Products',
-      },
-      {
-        categoryId: 4,
-        categoryName: 'Beverages',
-        parentCategoryName: 'Groceries',
-      },
-      {
-        categoryId: 5,
-        categoryName: 'Stationery',
-        parentCategoryName: 'Office Supplies',
-      },
-      {
-        categoryId: 6,
-        categoryName: 'Furniture',
-        parentCategoryName: 'Office Supplies',
-      },
-      {
-        categoryId: 7,
-        categoryName: 'Clothing',
-        parentCategoryName: 'Fashion',
-      },
-      {
-        categoryId: 8,
-        categoryName: 'Footwear',
-        parentCategoryName: 'Fashion',
-      },
-      {
-        categoryId: 9,
-        categoryName: 'Sports Equipment',
-        parentCategoryName: 'Outdoor & Fitness',
-      },
-      {
-        categoryId: 10,
-        categoryName: 'Health & Beauty',
-        parentCategoryName: 'Personal Care',
-      },
-      {
-        categoryId: 11,
-        categoryName: 'Automotive Accessories',
-        parentCategoryName: 'Vehicles',
-      },
-    ];
+    });
   }
 
   createEmptyCategory(): Category {
@@ -138,11 +101,18 @@ export class CategoryDetail {
       categoryId: 0,
       categoryName: '',
       parentCategoryName: '',
+      parentCategoryId: 0,
     };
   }
   openNew() {
     this.category = this.createEmptyCategory();
     this.submitted = false;
+    this.categoryDialog = true;
+  }
+  editCategory(category: Category): void {
+    this.isEditMode = true;
+    this.category = { ...category };
+    // this.selectedParentCategoryForDropdown = this.items.find((p) => p.value === category.parentCategoryId);
     this.categoryDialog = true;
   }
 
@@ -153,100 +123,72 @@ export class CategoryDetail {
 
   saveCategory() {
     this.submitted = true;
-
-    if (this.category.categoryName.trim()) {
-      if (this.category.categoryId) {
-        const index = this.findIndexById(this.category.categoryId);
-        if (index !== -1) this.categories[index] = this.category;
-
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Category Updated',
-          life: 3000,
-        });
-      } else {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Category Created',
-          life: 3000,
-        });
-      }
-
-      this.categories = [...this.categories];
-      this.categoryDialog = false;
-      this.category = this.createEmptyCategory();
+    const req: CategoryRequest = this.makeCategoryRequest();
+    if (this.isEditMode) {
+      this.updateCategory(req);
+    } else {
+      this.createCategory(req);
     }
   }
 
-  editCategory(category: Category) {
-    this.category = { ...category };
+  private createCategory(req: CategoryRequest): void {
+    const payload = {
+      ...req,
+      parentCategoryId: req.parentCategoryId === 0 ? null : req.parentCategoryId,
+    };
+    this.categoryService.createCategory(payload).subscribe({
+      next: () => {
+        this.notificationService.success('Success', 'Category Created Successfully');
+        this.hideDialog();
+        this.loadCategories();
+      },
+      error: (err) => {
+        this.notificationService.error('Error', err.error?.message || 'Failed to Create Category');
+      },
+    });
+  }
+
+  updateCategory(req: CategoryRequest): void {
     this.categoryDialog = true;
-  }
+    this.isEditMode = true;
 
-  deleteCategory(category: Category) {
-    this.confirmationService.confirm({
-      message: `Are you sure you want to delete "${category.categoryName}"?`,
-      header: 'Confirm Deletion',
-      icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Confirm',
-      rejectLabel: 'Cancel',
-      rejectButtonStyleClass: 'p-button-secondary',
-      acceptButtonStyleClass: 'p-button-danger',
-
-      accept: () => {
-        this.categories = this.categories.filter((p) => p.categoryId !== category.categoryId);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Supplier Deleted',
-          life: 3000,
-        });
+    this.categoryService.updateCategory(req, this.category.categoryId).subscribe({
+      next: () => {
+        this.notificationService.success('Success', 'Category Updated Successfully');
+        this.hideDialog();
+        this.loadCategories();
+      },
+      error: (err) => {
+        this.notificationService.error('Error', err.error?.message || 'Failed to Update Category');
       },
     });
   }
 
-  deleteSelectedCategories() {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete the selected Suppliers?',
-      header: 'Confirm',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.categories = this.categories.filter((val) => !this.selectedCategories.includes(val));
-        this.selectedCategories = [];
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Suppliers Deleted',
-          life: 3000,
-        });
-      },
-    });
+  exportExcel(): void {
+    try {
+      this.exportService.exportToExcel(this.categories as never, {
+        fileName: 'Warehouses_Excel_Report',
+        sheetName: 'Warehouse Data',
+        title: 'The Unity Ware Excel Report',
+      });
+      this.notificationService.success('Export', 'Excel Export Completed');
+    } catch {
+      this.notificationService.error('Export', 'Excel Export Failed');
+    }
   }
 
-  exportCSV(event?: Event) {
-    console.log('Export CSV clicked', event);
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Export',
-      detail: 'CSV Export started...',
-      life: 3000,
-    });
+  private makeCategoryRequest(): CategoryRequest {
+    return {
+      categoryName: this.category.categoryName,
+      parentCategoryId: Number(this.selectedParentCategory),
+    };
   }
 
-  findIndexById(id: number): number {
-    return this.categories.findIndex((p) => p.categoryId === id);
-  }
+  //   getStatusLabel(isActive: boolean): string {
+  //     return isActive ? 'Active' : 'Inactive';
+  //   }
 
-  createId(): number {
-    return Math.floor(Math.random() * 10000) + 100;
-  }
-  getStatusLabel(isActive: boolean): string {
-    return isActive ? 'Active' : 'Inactive';
-  }
-
-  getSeverity(isActive: boolean): 'success' | 'danger' {
-    return isActive ? 'success' : 'danger';
-  }
+  //   getSeverity(isActive: boolean): 'success' | 'danger' {
+  //     return isActive ? 'success' : 'danger';
+  //   }
 }

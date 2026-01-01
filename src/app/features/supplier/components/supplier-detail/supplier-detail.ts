@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -18,10 +18,10 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+import { ExportService } from '../../../../core/services/export.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 import { SupplierService } from '../../services/supplier.services';
-import { NotificationService } from '../../../../core/services/notification.services';
-import { ExportService } from '../../../../core/services/export.services';
 
 interface Supplier {
   supplierId: number;
@@ -63,7 +63,7 @@ interface Supplier {
   standalone: true,
   templateUrl: './supplier-detail.html',
 })
-export class SupplierDetail {
+export class SupplierDetail implements OnInit {
   //DI
   private readonly supplierService = inject(SupplierService);
   private readonly notificationService = inject(NotificationService);
@@ -89,7 +89,7 @@ export class SupplierDetail {
   supplierDialog = false;
   submitted = false;
   isEditMode = false;
-  items: any[] = [];
+  items: unknown[] = [];
 
   // Runs once after Angular has initialized all the component's inputs
   ngOnInit(): void {
@@ -142,10 +142,7 @@ export class SupplierDetail {
     this.submitted = true;
 
     if (!this.supplier.name || !this.supplier.phone || !this.supplier.email) {
-      this.notificationService.warn(
-        'Validation Error',
-        'Supplier Name, Phone and Email are required'
-      );
+      this.notificationService.warn('Validation Error', 'Supplier Name, Phone and Email are required');
       return;
     }
 
@@ -166,10 +163,7 @@ export class SupplierDetail {
         this.loadSuppliers();
       },
       error: (err) => {
-        this.notificationService.error(
-          'Error!!',
-          err.error?.message || 'Failed to Create Supplier'
-        );
+        this.notificationService.error('Error!!', err.error?.message || 'Failed to Create Supplier');
       },
     });
   }
@@ -221,15 +215,15 @@ export class SupplierDetail {
   }
   exportExcel() {
     try {
-      this.exportService.exportToExcel(this.items, {
+      this.exportService.exportToExcel(this.items as never, {
         fileName: 'Suppliers_Excel_Report',
         sheetName: 'Supplier Data',
         title: 'The Unity Ware Excel Report',
       });
 
       this.notificationService.success('Export', 'Excel Export Completed');
-    } catch (error) {
-      this.notificationService.error('Export', 'Excel Export Failed');
+    } catch (err) {
+      this.notificationService.error('Export', `Excel Export Failed | ${err}`);
     }
   }
 

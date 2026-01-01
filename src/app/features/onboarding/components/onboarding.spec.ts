@@ -1,16 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Onboarding } from '../services/onboarding';
 
-
 describe('Onboarding', () => {
   let component: Onboarding;
   let fixture: ComponentFixture<Onboarding>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Onboarding]
-    })
-    .compileComponents();
+      imports: [Onboarding],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Onboarding);
     component = fixture.componentInstance;

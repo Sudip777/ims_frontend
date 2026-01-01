@@ -31,4 +31,11 @@ export class AuthService {
     const path = `${environment.apiUrl}/auth/login`;
     return this.http.post<LoginResponse>(path, payload);
   }
+  refreshToken() {
+    return this.http.post<{ result: { access_token: string; refresh_token: string } }>(
+      `${environment.apiUrl}/auth/refresh-token`,
+      {},
+      { withCredentials: true } // due to backend use cookie
+    );
+  }
 }

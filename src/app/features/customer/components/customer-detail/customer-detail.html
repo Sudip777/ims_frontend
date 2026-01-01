@@ -1,5 +1,5 @@
 <main class="p-6 space-y-6 bg-gray-50">
-  <div class="max-w-6xl mx-auto space-y-6">
+  <div>
     <div>
       <h1 class="font-heading font-medium p-2 text-2xl">Customer Overview</h1>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -26,7 +26,11 @@
     </div>
 
     <h2 class="font-heading font-medium p-2 text-2xl">Customer Detail</h2>
-    <div class="overflow-x-auto bg-white rounded-2xl shadow-lg border-surface-200">
+    <div
+      class="overflow-x-auto bg-white rounded-2xl shadow-lg border-surface-200"
+    >
+      <!-- Show skeleton when loading -->
+      @if (!tableLoading) {
       <p-table
         #dt
         [value]="items"
@@ -54,7 +58,12 @@
               />
             </p-iconfield>
             <div class="flex gap-2">
-              <p-button label="Add" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+              <p-button
+                label="Add"
+                icon="pi pi-plus"
+                class="mr-2"
+                (onClick)="openNew()"
+              />
               <p-button
                 icon="pi pi-upload"
                 label="Export"
@@ -69,7 +78,9 @@
         <ng-template pTemplate="header">
           <tr>
             <th class="w-2">ID</th>
-            <th pSortableColumn="name" class="w-2">Name <p-sortIcon field="name"></p-sortIcon></th>
+            <th pSortableColumn="name" class="w-2">
+              Name <p-sortIcon field="name"></p-sortIcon>
+            </th>
             <th class="w-2">Email</th>
             <th class="w-2">Phone</th>
             <th class="w-2">Address</th>
@@ -123,15 +134,33 @@
             </td>
           </tr>
         </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4" class="text-center py-8">
+              <p class="text-xl font-semibold text-surface-700 mb-2">
+                No customers found
+              </p>
+
+              <p class="text-surface-500 mb-4">
+                Get Started by creating Customer
+              </p>
+              <p-button
+                label="Create Purchase Order"
+                icon="pi pi-plus"
+                (onClick)="openNew()"
+              ></p-button>
+            </td>
+          </tr>
+        </ng-template>
       </p-table>
+      }
     </div>
   </div>
 
   <p-dialog
     [(visible)]="customerDialog"
-    [style]="{ width: '70vw' }"
-    [breakpoints]="{ '1024px': '78vw', '768px': '78vw', '425px': '94vw' }"
-    header="customer Details"
+    [styleClass]="'responsive-dialog'"
+    [header]="isEditMode? 'Update Customer Details':'Add Customer Details'"
     [modal]="true"
     [draggable]="false"
   >
@@ -145,34 +174,57 @@
             id="name"
             [(ngModel)]="customer.name"
             required
-            autofocus
             fluid
           />
-          <small class="text-red-500" *ngIf="submitted && !customer.name">Name is required.</small>
+          <small class="text-red-500" *ngIf="submitted && !customer.name"
+            >Name is required.</small
+          >
         </div>
 
         <div>
           <label for="email" class="block font-bold mb-3">Email</label>
-          <input type="email" pInputText id="email" [(ngModel)]="customer.email" required fluid />
+          <input
+            type="email"
+            pInputText
+            id="email"
+            [(ngModel)]="customer.email"
+            required
+            fluid
+          />
         </div>
 
         <div>
           <label for="phone" class="block font-bold mb-3">Phone</label>
-          <input type="text" pInputText id="phone" [(ngModel)]="customer.phone" required fluid />
+          <input
+            type="text"
+            pInputText
+            id="phone"
+            [(ngModel)]="customer.phone"
+            required
+            fluid
+          />
         </div>
 
         <div>
           <label for="address" class="block font-bold mb-3">Address</label>
-          <textarea pTextarea id="address" [(ngModel)]="customer.address" rows="3" fluid></textarea>
+          <textarea
+            pTextarea
+            id="address"
+            [(ngModel)]="customer.address"
+            rows="3"
+            fluid
+          ></textarea>
         </div>
 
         <div>
-          <label class="block font-bold mb-3">Active Status</label>
+          <label for="isActive" class="block font-bold mb-3"
+            >Active Status</label
+          >
           <p-select
             [(ngModel)]="customer.isActive"
             [options]="[
               { label: 'Active', value: true },
-              { label: 'Inactive', value: false }
+              { label: 'Inactive', value: false },
             ]"
             optionLabel="label"
             optionValue="value"
@@ -184,7 +236,12 @@
     </ng-template>
 
     <ng-template pTemplate="footer">
-      <p-button label="Cancel" icon="pi pi-times" text (onClick)="hideDialog()" />
+      <p-button
+        label="Cancel"
+        icon="pi pi-times"
+        text
+        (onClick)="hideDialog()"
+      />
       <p-button label="Save" icon="pi pi-check" (onClick)="saveCustomer()" />
     </ng-template>
   </p-dialog>

@@ -1,15 +1,14 @@
-import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChartModule } from 'primeng/chart';
-import { IconFieldModule } from 'primeng/iconfield';
-import { IconComponent } from '../../../../shared/icons/components/icon.component';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
+import { ChartModule } from 'primeng/chart';
 import { DatePickerModule } from 'primeng/datepicker';
+import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
-import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
-import { ButtonModule } from 'primeng/button';
 import { AuthStore } from '../../../../core/store/auth-store';
+import { MetricCardComponent } from '../../../../shared/components/metric-card/metric-card';
 
 @Component({
   selector: 'app-dashboard-overview',
@@ -44,17 +43,17 @@ export class DashboardOverview implements OnInit {
   }
 
   // Chart Data
-  stackedBarData: any;
-  stackedBarOptions: any;
+  stackedBarData: unknown;
+  stackedBarOptions: unknown;
 
-  doughnutData: any;
-  doughnutOptions: any;
+  doughnutData: unknown;
+  doughnutOptions: unknown;
 
-  pieData: any;
-  pieOptions: any;
+  pieData: unknown;
+  pieOptions: unknown;
 
-  normalBarData: any;
-  normalBarOptions: any;
+  normalBarData: unknown;
+  normalBarOptions: unknown;
 
   ngOnInit() {
     this.stackedBarData = {
