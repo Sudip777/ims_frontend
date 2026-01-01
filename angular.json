@@ -20,7 +20,6 @@
             "browser": "src/main.ts",
             "polyfills": ["src/polyfills.ts"],
             "outputPath": "dist/inventory-management-system",
-            "outputPath": "dist/inventory-management-system",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
